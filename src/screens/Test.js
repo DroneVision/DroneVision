@@ -32,7 +32,7 @@ class Test extends Component {
   render() {
     return (
       <div>
-        <h1>Test1</h1>
+        <h1>Test</h1>
         <p>{`${this.state.flightCommands.toString()}`}</p>
         <button onClick={() => this.addDirection('up')}>Up</button>
         <button onClick={() => this.addDirection('right')}>Right</button>
