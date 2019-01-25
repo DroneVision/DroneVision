@@ -59,71 +59,44 @@ const BACK = 'back';
 const CURVE = 'curve';
 const CW = 'cw';
 const CCW = 'ccw';
-
+const GO = 'go';
 const EMERGENCY = 'emergency';
+const FLIP = 'flip';
 
-function sendCommand(flightInstruction) {
-  if (flightInstruction[2]) {
-    const curveString = `${flightInstruction[0]} ${flightInstruction[1]} ${
-      flightInstruction[2]
-    } ${flightInstruction[3]} ${flightInstruction[4]} ${flightInstruction[5]} ${
-      flightInstruction[6]
-    }`;
-
-    console.log('curve string', curveString);
-    droneCommand.send(
-      flightString,
-      0,
-      flightString.length,
-      COMMANDPORT,
-      HOST,
-      handleError
-    );
-  }
-  if (flightInstruction[1]) {
-    const flightString = `${flightInstruction[0]} ${flightInstruction[1]}`;
-
-    console.log('flight string with second arg', flightString);
-
-    droneCommand.send(
-      flightString,
-      0,
-      flightString.length,
-      COMMANDPORT,
-      HOST,
-      handleError
-    );
-  } else {
-    console.log('reg flight string', flightInstruction[0]);
-    droneCommand.send(
-      flightInstruction[0],
-      0,
-      flightInstruction[0].length,
-      COMMANDPORT,
-      HOST,
-      handleError
-    );
-  }
+function sendCommand(flightInstructionString) {
+  // const flightInstructionString = flightInstruction.join(' ');
+  console.log('Flight Instruction String:', flightInstructionString);
+  droneCommand.send(
+    flightInstructionString,
+    0,
+    flightInstructionString.length,
+    COMMANDPORT,
+    HOST,
+    handleError
+  );
 }
+// flightInstruction argument for all of the functions below is an array where the first argument (ind0) is
 
-// sendCommand(COMMAND);
-// sendCommand(BATTERY);
-// sendCommand(TAKEOFF);
-// sendCommand(UP, 100);
-// sendCommand(DOWN, 50);
-// // hold(5000);
-// sendCommand(EMERGENCY);
+// // Adds flightInstruction to the existing list of instructions (doesn't run anything)
+// const addInstructionToQueue = flightInstruction => {
+//   autoPilot.push(flightInstruction);
+// };
 
-// droneCommand.send(COMMAND, 0, COMMAND.length, COMMANDPORT, HOST, handleError);
-// droneCommand.send(BATTERY, 0, BATTERY.length, COMMANDPORT, HOST, handleError);
-// droneCommand.send(TAKEOFF, 0, TAKEOFF.length, COMMANDPORT, HOST, handleError);
-// droneCommand.send(TAKEOFF, 0, TAKEOFF.length, COMMANDPORT, HOST, handleError);
-// droneCommand.send(LAND, 0, LAND.length, COMMANDPORT, HOST, handleError);
+// Directly runs the given flightInstruction
+const runSingleInstruction = async flightInstruction => {
+  sendCommand(flightInstruction);
+  const delay = commandDelays[flightInstruction.split(' ')[0]];
+  await wait(delay);
+};
 
 const autoPilot = [
-  [COMMAND],
-  [BATTERY],
-  [TAKEOFF],
+  'command',
+  'battery?',
+  'takeoff',
+  'curve 100 -100 0 200 0 40 50',
+  'ccw -180',
+  'curve 100 -100 0 200 0 -40 50',
+  'land',
   // [FORWARD, 50],
   // [BACK, 50],
   // [LEFT, 50],
@@ -131,9 +104,12 @@ const autoPilot = [
   // [RIGHT, 50],
   // [CW, 90],
   // [CCW, 90],
-  // [CURVE, 25, 25, 0, 0, 50, 0],
-  [LAND],
+  // [CURVE, 50, 50, 0, 100, 0, 0, 10],
+  // [GO, -200, 0, 0, 10],
 ];
+
+// testing purposes -> comment out when using frontend
+fly(autoPilot);
 
 // function fly(flightManifest) {
 //   flightManifest.forEach(async inst => {
@@ -146,37 +122,26 @@ const autoPilot = [
 // }
 async function fly(flightManifest) {
   for (let i = 0; i < flightManifest.length; i++) {
-    const inst = flightManifest[i];
-    const delay = commandDelays[inst[0]];
-
-    sendCommand(inst);
-    // console.log('command', inst[0], inst[1]);
-
-    await wait(delay);
-    // console.log('delay', delay);
+    await runSingleInstruction(flightManifest[i]);
   }
-
-  // console.log('flown');
+  console.log('flown');
 }
 
-fly(autoPilot);
-
-// setTimeout(() => {
-//   sendCommand(EMERGENCY);
-// }, 10000);
-
 io.on('connection', socket => {
-  socket.on('command', command => {
-    console.log('command Sent from browser');
+  socket.on('takeoff', () => {
+    console.log('Take-off Sent from Browser:');
+    runSingleInstruction('command');
+    runSingleInstruction('command');
+  });
+  socket.on('single-command', command => {
+    console.log('Single Command Sent from Browser:');
     console.log(command);
-    droneCommand.send(
-      command,
-      0,
-      command.length,
-      COMMANDPORT,
-      HOST,
-      handleError
-    );
+    runSingleInstruction(command);
+  });
+  socket.on('autopilot', commands => {
+    console.log('Multiple Commands Sent from Browser:');
+    console.log(commands);
+    fly(commands);
   });
 
   socket.emit('status', 'CONNECTED');
