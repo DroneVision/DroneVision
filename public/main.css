@@ -60,3 +60,9 @@
   border-style: solid;
   border-width: 5px;
 }
+
+#status_container {
+  width: 10vw;
+  height: 25vh;
+  margin-left: 25vw
+}

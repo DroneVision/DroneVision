@@ -1,9 +1,14 @@
-import React from 'react';
+import React from "react";
+import { Progress } from "semantic-ui-react";
 
-const Battery = props => (
-    <div>
-        Battery level: {props.level}
+const Battery = props => {
+  const { percent } = props;
+  const label = `Battery: ${percent}%`;
+  return (
+    <div id="battery">
+      <Progress percent={percent} label={label} warning={false} indicating />
     </div>
-)
+  );
+};
 
-export default Battery
+export default Battery;
