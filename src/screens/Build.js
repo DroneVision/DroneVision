@@ -5,6 +5,7 @@ import { Button, Icon } from 'semantic-ui-react';
 import UpPlane from '../components/UpPlane';
 import CurrentPlane from '../components/CurrentPlane';
 import DownPlane from '../components/DownPlane';
+import Canvas from '../components/Canvas';
 import FlyControls from '../components/FlyControls';
 import {
   increaseDistance,
@@ -12,7 +13,7 @@ import {
   increaseSpeed,
   decreaseSpeed,
 } from '../store/reducer';
-import StatusContainer from '../components/StatusContainer'
+import StatusContainer from '../components/StatusContainer';
 
 class Build extends Component {
   constructor() {
@@ -73,7 +74,7 @@ class Build extends Component {
     return (
       <div id="test">
         <h1>AutoPilot Builder/Visualizer</h1>
-        <canvas id="canvas" />
+        <Canvas />
         <p>{`${this.state.flightCommands
           .toString()
           .split(',')
