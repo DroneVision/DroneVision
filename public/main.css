@@ -55,10 +55,10 @@
 }
 
 #canvas {
-  width: 640px;
-  height: 360px;
-  border-style: solid;
-  border-width: 5px;
+  margin-top:1em;
+  margin-right:0;
+  margin-bottom:2em;
+  margin-left:0.5em;
 }
 
 #status-container {
