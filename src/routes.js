@@ -11,7 +11,6 @@ const Routes = props => (
     <Switch>
       <Route path="/build" component={Build} />
       <Route path="/run" component={Run} />
-      <Route path="/status" component={StatusContainer} />
       <Route exact path="/" component={Build} />
     </Switch>
   </div>
