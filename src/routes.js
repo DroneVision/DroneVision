@@ -3,6 +3,7 @@ import { withRouter, Route, Switch } from 'react-router-dom';
 import Build from './screens/Build';
 import Run from './screens/Run';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 const Routes = props => (
   <div>
@@ -12,6 +13,7 @@ const Routes = props => (
       <Route path="/build" component={Build} />
       <Route path="/run" component={Run} />
     </Switch>
+    <Footer />
   </div>
 );
 
