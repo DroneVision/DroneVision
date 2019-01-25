@@ -14,12 +14,12 @@ class Canvas extends Component {
     );
 
     this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize(640, 360);
-    this.geometry = new THREE.BoxGeometry(1, 1, 1);
-    this.material = new THREE.MeshBasicMaterial({ color: 0x488384 });
-    this.cube = new THREE.Mesh(this.geometry, this.material);
-    
-    this.scene.add(this.cube);
+    this.renderer.setSize(640, 360, false);
+    this.geometry = new THREE.PlaneGeometry( 30, 30, 14 );
+    this.material = new THREE.MeshBasicMaterial({ color: 0x488384, side: THREE.DoubleSide} );
+    this.floor = new THREE.Mesh(this.geometry, this.material);
+    this.floor.rotation.x = 5;
+    this.scene.add(this.floor);
     this.camera.position.z = 5;
   }
 
@@ -30,8 +30,8 @@ class Canvas extends Component {
 
   animate = () => {
     requestAnimationFrame(this.animate);
-    this.cube.rotation.x += 0.01;
-    this.cube.rotation.y += 0.01;
+    // this.floor.rotation.x += 0.01;
+    // this.floor.rotation.y += 0.01;
     this.renderer.render(this.scene, this.camera);
   };
 
