@@ -1,66 +1,75 @@
-import React from 'react'
+import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
+import { ipcRenderer } from 'electron';
 
-const FlyControls = props => {
-  return (
-    <table>
-      <tbody>
-        <tr>
-          <td>
-            <p>FLY IN REAL TIME</p>
-            <Button onClick={() => props.realTimeTakeOff()}>Take Off</Button>
-            <br />
-            <br />
-            <Button onClick={() => props.realTimeFly(`up ${props.distance}`)}>
-              Up
-            </Button>
-            <Button
-              onClick={() => props.realTimeFly(`forward ${props.distance}`)}
-            >
-              Forward
-            </Button>
-            <br />
-            <Button
-              onClick={() => props.realTimeFly(`right ${props.distance}`)}
-            >
-              Right
-            </Button>
-            <Button onClick={() => props.realTimeFly(`left ${props.distance}`)}>
-              Left
-            </Button>
-            <br />
-            <Button onClick={() => props.realTimeFly(`down ${props.distance}`)}>
-              Down
-            </Button>
-            <Button onClick={() => props.realTimeFly(`back ${props.distance}`)}>
-              Back
-            </Button>
-            <br />
-            <br />
-            <Button onClick={() => props.realTimeFly(`flip f`)}>
-              Front-Flip
-            </Button>
-            <Button onClick={() => props.realTimeFly(`flip b`)}>
-              Back-Flip
-            </Button>
-            <Button onClick={() => props.realTimeFly(`flip l`)}>
-              Left-Flip
-            </Button>
-            <Button onClick={() => props.realTimeFly(`flip r`)}>
-              Right-Flip
-            </Button>
-            <br />
-            <br />
-            <Button onClick={() => props.realTimeFly(`land`)}>Land</Button>
-            &nbsp;&nbsp;&nbsp;
-            <Button onClick={() => props.realTimeFly(`emergency`)}>
-              EMERGENCY STOP
-            </Button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  );
-};
+class FlyControls extends Component {
+  realTimeFly = instruction => {
+    console.log('sending single instruction to drone', instruction);
+    ipcRenderer.send('single-instruction', instruction);
+  };
+
+  realTimeTakeOff = () => {
+    console.log('sending single instruction to drone', 'takeoff');
+    ipcRenderer.send('takeoff');
+  };
+  render() {
+    const { distance, speed } = this.props;
+    return (
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <p>FLY IN REAL TIME</p>
+              <Button onClick={() => this.realTimeTakeOff()}>Take Off</Button>
+              <br />
+              <br />
+              <Button onClick={() => this.realTimeFly(`up ${distance}`)}>
+                Up
+              </Button>
+              <Button onClick={() => this.realTimeFly(`forward ${distance}`)}>
+                Forward
+              </Button>
+              <br />
+              <Button onClick={() => this.realTimeFly(`right ${distance}`)}>
+                Right
+              </Button>
+              <Button onClick={() => this.realTimeFly(`left ${distance}`)}>
+                Left
+              </Button>
+              <br />
+              <Button onClick={() => this.realTimeFly(`down ${distance}`)}>
+                Down
+              </Button>
+              <Button onClick={() => this.realTimeFly(`back ${distance}`)}>
+                Back
+              </Button>
+              <br />
+              <br />
+              <Button onClick={() => this.realTimeFly(`flip f`)}>
+                Front-Flip
+              </Button>
+              <Button onClick={() => this.realTimeFly(`flip b`)}>
+                Back-Flip
+              </Button>
+              <Button onClick={() => this.realTimeFly(`flip l`)}>
+                Left-Flip
+              </Button>
+              <Button onClick={() => this.realTimeFly(`flip r`)}>
+                Right-Flip
+              </Button>
+              <br />
+              <br />
+              <Button onClick={() => this.realTimeFly(`land`)}>Land</Button>
+              &nbsp;&nbsp;&nbsp;
+              <Button onClick={() => this.realTimeFly(`emergency`)}>
+                EMERGENCY STOP
+              </Button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  }
+}
 
 export default FlyControls;
