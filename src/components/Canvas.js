@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 
 class Canvas extends Component {
-  constructor() {
+  constructor(lines) {
     super();
+
+    this.state = {
+      sceneItems: [],
+    };
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
@@ -14,16 +18,33 @@ class Canvas extends Component {
     );
 
     this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize(640, 360);
-    this.geometry = new THREE.BoxGeometry(1, 1, 1);
-    this.material = new THREE.MeshBasicMaterial({ color: 0x488384 });
-    this.cube = new THREE.Mesh(this.geometry, this.material);
-    
+    this.renderer.setSize(640, 360, false);
+
+    function createPlane() {}
+    this.planeGeo = new THREE.PlaneBufferGeometry(30, 30, 500, 500);
+    this.planeMaterial = new THREE.MeshBasicMaterial({
+      color: 0x488384,
+      wireframe: true,
+      fog: true,
+    });
+    this.floor = new THREE.Mesh(this.planeGeo, this.planeMaterial);
+
+    this.cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+    this.cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    this.cube = new THREE.Mesh(this.cubeGeo, this.cubeMaterial);
+
+    this.scene.add(this.floor);
     this.scene.add(this.cube);
-    this.camera.position.z = 5;
+    // this.camera.position.x = 5;
+    // this.camera.position.y = 0;
+    this.camera.position.z = 2;
   }
 
   componentDidMount() {
+    this.state.sceneItems.forEach(item => {
+      this.scene.add(item);
+    });
+
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
   }
@@ -36,9 +57,7 @@ class Canvas extends Component {
   };
 
   render() {
-    return (
-      <div id="canvas"/>
-    );
+    return <div id="canvas" />;
   }
 }
 
