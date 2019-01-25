@@ -12,6 +12,7 @@ import {
   increaseSpeed,
   decreaseSpeed,
 } from '../store/reducer';
+import StatusContainer from '../components/StatusContainer'
 
 class Build extends Component {
   constructor() {
