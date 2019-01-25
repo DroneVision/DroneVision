@@ -23,6 +23,15 @@ const STATEPORT = 8890;
 const droneState = dgram.createSocket('udp4');
 droneState.bind(STATEPORT);
 
+droneState.on('message', message => {
+  // throttle(state => {
+  //   const formattedState = parseState(state.toString());
+  //   console.log(formattedState);
+  //   io.sockets.emit('dronestate', formattedState);
+  // }, 100)
+  console.log(`🤖 : ${message}`);
+});
+
 function parseState(state) {
   return state
     .split(';')
@@ -32,6 +41,13 @@ function parseState(state) {
       return data;
     }, {});
 }
+
+async function receiveDroneState() {
+  await runSingleInstruction('command');
+  await runSingleInstruction('battery?');
+}
+
+receiveDroneState();
 
 //DRONE VIDEO STREAM
 const STREAMPORT = 11111;
@@ -45,23 +61,6 @@ function handleError(err) {
     console.log(err);
   }
 }
-
-const COMMAND = 'command';
-const BATTERY = 'battery?';
-const TAKEOFF = 'takeoff';
-const UP = 'up';
-const DOWN = 'down';
-const LAND = 'land';
-const LEFT = 'left';
-const RIGHT = 'right';
-const FORWARD = 'forward';
-const BACK = 'back';
-const CURVE = 'curve';
-const CW = 'cw';
-const CCW = 'ccw';
-const GO = 'go';
-const EMERGENCY = 'emergency';
-const FLIP = 'flip';
 
 function sendCommand(flightInstructionString) {
   // const flightInstructionString = flightInstruction.join(' ');
@@ -84,6 +83,7 @@ function sendCommand(flightInstructionString) {
 
 // Directly runs the given flightInstruction
 const runSingleInstruction = async flightInstruction => {
+  console.log(flightInstruction);
   sendCommand(flightInstruction);
   const delay = commandDelays[flightInstruction.split(' ')[0]];
   await wait(delay);
@@ -111,15 +111,6 @@ const autoPilot = [
 // testing purposes -> comment out when using frontend
 // fly(autoPilot);
 
-// function fly(flightManifest) {
-//   flightManifest.forEach(async inst => {
-//     const delay = commandDelays[inst[0]];
-//     sendCommand(inst);
-//     console.log(inst[0], inst[1]);
-//     await wait(delay);
-//   });
-//   console.log('flown');
-// }
 async function fly(flightManifest) {
   for (let i = 0; i < flightManifest.length; i++) {
     await runSingleInstruction(flightManifest[i]);
@@ -146,14 +137,6 @@ io.on('connection', socket => {
 
   socket.emit('status', 'CONNECTED');
 });
-
-droneState.on(
-  'message',
-  throttle(state => {
-    const formattedState = parseState(state.toString());
-    io.sockets.emit('dronestate', formattedState);
-  }, 100)
-);
 
 http.listen(6767, () => {
   console.log('Socket io server up and running');
