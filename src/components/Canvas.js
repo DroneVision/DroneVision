@@ -15,12 +15,22 @@ class Canvas extends Component {
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(640, 360, false);
-    this.geometry = new THREE.PlaneGeometry( 30, 30, 14 );
-    this.material = new THREE.MeshBasicMaterial({ color: 0x488384, side: THREE.DoubleSide} );
-    this.floor = new THREE.Mesh(this.geometry, this.material);
+    this.planeGeo = new THREE.PlaneBufferGeometry(30, 30, 500, 500);
+    this.planeMaterial = new THREE.MeshBasicMaterial({
+      color: 0x488384,
+      wireframe: true,
+      fog: true,
+    });
+    this.floor = new THREE.Mesh(this.planeGeo, this.planeMaterial);
+
+    // this.cubeGeo = new THREE.PlaneBufferGeometry(30, 30, 200, 200);
+    // this.cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    // this.cube = new THREE.Mesh(this.cubeGeo, this.cubeMaterial);
+
     this.floor.rotation.x = 5;
     this.scene.add(this.floor);
-    this.camera.position.z = 5;
+    this.scene.add(this.cube);
+    this.camera.position.z = 2;
   }
 
   componentDidMount() {
@@ -36,9 +46,7 @@ class Canvas extends Component {
   };
 
   render() {
-    return (
-      <div id="canvas"/>
-    );
+    return <div id="canvas" />;
   }
 }
 
