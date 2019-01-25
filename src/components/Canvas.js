@@ -37,8 +37,7 @@ class Canvas extends Component {
 
   render() {
     return (
-      <div id="canvas">
-      </div>
+      <div id="canvas"/>
     );
   }
 }
