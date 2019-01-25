@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import Battery from "./Battery";
-import { connect } from "react-redux";
-import { List, Segment } from "semantic-ui-react";
+import React, { Component } from 'react';
+import Battery from './Battery';
+import { connect } from 'react-redux';
+import { List, Segment } from 'semantic-ui-react';
 
 class StatusSegment extends Component {
   render() {
-    const { battery, speed } = this.props;
+    const { speed } = this.props;
     return (
-      <div id="status_segment">
+      <div id="status-segment">
         <Segment compact tertiary padded floated="right">
           <List divided relaxed>
             <List.Item>
               <List.Content>
-                <Battery percent={battery} />
+                <Battery percent={100} />
               </List.Content>
             </List.Item>
             <List.Item>
@@ -42,9 +42,19 @@ class StatusSegment extends Component {
 
 const mapState = state => {
   return {
-    battery: state.battery,
-    state: state.speed
+    state: state.speed,
   };
 };
 
-export default connect(mapState)(StatusSegment);
+// const mapDispatch = dispatch => {
+//   return {
+//     functionName: () => {
+//       dispatch(functionName());
+//     },
+//   };
+// };
+
+export default connect(
+  mapState,
+  null
+)(StatusSegment);

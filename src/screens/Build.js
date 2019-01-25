@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
-import { Button, Icon } from 'semantic-ui-react';
+// import { Button, Icon } from 'semantic-ui-react';
 import UpPlane from '../components/UpPlane';
 import CurrentPlane from '../components/CurrentPlane';
 import DownPlane from '../components/DownPlane';
+import Canvas from '../components/Canvas';
 import FlyControls from '../components/FlyControls';
-import {
-  increaseDistance,
-  decreaseDistance,
-  increaseSpeed,
-  decreaseSpeed,
-} from '../store/reducer';
-import StatusContainer from '../components/StatusContainer'
+// import {
+//   increaseDistance,
+//   decreaseDistance,
+//   increaseSpeed,
+//   decreaseSpeed,
+// } from '../store/reducer';
+// import StatusContainer from '../components/StatusContainer';
 
 class Build extends Component {
   constructor() {
@@ -67,7 +68,7 @@ class Build extends Component {
     return (
       <div id="test">
         <h1>AutoPilot Builder/Visualizer</h1>
-        <canvas id="canvas" />
+        <Canvas />
         <p>{`${this.state.flightCommands
           .toString()
           .split(',')
@@ -77,55 +78,59 @@ class Build extends Component {
 
         <div id="controls-3d">
           <table>
-            <tr>
-              <td>
-                <h1>Up</h1>
-              </td>
-              <td>
-                <h1>Horizontal</h1>
-              </td>
-              <td>
-                <h1>Down</h1>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <UpPlane
-                  addDirection={this.addDirection}
-                  distance={this.props.distance}
-                  speed={this.props.speed}
-                />
-              </td>
-              <td>
-                <CurrentPlane
-                  addDirection={this.addDirection}
-                  distance={this.props.distance}
-                  speed={this.props.speed}
-                />
-              </td>
-              <td>
-                <DownPlane
-                  addDirection={this.addDirection}
-                  distance={this.props.distance}
-                  speed={this.props.speed}
-                />
-              </td>
-            </tr>
+            <tbody>
+              <tr>
+                <td>
+                  <h1>Up</h1>
+                </td>
+                <td>
+                  <h1>Horizontal</h1>
+                </td>
+                <td>
+                  <h1>Down</h1>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <UpPlane
+                    addDirection={this.addDirection}
+                    distance={this.props.distance}
+                    speed={this.props.speed}
+                  />
+                </td>
+                <td>
+                  <CurrentPlane
+                    addDirection={this.addDirection}
+                    distance={this.props.distance}
+                    speed={this.props.speed}
+                  />
+                </td>
+                <td>
+                  <DownPlane
+                    addDirection={this.addDirection}
+                    distance={this.props.distance}
+                    speed={this.props.speed}
+                  />
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
 
         <div id="delete-clear-send">
           <table>
-            <tr>
-              <td>
-                <button onClick={() => this.deleteLast()}>Delete</button>
-                <button onClick={() => this.clear()}>Clear</button>
-                <br /> <br />
-                <button onClick={() => this.runAutoPilot()}>
-                  Send AutoPilot to Drone
-                </button>
-              </td>
-            </tr>
+            <tbody>
+              <tr>
+                <td>
+                  <button onClick={() => this.deleteLast()}>Delete</button>
+                  <button onClick={() => this.clear()}>Clear</button>
+                  <br /> <br />
+                  <button onClick={() => this.runAutoPilot()}>
+                    Send AutoPilot to Drone
+                  </button>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
 
