@@ -50,23 +50,17 @@ class Build extends Component {
 
   runAutoPilot = () => {
     console.log('sending auto pilot to drone', this.state.flightCommands);
-    return function() {
-      socket.emit('autopilot', this.state.flightCommands);
-    };
+    socket.emit('autopilot', this.state.flightCommands);
   };
 
   realTimeFly = instruction => {
     console.log('sending single instruction to drone', instruction);
-    return function() {
-      socket.emit('single-instruction', instruction);
-    };
+    socket.emit('single-instruction', instruction);
   };
 
   realTimeTakeOff = () => {
     console.log('sending single instruction to drone', 'takeoff');
-    return function() {
-      socket.emit('takeoff');
-    };
+    socket.emit('takeoff');
   };
 
   render() {

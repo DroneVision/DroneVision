@@ -109,7 +109,7 @@ const autoPilot = [
 ];
 
 // testing purposes -> comment out when using frontend
-fly(autoPilot);
+// fly(autoPilot);
 
 // function fly(flightManifest) {
 //   flightManifest.forEach(async inst => {
@@ -131,17 +131,17 @@ io.on('connection', socket => {
   socket.on('takeoff', () => {
     console.log('Take-off Sent from Browser:');
     runSingleInstruction('command');
-    runSingleInstruction('command');
+    runSingleInstruction('takeoff');
   });
-  socket.on('single-command', command => {
-    console.log('Single Command Sent from Browser:');
-    console.log(command);
-    runSingleInstruction(command);
+  socket.on('single-instruction', instruction => {
+    console.log('Single instruction Sent from Browser:');
+    console.log(instruction);
+    runSingleInstruction(instruction);
   });
-  socket.on('autopilot', commands => {
-    console.log('Multiple Commands Sent from Browser:');
-    console.log(commands);
-    fly(commands);
+  socket.on('autopilot', instructions => {
+    console.log('Multiple instructions Sent from Browser:');
+    console.log(instructions);
+    fly(instructions);
   });
 
   socket.emit('status', 'CONNECTED');
