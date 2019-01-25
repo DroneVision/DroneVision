@@ -1,0 +1,178 @@
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import socket from '../socket';
+import { Button, Icon } from 'semantic-ui-react';
+import UpPlane from '../components/UpPlane';
+import CurrentPlane from '../components/CurrentPlane';
+import DownPlane from '../components/DownPlane';
+import FlyControls from '../components/FlyControls';
+import {
+  increaseDistance,
+  decreaseDistance,
+  increaseSpeed,
+  decreaseSpeed,
+} from '../store/reducer';
+
+class Build extends Component {
+  constructor() {
+    super();
+    this.state = {
+      flightCommands: ['command', 'takeoff', 'land'],
+    };
+  }
+
+  addDirection = newDirection => {
+    console.log(this.state.flightCommands);
+    let tmpArray = this.state.flightCommands.slice();
+    tmpArray.splice(-1, 0, newDirection);
+    console.log(tmpArray);
+    this.setState({
+      flightCommands: tmpArray,
+    });
+  };
+
+  deleteLast = () => {
+    if (this.state.flightCommands.length > 3) {
+      console.log(this.state.flightCommands);
+      let tmpArray = this.state.flightCommands.slice();
+      tmpArray.splice(-2, 1);
+      console.log(tmpArray);
+      this.setState({
+        flightCommands: tmpArray,
+      });
+    }
+  };
+
+  clear = () => {
+    this.setState({ flightCommands: ['command', 'takeoff', 'land'] });
+  };
+
+  runAutoPilot = () => {
+    console.log('sending auto pilot to drone', this.state.flightCommands);
+    return function() {
+      socket.emit('autopilot', this.state.flightCommands);
+    };
+  };
+
+  realTimeFly = instruction => {
+    console.log('sending single instruction to drone', instruction);
+    return function() {
+      socket.emit('single-instruction', instruction);
+    };
+  };
+
+  realTimeTakeOff = () => {
+    console.log('sending single instruction to drone', 'takeoff');
+    return function() {
+      socket.emit('takeoff');
+    };
+  };
+
+  render() {
+    return (
+      <div id="test">
+        <h1>AutoPilot Builder/Visualizer</h1>
+        <canvas id="canvas" />
+        <p>{`${this.state.flightCommands
+          .toString()
+          .split(',')
+          .join(' --> ')}`}</p>
+        <br />
+        <p>CREATE AUTOPILOT</p>
+
+        <div id="controls-3d">
+          <table>
+            <tr>
+              <td>
+                <h1>Up</h1>
+              </td>
+              <td>
+                <h1>Horizontal</h1>
+              </td>
+              <td>
+                <h1>Down</h1>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <UpPlane
+                  addDirection={this.addDirection}
+                  distance={this.props.distance}
+                  speed={this.props.speed}
+                />
+              </td>
+              <td>
+                <CurrentPlane
+                  addDirection={this.addDirection}
+                  distance={this.props.distance}
+                  speed={this.props.speed}
+                />
+              </td>
+              <td>
+                <DownPlane
+                  addDirection={this.addDirection}
+                  distance={this.props.distance}
+                  speed={this.props.speed}
+                />
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div id="delete-clear-send">
+          <table>
+            <tr>
+              <td>
+                <button onClick={() => this.deleteLast()}>Delete</button>
+                <button onClick={() => this.clear()}>Clear</button>
+                <br /> <br />
+                <button onClick={() => this.runAutoPilot()}>
+                  Send AutoPilot to Drone
+                </button>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <hr />
+        <div id="controls-real-time">
+          <FlyControls
+            realTimeFly={this.realTimeFly}
+            realTimeTakeOff={this.realTimeTakeOff}
+            distance={this.props.distance}
+            speed={this.props.speed}
+          />
+        </div>
+      </div>
+    );
+  }
+}
+
+const mapState = state => {
+  return {
+    distance: state.distance,
+    speed: state.speed,
+  };
+};
+
+// const mapDispatch = dispatch => {
+//   return {
+//     increaseDistance: () => {
+//       dispatch(increaseDistance());
+//     },
+//     decreaseDistance: () => {
+//       dispatch(decreaseDistance());
+//     },
+//     increaseSpeed: () => {
+//       dispatch(increaseSpeed());
+//     },
+//     decreaseSpeed: () => {
+//       dispatch(decreaseSpeed());
+//     },
+//   };
+// };
+
+export default connect(
+  mapState,
+  null
+)(Build);
