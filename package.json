@@ -6,6 +6,7 @@
     "dgram": "^1.0.1",
     "electron-reload": "^1.4.0",
     "express": "^4.16.4",
+    "ffmpeg": "0.0.4",
     "lodash": "^4.17.11",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",

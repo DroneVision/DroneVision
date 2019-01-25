@@ -23,14 +23,14 @@ const STATEPORT = 8890;
 const droneState = dgram.createSocket('udp4');
 droneState.bind(STATEPORT);
 
-droneState.on('message', message => {
-  // throttle(state => {
-  //   const formattedState = parseState(state.toString());
-  //   console.log(formattedState);
-  //   io.sockets.emit('dronestate', formattedState);
-  // }, 100)
-  console.log(`🤖 : ${message}`);
-});
+droneState.on(
+  'message',
+  throttle(state => {
+    const formattedState = parseState(state.toString());
+    // console.log(formattedState);
+    io.sockets.emit('dronestate', formattedState);
+  }, 100)
+);
 
 function parseState(state) {
   return state
@@ -42,17 +42,14 @@ function parseState(state) {
     }, {});
 }
 
-async function receiveDroneState() {
-  await runSingleInstruction('command');
-  await runSingleInstruction('battery?');
-}
-
-receiveDroneState();
-
 //DRONE VIDEO STREAM
 const STREAMPORT = 11111;
 const droneStream = dgram.createSocket('udp4');
 droneStream.bind(STREAMPORT);
+
+droneStream.on('message', message => {
+  console.log('message', message);
+});
 
 //ERROR HANDLER
 function handleError(err) {
@@ -92,11 +89,12 @@ const runSingleInstruction = async flightInstruction => {
 const autoPilot = [
   'command',
   'battery?',
-  'takeoff',
-  'curve 100 -100 0 200 0 40 50',
-  'ccw -180',
-  'curve 100 -100 0 200 0 -40 50',
-  'land',
+  'streamon',
+  // 'takeoff',
+  // 'curve 100 -100 0 200 0 40 50',
+  // 'ccw -180',
+  // 'curve 100 -100 0 200 0 -40 50',
+  // 'land',
   // [FORWARD, 50],
   // [BACK, 50],
   // [LEFT, 50],
@@ -109,7 +107,7 @@ const autoPilot = [
 ];
 
 // testing purposes -> comment out when using frontend
-// fly(autoPilot);
+fly(autoPilot);
 
 async function fly(flightManifest) {
   for (let i = 0; i < flightManifest.length; i++) {
