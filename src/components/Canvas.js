@@ -14,13 +14,13 @@ class Canvas extends Component {
     );
 
     this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize(640, 360);
+    this.renderer.setSize(640, 360, false);
     this.geometry = new THREE.BoxGeometry(1, 1, 1);
     this.material = new THREE.MeshBasicMaterial({ color: 0x488384 });
     this.cube = new THREE.Mesh(this.geometry, this.material);
     
     this.scene.add(this.cube);
-    this.camera.position.z = 5;
+    this.camera.position.z = 3;
   }
 
   componentDidMount() {
