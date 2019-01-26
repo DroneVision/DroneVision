@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
-// import { Button, Icon } from 'semantic-ui-react';
+import { Button, Icon } from 'semantic-ui-react';
 // import UpPlane from '../components/UpPlane';
 import Plane from '../components/Plane';
 // import DownPlane from '../components/DownPlane';
 import Canvas from '../components/Canvas';
 import FlyControls from '../components/FlyControls';
+
+import PubSub from 'pubsub-js';
+
 const { ipcRenderer } = window.require('electron');
 
 // import {
@@ -56,11 +59,22 @@ class Build extends Component {
     ipcRenderer.send('autopilot', this.state.flightCommands);
   };
 
+  addLine = (point1, point2) => {
+    PubSub.publish('cube-button', { point1, point2 });
+  };
+
   render() {
     return (
       <div id="build">
         <h1>AutoPilot Builder/Visualizer</h1>
         <Canvas />
+        <Button
+          onClick={() =>
+            this.addLine({ x: -10, y: 0, z: 0 }, { x: 0, y: 10, z: 0 })
+          }
+        >
+          Draw Line
+        </Button>
         <p>{`${this.state.flightCommands
           .toString()
           .split(',')

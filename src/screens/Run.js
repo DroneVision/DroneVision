@@ -5,10 +5,6 @@ import Stream from '../components/Stream';
 const { ipcRenderer } = window.require('electron');
 
 class Run extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');
   };

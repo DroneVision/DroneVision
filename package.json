@@ -8,6 +8,7 @@
     "express": "^4.16.4",
     "ffmpeg": "0.0.4",
     "lodash": "^4.17.11",
+    "pubsub-js": "^1.7.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.0",
