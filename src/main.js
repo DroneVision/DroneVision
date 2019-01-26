@@ -1,5 +1,10 @@
 // Modules to control application life and create native browser window
+// const { app, BrowserWindow, ipcMain } = require('electron');
 const { app, BrowserWindow, ipcMain } = require('electron');
+
+
+// Drone init import
+const droneInit = require('./drone/droneInit');
 
 require('electron-reload')(__dirname);
 // Keep a global reference of the window object, if you don't, the window will
@@ -49,3 +54,28 @@ app.on('activate', function() {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+// Front-end - Back-end Communication
+// ipcMain.on('connect-to-drone', (event, arg) => {
+const { runSingleInstruction, runInstructionList } = droneInit();
+
+ipcMain.on('takeoff', () => {
+  console.log('Take-off Sent from Browser:');
+  runSingleInstruction('command');
+  runSingleInstruction('takeoff');
+});
+
+ipcMain.on('single-instruction', (evt,instruction) => {
+  console.log('Single instruction Sent from Browser:');
+  console.log(instruction);
+  runSingleInstruction(instruction);
+});
+
+ipcMain.on('autopilot', (evt,instructions) => {
+  console.log('Multiple instructions Sent from Browser:');
+  console.log(instructions);
+  runInstructionList(instructions);
+});
+
+ipcMain.emit('status', 'CONNECTED');
+// });

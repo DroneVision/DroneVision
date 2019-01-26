@@ -1,48 +1,46 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
+const { ipcRenderer } = window.require('electron');
 
-const FlyControls = props => {
-  return (
-    <div id="fly-controls">
+class FlyControls extends Component {
+  realTimeFly = instruction => {
+    console.log('sending single instruction to drone', instruction);
+    ipcRenderer.send('single-instruction', instruction);
+  };
+
+  realTimeTakeOff = () => {
+    console.log('sending single instruction to drone', 'takeoff');
+    ipcRenderer.send('takeoff');
+  };
+  render() {
+    const { distance, speed } = this.props;
+    return (
       <table>
         <tbody>
           <tr>
             <td>
+              <p>FLY IN REAL TIME</p>
               <Button onClick={() => this.realTimeTakeOff()}>Take Off</Button>
               <br />
               <br />
-              <Button
-                onClick={() => this.realTimeFly(`up ${this.props.distance}`)}
-              >
+              <Button onClick={() => this.realTimeFly(`up ${distance}`)}>
                 Up
               </Button>
-              <Button
-                onClick={() =>
-                  this.realTimeFly(`forward ${this.props.distance}`)
-                }
-              >
+              <Button onClick={() => this.realTimeFly(`forward ${distance}`)}>
                 Forward
               </Button>
               <br />
-              <Button
-                onClick={() => this.realTimeFly(`right ${this.props.distance}`)}
-              >
+              <Button onClick={() => this.realTimeFly(`right ${distance}`)}>
                 Right
               </Button>
-              <Button
-                onClick={() => this.realTimeFly(`left ${this.props.distance}`)}
-              >
+              <Button onClick={() => this.realTimeFly(`left ${distance}`)}>
                 Left
               </Button>
               <br />
-              <Button
-                onClick={() => this.realTimeFly(`down ${this.props.distance}`)}
-              >
+              <Button onClick={() => this.realTimeFly(`down ${distance}`)}>
                 Down
               </Button>
-              <Button
-                onClick={() => this.realTimeFly(`back ${this.props.distance}`)}
-              >
+              <Button onClick={() => this.realTimeFly(`back ${distance}`)}>
                 Back
               </Button>
               <br />
@@ -70,8 +68,8 @@ const FlyControls = props => {
           </tr>
         </tbody>
       </table>
-    </div>
-  );
-};
+    );
+  }
+}
 
 export default FlyControls;
