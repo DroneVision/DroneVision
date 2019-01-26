@@ -30,7 +30,7 @@ class Navbar extends Component {
             as={Link}
             to={'/fly'}
             name="fly"
-            active={activeItem === 'run'}
+            active={activeItem === 'fly'}
             onClick={this.handleItemClick}
           />
         </Menu>
