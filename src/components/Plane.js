@@ -1,7 +1,55 @@
 import React from 'react';
 import { Button, Icon } from 'semantic-ui-react';
 
-const CurrentPlane = props => {
+const getInstruction = (name, distance, speed, type) => {
+  let xyz;
+  let z;
+  switch (type) {
+    case 'current':
+      z = 0;
+      break;
+    case 'up':
+      z = distance;
+      break;
+    case 'down':
+      z = -distance;
+      break;
+    default:
+      z = null;
+  }
+  switch (name) {
+    case 'forward-left':
+      xyz = `${distance} ${distance} ${z}`;
+      break;
+    case 'forward':
+      xyz = `${distance} 0 ${z}`;
+      break;
+    case 'forward-right':
+      xyz = `${distance} -${distance} ${z}`;
+      break;
+    case 'left':
+      xyz = `0 ${distance} ${z}`;
+      break;
+    case 'right':
+      xyz = `0 -${distance} ${z}`;
+      break;
+    case 'reverse-left':
+      xyz = `-${distance} ${distance} ${z}`;
+      break;
+    case 'reverse':
+      xyz = `-${distance} 0 ${z}`;
+      break;
+    case 'reverse-right':
+      xyz = `-${distance} -${distance} ${z}`;
+      break;
+    default:
+      xyz = '';
+  }
+  return `go ${xyz} ${speed}`;
+};
+
+const Plane = props => {
+  const { type, distance, speed, addDirection } = props;
   return (
     <table>
       <tbody>
@@ -13,7 +61,9 @@ const CurrentPlane = props => {
           <td>
             <Button
               onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
+                addDirection(
+                  getInstruction('forward-left', distance, speed, type)
+                )
               }
             >
               <Button.Content visible>
@@ -24,7 +74,7 @@ const CurrentPlane = props => {
           <td>
             <Button
               onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
+                addDirection(getInstruction('forward', distance, speed, type))
               }
             >
               <Button.Content visible>
@@ -35,7 +85,9 @@ const CurrentPlane = props => {
           <td>
             <Button
               onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
+                addDirection(
+                  getInstruction('forward-right', distance, speed, type)
+                )
               }
             >
               <Button.Content visible>
@@ -48,7 +100,7 @@ const CurrentPlane = props => {
           <td>
             <Button
               onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
+                addDirection(getInstruction('left', distance, speed, type))
               }
             >
               <Button.Content visible>
@@ -57,11 +109,7 @@ const CurrentPlane = props => {
             </Button>
           </td>
           <td>
-            <Button
-              onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
-              }
-            >
+            <Button onClick={() => addDirection(`hold`)}>
               <Button.Content visible>
                 <Icon className="hold" name="hourglass half" />
               </Button.Content>
@@ -70,7 +118,7 @@ const CurrentPlane = props => {
           <td>
             <Button
               onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
+                addDirection(getInstruction('right', distance, speed, type))
               }
             >
               <Button.Content visible>
@@ -83,7 +131,9 @@ const CurrentPlane = props => {
           <td>
             <Button
               onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
+                addDirection(
+                  getInstruction('reverse-left', distance, speed, type)
+                )
               }
             >
               <Button.Content visible>
@@ -94,7 +144,7 @@ const CurrentPlane = props => {
           <td>
             <Button
               onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
+                addDirection(getInstruction('reverse', distance, speed, type))
               }
             >
               <Button.Content visible>
@@ -105,7 +155,9 @@ const CurrentPlane = props => {
           <td>
             <Button
               onClick={() =>
-                props.addDirection(`go 0 0 ${props.distance} ${props.speed}`)
+                addDirection(
+                  getInstruction('reverse-right', distance, speed, type)
+                )
               }
             >
               <Button.Content visible>
@@ -119,4 +171,4 @@ const CurrentPlane = props => {
   );
 };
 
-export default CurrentPlane;
+export default Plane;

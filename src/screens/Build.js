@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
 // import { Button, Icon } from 'semantic-ui-react';
-import UpPlane from '../components/UpPlane';
-import CurrentPlane from '../components/CurrentPlane';
-import DownPlane from '../components/DownPlane';
+// import UpPlane from '../components/UpPlane';
+import Plane from '../components/Plane';
+// import DownPlane from '../components/DownPlane';
 import Canvas from '../components/Canvas';
 import FlyControls from '../components/FlyControls';
 const { ipcRenderer } = window.require('electron');
@@ -84,24 +84,27 @@ class Build extends Component {
               </tr>
               <tr>
                 <td>
-                  <UpPlane
+                  <Plane
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
+                    type="up"
                   />
                 </td>
                 <td>
-                  <CurrentPlane
+                  <Plane
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
+                    type="current"
                   />
                 </td>
                 <td>
-                  <DownPlane
+                  <Plane
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
+                    type="down"
                   />
                 </td>
               </tr>
