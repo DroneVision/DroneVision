@@ -26,6 +26,13 @@ class Navbar extends Component {
             active={activeItem === 'run'}
             onClick={this.handleItemClick}
           />
+          <Menu.Item
+            as={Link}
+            to={'/fly'}
+            name="fly"
+            active={activeItem === 'run'}
+            onClick={this.handleItemClick}
+          />
         </Menu>
       </Segment>
     );

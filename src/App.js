@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import reducer from './store/reducer';
 import { BrowserRouter } from 'react-router-dom';
-import Routes from './routes';
+import Routes from './Routes';
 import Footer from './components/Footer';
 
 const store = createStore(reducer);

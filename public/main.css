@@ -35,8 +35,17 @@
 .straight-down {
 }
 
-#test {
+#build {
   text-align: center;
+}
+
+#fly {
+  text-align: center;
+}
+
+#fly-controls {
+  display: flex;
+  justify-content: center;
 }
 
 #controls-3d {

@@ -6,7 +6,6 @@ import UpPlane from '../components/UpPlane';
 import CurrentPlane from '../components/CurrentPlane';
 import DownPlane from '../components/DownPlane';
 import Canvas from '../components/Canvas';
-import FlyControls from '../components/FlyControls';
 // import {
 //   increaseDistance,
 //   decreaseDistance,
@@ -54,19 +53,9 @@ class Build extends Component {
     socket.emit('autopilot', this.state.flightCommands);
   };
 
-  realTimeFly = instruction => {
-    console.log('sending single instruction to drone', instruction);
-    socket.emit('single-instruction', instruction);
-  };
-
-  realTimeTakeOff = () => {
-    console.log('sending single instruction to drone', 'takeoff');
-    socket.emit('takeoff');
-  };
-
   render() {
     return (
-      <div id="test">
+      <div id="build">
         <h1>AutoPilot Builder/Visualizer</h1>
         <Canvas />
         <p>{`${this.state.flightCommands
@@ -132,16 +121,6 @@ class Build extends Component {
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <hr />
-        <div id="controls-real-time">
-          <FlyControls
-            realTimeFly={this.realTimeFly}
-            realTimeTakeOff={this.realTimeTakeOff}
-            distance={this.props.distance}
-            speed={this.props.speed}
-          />
         </div>
       </div>
     );
