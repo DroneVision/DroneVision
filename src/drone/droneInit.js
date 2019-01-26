@@ -1,8 +1,5 @@
 const dgram = require('dgram');
 const wait = require('waait');
-const app = require('express')();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
 const throttle = require('lodash/throttle');
 const commandDelays = require('./commandDelays');
 
@@ -10,6 +7,9 @@ const HOST = '192.168.10.1';
 const COMMANDPORT = 8889;
 const STATEPORT = 8890;
 const STREAMPORT = 11111;
+
+
+const { ipcMain } = require('electron');
 
 const autoPilot = [
   'command',
@@ -54,9 +54,6 @@ const autoPilot = [
 //   socket.emit('status', 'CONNECTED');
 // });
 
-// http.listen(6767, () => {
-//   console.log('Socket io server up and running');
-// });
 
 module.exports = function() {
   //DRONE COMMANDS
@@ -71,25 +68,32 @@ module.exports = function() {
   //DRONE STATE
   const droneState = dgram.createSocket('udp4');
   droneState.bind(STATEPORT);
+  let formattedState
 
+  
+
+  
+  const parseState = state => {
+    return state
+    .split(';')
+    .map(x => x.split(':'))
+    .reduce((data, [key, value]) => {
+      data[key] = value;
+      return data;
+    }, {});
+  };
+  
   droneState.on(
     'message',
     throttle(state => {
-      const formattedState = parseState(state.toString());
-      // console.log(formattedState);
-      // io.sockets.emit('dronestate', formattedState);
+      formattedState = parseState(state.toString());
     }, 100)
   );
 
-  const parseState = state => {
-    return state
-      .split(';')
-      .map(x => x.split(':'))
-      .reduce((data, [key, value]) => {
-        data[key] = value;
-        return data;
-      }, {});
-  };
+
+  
+  // Get the drone state
+  const getDroneState = () => formattedState ;
 
   //DRONE VIDEO STREAM
   const droneStream = dgram.createSocket('udp4');
@@ -137,5 +141,6 @@ module.exports = function() {
   return {
     runSingleInstruction,
     runInstructionList,
+    getDroneState
   };
 };
