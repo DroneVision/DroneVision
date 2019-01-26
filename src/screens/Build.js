@@ -58,7 +58,7 @@ class Build extends Component {
 
   render() {
     return (
-      <div id="test">
+      <div id="build">
         <h1>AutoPilot Builder/Visualizer</h1>
         <Canvas />
         <p>{`${this.state.flightCommands

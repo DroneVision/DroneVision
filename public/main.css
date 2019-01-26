@@ -35,8 +35,17 @@
 .straight-down {
 }
 
-#test {
+#build {
   text-align: center;
+}
+
+#fly {
+  text-align: center;
+}
+
+#fly-controls {
+  display: flex;
+  justify-content: center;
 }
 
 #controls-3d {
@@ -77,4 +86,14 @@
   border-style: solid;
   border-width: 5px;
   border-color: black;
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  background-color: black;
+  color: white;
+  width: 100%;
+  text-align: center;
+  padding: 5px;
 }
