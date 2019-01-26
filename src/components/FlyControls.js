@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
-import { ipcRenderer } from 'electron';
+const { ipcRenderer } = window.require('electron');
 
 class FlyControls extends Component {
   realTimeFly = instruction => {

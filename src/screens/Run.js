@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import StatusContainer from '../components/StatusContainer';
 import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
-import { ipcRenderer } from 'electron';
+const { ipcRenderer } = window.require('electron');
 
 class Run extends Component {
   constructor(props) {

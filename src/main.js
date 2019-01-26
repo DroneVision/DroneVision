@@ -1,8 +1,10 @@
 // Modules to control application life and create native browser window
+// const { app, BrowserWindow, ipcMain } = require('electron');
 const { app, BrowserWindow, ipcMain } = require('electron');
 
+
 // Drone init import
-const droneInit = require('../drone/droneInit');
+const droneInit = require('./drone/droneInit');
 
 require('electron-reload')(__dirname);
 // Keep a global reference of the window object, if you don't, the window will
@@ -63,13 +65,13 @@ ipcMain.on('takeoff', () => {
   runSingleInstruction('takeoff');
 });
 
-ipcMain.on('single-instruction', instruction => {
+ipcMain.on('single-instruction', (evt,instruction) => {
   console.log('Single instruction Sent from Browser:');
   console.log(instruction);
   runSingleInstruction(instruction);
 });
 
-ipcMain.on('autopilot', instructions => {
+ipcMain.on('autopilot', (evt,instructions) => {
   console.log('Multiple instructions Sent from Browser:');
   console.log(instructions);
   runInstructionList(instructions);

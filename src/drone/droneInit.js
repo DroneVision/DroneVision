@@ -76,7 +76,7 @@ module.exports = function() {
     'message',
     throttle(state => {
       const formattedState = parseState(state.toString());
-      console.log(formattedState);
+      // console.log(formattedState);
       // io.sockets.emit('dronestate', formattedState);
     }, 100)
   );

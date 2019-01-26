@@ -7,6 +7,7 @@ import CurrentPlane from '../components/CurrentPlane';
 import DownPlane from '../components/DownPlane';
 import Canvas from '../components/Canvas';
 import FlyControls from '../components/FlyControls';
+const { ipcRenderer } = window.require('electron');
 
 // import {
 //   increaseDistance,
@@ -52,7 +53,7 @@ class Build extends Component {
 
   runAutoPilot = () => {
     console.log('sending auto pilot to drone', this.state.flightCommands);
-    socket.emit('autopilot', this.state.flightCommands);
+    ipcRenderer.send('autopilot', this.state.flightCommands);
   };
 
   render() {
