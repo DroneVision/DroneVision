@@ -25,7 +25,8 @@ class FlyScreen extends Component {
       <div id="fly">
         <h1>Fly in Real Time</h1>
         <Stream />
-        <FlyControls />
+        <FlyControls distance={this.props.distance}
+            speed={this.props.speed}/>
       </div>
     );
   }
