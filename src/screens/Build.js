@@ -125,14 +125,6 @@ class Build extends Component {
             </tbody>
           </table>
         </div>
-
-        <hr />
-        <div id="controls-real-time">
-          <FlyControls
-            distance={this.props.distance}
-            speed={this.props.speed}
-          />
-        </div>
       </div>
     );
   }
