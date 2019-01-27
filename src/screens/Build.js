@@ -25,16 +25,28 @@ class Build extends Component {
     super();
     this.state = {
       flightCommands: ['command', 'takeoff', 'land'],
+      currentPoint: { x: 0, y: 0, z: 0 },
     };
   }
 
   addDirection = newDirection => {
-    console.log(this.state.flightCommands);
-    let tmpArray = this.state.flightCommands.slice();
+    const { flightCommands, currentPoint } = this.state;
+    const { distance } = this.props;
+    console.log(flightCommands);
+    let tmpArray = flightCommands.slice();
     tmpArray.splice(-1, 0, newDirection);
     console.log(tmpArray);
+    const [x, y, z] = newDirection
+      .split(' ')
+      .slice(1, 4)
+      .map(numStr => Number(numStr) / distance);
+    console.log(x, y, z);
+    const { x: x0, y: y0, z: z0 } = currentPoint;
+    const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
+    this.addLine(currentPoint, newPoint);
     this.setState({
       flightCommands: tmpArray,
+      currentPoint: newPoint,
     });
   };
 
@@ -60,7 +72,7 @@ class Build extends Component {
   };
 
   addLine = (point1, point2) => {
-    PubSub.publish('cube-button', { point1, point2 });
+    PubSub.publish('new-line', { point1, point2 });
   };
 
   render() {

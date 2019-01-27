@@ -28,12 +28,17 @@ class Canvas extends Component {
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      50
     );
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(640, 360, false);
-    this.planeGeo = new THREE.PlaneBufferGeometry(30, 30, 500, 500);
+    this.planeGeo = new THREE.PlaneBufferGeometry(
+      45,
+      window.innerWidth / window.innerHeight,
+      1,
+      1000
+    );
     this.planeMaterial = new THREE.MeshBasicMaterial({
       color: 0x488384,
       wireframe: true,
@@ -49,10 +54,10 @@ class Canvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
-    PubSub.subscribe('cube-button', (msg, points) => {
+    PubSub.subscribe('new-line', (msg, points) => {
       const { point1, point2 } = points;
-      //create a blue LineBasicMaterial
-      var material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+      //create a LineBasicMaterial
+      var material = new THREE.LineBasicMaterial({ color: 'red' });
       var geometry = new THREE.Geometry();
       geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
       geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));

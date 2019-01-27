@@ -42,10 +42,55 @@ const getInstruction = (name, distance, speed, type) => {
     case 'reverse-right':
       xyz = `-${distance} -${distance} ${z}`;
       break;
+    case 'straight-up':
+      xyz = `0 0 ${z}`;
+      break;
+    case 'straight-down':
+      xyz = `0 0 ${z}`;
+      break;
     default:
       xyz = '';
   }
   return `go ${xyz} ${speed}`;
+};
+
+const renderCenterButton = (type, distance, speed, addDirection) => {
+  switch (type) {
+    case 'current':
+      return (
+        <Button onClick={() => addDirection(`hold`)}>
+          <Button.Content visible>
+            <Icon className="hold" name="hourglass half" />
+          </Button.Content>
+        </Button>
+      );
+    case 'up':
+      return (
+        <Button
+          onClick={() =>
+            addDirection(getInstruction('straight-up', distance, speed, type))
+          }
+        >
+          <Button.Content visible>
+            <Icon className="straight-up" name="arrow circle up" />
+          </Button.Content>
+        </Button>
+      );
+    case 'down':
+      return (
+        <Button
+          onClick={() =>
+            addDirection(getInstruction('straight-down', distance, speed, type))
+          }
+        >
+          <Button.Content visible>
+            <Icon className="straight-down" name="arrow circle down" />
+          </Button.Content>
+        </Button>
+      );
+    default:
+      return null;
+  }
 };
 
 const Plane = props => {
@@ -108,13 +153,7 @@ const Plane = props => {
               </Button.Content>
             </Button>
           </td>
-          <td>
-            <Button onClick={() => addDirection(`hold`)}>
-              <Button.Content visible>
-                <Icon className="hold" name="hourglass half" />
-              </Button.Content>
-            </Button>
-          </td>
+          <td>{renderCenterButton(type, distance, speed, addDirection)}</td>
           <td>
             <Button
               onClick={() =>
