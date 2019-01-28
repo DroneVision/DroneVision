@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
@@ -21,8 +22,8 @@ window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
 class Canvas extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     //renderer
     this.renderer = new THREE.WebGLRenderer();
@@ -38,8 +39,11 @@ class Canvas extends Component {
       1,
       1000
     );
-    this.camera.position.set(0, -13, 6.5);
-    // this.camera.rotateOnWorldAxis()
+    this.camera.position.set(
+      0,
+      -this.props.scale - 3,
+      -(this.props.scale + 3) / 2
+    );
 
     //controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -49,24 +53,37 @@ class Canvas extends Component {
     this.controls.maxDistance = 1000;
     // this.controls.maxPolarAngle = Math.PI / 2;
 
-    this.planeGeo = new THREE.PlaneBufferGeometry(10, 10, 10, 10);
+    this.planeGeo = new THREE.PlaneBufferGeometry(
+      10,
+      10,
+      this.props.scale,
+      this.props.scale
+    );
     this.planeMaterial = new THREE.MeshBasicMaterial({
       color: 0x488384,
       wireframe: true,
     });
+
     this.floor = new THREE.Mesh(this.planeGeo, this.planeMaterial);
+    // this.floor.rotation.y = Math.PI / 2;
+    // this.floor.rotation.x = Math.PI / 2;
+    // this.floor.rotation.z = Math.PI / 2;
+
+    var axesHelper = new THREE.AxesHelper(5);
+    this.scene.add(axesHelper);
 
     this.scene.add(this.floor);
+    this.scene.background = new THREE.Color(0x123456);
 
-    // lights
-    var light1 = new THREE.DirectionalLight(0xffffff);
-    light1.position.set(1, 1, 1);
-    this.scene.add(light1);
-    var light2 = new THREE.DirectionalLight(0x002288);
-    light2.position.set(-1, -1, -1);
-    this.scene.add(light2);
-    var light3 = new THREE.AmbientLight(0x222222);
-    this.scene.add(light3);
+    // // lights
+    // var light1 = new THREE.DirectionalLight(0xffffff);
+    // light1.position.set(1, 1, 1);
+    // this.scene.add(light1);
+    // var light2 = new THREE.DirectionalLight(0x002288);
+    // light2.position.set(-1, -1, -1);
+    // this.scene.add(light2);
+    // var light3 = new THREE.AmbientLight(0x222222);
+    // this.scene.add(light3);
   }
 
   componentDidMount() {
@@ -87,7 +104,7 @@ class Canvas extends Component {
 
   animate = () => {
     requestAnimationFrame(this.animate);
-    console.dir(this.camera);
+    // console.dir(this.camera);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
     // if (keyboard[87]) {
@@ -132,4 +149,11 @@ class Canvas extends Component {
   }
 }
 
-export default Canvas;
+const mapState = state => {
+  return { scale: state.scale };
+};
+
+export default connect(
+  mapState,
+  null
+)(Canvas);

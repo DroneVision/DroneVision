@@ -21,11 +21,20 @@ const { ipcRenderer } = window.require('electron');
 // import StatusContainer from '../components/StatusContainer';
 
 class Build extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    const { scale } = this.props;
     this.state = {
       flightCommands: ['command', 'takeoff', 'land'],
-      currentPoint: { x: 0, y: 0, z: 0 },
+      limits: {
+        maxX: scale / 2,
+        maxY: scale / 2,
+        maxZ: scale,
+        minX: -scale / 2,
+        minY: -scale / 2,
+        minZ: 1,
+      },
+      currentPoint: { x: 0, y: 0, z: 1 },
     };
   }
 
@@ -40,8 +49,8 @@ class Build extends Component {
       .split(' ')
       .slice(1, 4)
       .map(numStr => Number(numStr) / distance);
-    y = -1 * y;
-    x = -1 * x;
+    y = -1 * x;
+    x = -1 * y;
     console.log(x, y, z);
     const { x: x0, y: y0, z: z0 } = currentPoint;
     const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
@@ -78,6 +87,7 @@ class Build extends Component {
   };
 
   render() {
+    const { currentPoint, limits } = this.state;
     return (
       <div id="build">
         <h1>AutoPilot Builder/Visualizer</h1>
@@ -113,6 +123,11 @@ class Build extends Component {
               <tr>
                 <td>
                   <Plane
+                    leftDisabled={currentPoint.y === limits.minY}
+                    rightDisabled={currentPoint.y === limits.maxY}
+                    forwardDisabled={currentPoint.x === limits.maxX}
+                    reverseDisabled={currentPoint.x === limits.minY}
+                    allDisabled={currentPoint.z === limits.maxZ}
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
@@ -121,6 +136,11 @@ class Build extends Component {
                 </td>
                 <td>
                   <Plane
+                    leftDisabled={currentPoint.y === limits.minY}
+                    rightDisabled={currentPoint.y === limits.maxY}
+                    forwardDisabled={currentPoint.x === limits.maxX}
+                    reverseDisabled={currentPoint.x === limits.minY}
+                    allDisabled={false}
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
@@ -129,6 +149,12 @@ class Build extends Component {
                 </td>
                 <td>
                   <Plane
+                    leftDisabled={currentPoint.y === limits.minY}
+                    rightDisabled={currentPoint.y === limits.maxY}
+                    forwardDisabled={currentPoint.x === limits.maxX}
+                    reverseDisabled={currentPoint.x === limits.minY}
+                    allDisabled={currentPoint.z === limits.minZ}
+                    currentPoint={currentPoint}
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
@@ -165,6 +191,7 @@ const mapState = state => {
   return {
     distance: state.distance,
     speed: state.speed,
+    scale: state.scale,
   };
 };
 

@@ -54,11 +54,17 @@ const getInstruction = (name, distance, speed, type) => {
   return `go ${xyz} ${speed}`;
 };
 
-const renderCenterButton = (type, distance, speed, addDirection) => {
+const renderCenterButton = (
+  type,
+  distance,
+  speed,
+  addDirection,
+  allDisabled
+) => {
   switch (type) {
     case 'current':
       return (
-        <Button onClick={() => addDirection(`hold`)}>
+        <Button disabled={allDisabled} onClick={() => addDirection(`hold`)}>
           <Button.Content visible>
             <Icon className="hold" name="hourglass half" />
           </Button.Content>
@@ -67,6 +73,7 @@ const renderCenterButton = (type, distance, speed, addDirection) => {
     case 'up':
       return (
         <Button
+          disabled={allDisabled}
           onClick={() =>
             addDirection(getInstruction('straight-up', distance, speed, type))
           }
@@ -79,6 +86,7 @@ const renderCenterButton = (type, distance, speed, addDirection) => {
     case 'down':
       return (
         <Button
+          disabled={allDisabled}
           onClick={() =>
             addDirection(getInstruction('straight-down', distance, speed, type))
           }
@@ -94,7 +102,17 @@ const renderCenterButton = (type, distance, speed, addDirection) => {
 };
 
 const Plane = props => {
-  const { type, distance, speed, addDirection } = props;
+  const {
+    type,
+    distance,
+    speed,
+    addDirection,
+    leftDisabled,
+    rightDisabled,
+    forwardDisabled,
+    reverseDisabled,
+    allDisabled,
+  } = props;
   return (
     <table>
       <tbody>
@@ -105,6 +123,7 @@ const Plane = props => {
         <tr>
           <td>
             <Button
+              disabled={leftDisabled || forwardDisabled || allDisabled}
               onClick={() =>
                 addDirection(
                   getInstruction('forward-left', distance, speed, type)
@@ -118,6 +137,7 @@ const Plane = props => {
           </td>
           <td>
             <Button
+              disabled={forwardDisabled || allDisabled}
               onClick={() =>
                 addDirection(getInstruction('forward', distance, speed, type))
               }
@@ -129,6 +149,7 @@ const Plane = props => {
           </td>
           <td>
             <Button
+              disabled={rightDisabled || forwardDisabled || allDisabled}
               onClick={() =>
                 addDirection(
                   getInstruction('forward-right', distance, speed, type)
@@ -144,6 +165,7 @@ const Plane = props => {
         <tr>
           <td>
             <Button
+              disabled={leftDisabled || allDisabled}
               onClick={() =>
                 addDirection(getInstruction('left', distance, speed, type))
               }
@@ -153,9 +175,18 @@ const Plane = props => {
               </Button.Content>
             </Button>
           </td>
-          <td>{renderCenterButton(type, distance, speed, addDirection)}</td>
+          <td>
+            {renderCenterButton(
+              type,
+              distance,
+              speed,
+              addDirection,
+              allDisabled
+            )}
+          </td>
           <td>
             <Button
+              disabled={rightDisabled || allDisabled}
               onClick={() =>
                 addDirection(getInstruction('right', distance, speed, type))
               }
@@ -169,6 +200,7 @@ const Plane = props => {
         <tr>
           <td>
             <Button
+              disabled={leftDisabled || reverseDisabled || allDisabled}
               onClick={() =>
                 addDirection(
                   getInstruction('reverse-left', distance, speed, type)
@@ -182,6 +214,7 @@ const Plane = props => {
           </td>
           <td>
             <Button
+              disabled={reverseDisabled || allDisabled}
               onClick={() =>
                 addDirection(getInstruction('reverse', distance, speed, type))
               }
@@ -193,6 +226,7 @@ const Plane = props => {
           </td>
           <td>
             <Button
+              disabled={rightDisabled || reverseDisabled || allDisabled}
               onClick={() =>
                 addDirection(
                   getInstruction('reverse-right', distance, speed, type)
