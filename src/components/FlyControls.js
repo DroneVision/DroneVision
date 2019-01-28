@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
+import wait from 'waait';
 const { ipcRenderer } = window.require('electron');
 
 class FlyControls extends Component {
@@ -63,6 +64,41 @@ class FlyControls extends Component {
               &nbsp;&nbsp;&nbsp;
               <Button onClick={() => this.realTimeFly(`emergency`)}>
                 EMERGENCY STOP
+              </Button>
+              <Button
+                onClick={() => {
+                  //100% for 1 second is about 90deg turn
+                  this.realTimeFly(`rc 0 0 0 100`);
+                  setTimeout(() => {
+                    this.realTimeFly(`rc 0 0 0 0`);
+                  }, 1000);
+                }}
+              >
+                RC f
+              </Button>
+              <Button
+                onClick={() => {
+                  this.realTimeFly(`rc 0 20 0 0`);
+                  setTimeout(() => {
+                    this.realTimeFly(`rc 0 0 0 0`);
+                  }, 1000);
+                }}
+              >
+                Forward RC
+              </Button>
+              <Button
+                onClick={() => {
+                  this.realTimeFly(`rc 0 0 0 0`);
+                }}
+              >
+                RC 0
+              </Button>
+              <Button
+                onClick={() => {
+                  this.realTimeFly(`rc 0 20 10 60`);
+                }}
+              >
+                RC Forward Spin Up
               </Button>
             </td>
           </tr>

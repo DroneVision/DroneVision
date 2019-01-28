@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
-
+import PubSub from 'pubsub-js';
 const keyboard = {};
 
 function keyDown(event) {
@@ -10,6 +10,11 @@ function keyDown(event) {
 function keyUp(event) {
   keyboard[event.keyCode] = false;
 }
+
+// var geometry = new THREE.BoxGeometry(1, 1, 1);
+// var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+// var cube = new THREE.Mesh(geometry, material);
+// scene.add(cube);
 
 window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
@@ -23,31 +28,43 @@ class Canvas extends Component {
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      50
     );
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(640, 360, false);
-    this.planeGeo = new THREE.PlaneBufferGeometry(30, 30, 500, 500);
+    this.planeGeo = new THREE.PlaneBufferGeometry(
+      45,
+      window.innerWidth / window.innerHeight,
+      1,
+      1000
+    );
     this.planeMaterial = new THREE.MeshBasicMaterial({
       color: 0x488384,
       wireframe: true,
     });
     this.floor = new THREE.Mesh(this.planeGeo, this.planeMaterial);
 
-    // this.cubeGeo = new THREE.PlaneBufferGeometry(30, 30, 200, 200);
-    // this.cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    // this.cube = new THREE.Mesh(this.cubeGeo, this.cubeMaterial);
-
     this.floor.rotation.x = 5;
     this.scene.add(this.floor);
-    this.scene.add(this.cube);
+
     this.camera.position.z = 2;
   }
 
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
+    PubSub.subscribe('new-line', (msg, points) => {
+      const { point1, point2 } = points;
+      //create a LineBasicMaterial
+      var material = new THREE.LineBasicMaterial({ color: 'red' });
+      var geometry = new THREE.Geometry();
+      geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
+      geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
+
+      var line = new THREE.Line(geometry, material);
+      this.scene.add(line);
+    });
   }
 
   animate = () => {
@@ -76,10 +93,12 @@ class Canvas extends Component {
       this.camera.position.z +=
         -Math.cos(this.camera.rotation.y - Math.PI / 2) * 0.5;
     }
-    if (keyboard[37]) { //left arrow
+    if (keyboard[37]) {
+      //left arrow
       this.camera.rotation.y -= 0.01;
     }
-    if (keyboard[39]) { //right arrow
+    if (keyboard[39]) {
+      //right arrow
       this.camera.rotation.y += 0.01;
     }
 

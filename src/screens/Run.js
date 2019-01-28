@@ -7,10 +7,6 @@ import { Button } from 'semantic-ui-react';
 const { ipcRenderer } = window.require('electron');
 
 class Run extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');
   };

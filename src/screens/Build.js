@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
-// import { Button, Icon } from 'semantic-ui-react';
-import UpPlane from '../components/UpPlane';
-import CurrentPlane from '../components/CurrentPlane';
-import DownPlane from '../components/DownPlane';
+import { Button, Icon } from 'semantic-ui-react';
+// import UpPlane from '../components/UpPlane';
+import Plane from '../components/Plane';
+// import DownPlane from '../components/DownPlane';
 import Canvas from '../components/Canvas';
 import FlyControls from '../components/FlyControls';
+
+import PubSub from 'pubsub-js';
+
 const { ipcRenderer } = window.require('electron');
 
 // import {
@@ -22,16 +25,28 @@ class Build extends Component {
     super();
     this.state = {
       flightCommands: ['command', 'takeoff', 'land'],
+      currentPoint: { x: 0, y: 0, z: 0 },
     };
   }
 
   addDirection = newDirection => {
-    console.log(this.state.flightCommands);
-    let tmpArray = this.state.flightCommands.slice();
+    const { flightCommands, currentPoint } = this.state;
+    const { distance } = this.props;
+    console.log(flightCommands);
+    let tmpArray = flightCommands.slice();
     tmpArray.splice(-1, 0, newDirection);
     console.log(tmpArray);
+    const [x, y, z] = newDirection
+      .split(' ')
+      .slice(1, 4)
+      .map(numStr => Number(numStr) / distance);
+    console.log(x, y, z);
+    const { x: x0, y: y0, z: z0 } = currentPoint;
+    const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
+    this.addLine(currentPoint, newPoint);
     this.setState({
       flightCommands: tmpArray,
+      currentPoint: newPoint,
     });
   };
 
@@ -56,11 +71,22 @@ class Build extends Component {
     ipcRenderer.send('autopilot', this.state.flightCommands);
   };
 
+  addLine = (point1, point2) => {
+    PubSub.publish('new-line', { point1, point2 });
+  };
+
   render() {
     return (
       <div id="build">
         <h1>AutoPilot Builder/Visualizer</h1>
         <Canvas />
+        <Button
+          onClick={() =>
+            this.addLine({ x: -10, y: 0, z: 0 }, { x: 0, y: 10, z: 0 })
+          }
+        >
+          Draw Line
+        </Button>
         <p>{`${this.state.flightCommands
           .toString()
           .split(',')
@@ -84,24 +110,27 @@ class Build extends Component {
               </tr>
               <tr>
                 <td>
-                  <UpPlane
+                  <Plane
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
+                    type="up"
                   />
                 </td>
                 <td>
-                  <CurrentPlane
+                  <Plane
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
+                    type="current"
                   />
                 </td>
                 <td>
-                  <DownPlane
+                  <Plane
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
+                    type="down"
                   />
                 </td>
               </tr>
