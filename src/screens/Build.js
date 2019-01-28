@@ -36,10 +36,16 @@ class Build extends Component {
     let tmpArray = flightCommands.slice();
     tmpArray.splice(-1, 0, newDirection);
     console.log(tmpArray);
-    const [x, y, z] = newDirection
+    let [x, y, z] = newDirection
       .split(' ')
       .slice(1, 4)
       .map(numStr => Number(numStr) / distance);
+
+    let tempx = x;
+    let tempy = y;
+
+    x = -tempy;
+    y = tempx;
     console.log(x, y, z);
     const { x: x0, y: y0, z: z0 } = currentPoint;
     const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
@@ -80,13 +86,6 @@ class Build extends Component {
       <div id="build">
         <h1>AutoPilot Builder/Visualizer</h1>
         <Canvas />
-        <Button
-          onClick={() =>
-            this.addLine({ x: -10, y: 0, z: 0 }, { x: 0, y: 10, z: 0 })
-          }
-        >
-          Draw Line
-        </Button>
         <p>{`${this.state.flightCommands
           .toString()
           .split(',')
@@ -143,12 +142,12 @@ class Build extends Component {
             <tbody>
               <tr>
                 <td>
-                  <button onClick={() => this.deleteLast()}>Delete</button>
-                  <button onClick={() => this.clear()}>Clear</button>
+                  <Button onClick={() => this.deleteLast()}>Delete</Button>
+                  <Button onClick={() => this.clear()}>Clear</Button>
                   <br /> <br />
-                  <button onClick={() => this.runAutoPilot()}>
+                  <Button onClick={() => this.runAutoPilot()}>
                     Send AutoPilot to Drone
-                  </button>
+                  </Button>
                 </td>
               </tr>
             </tbody>
