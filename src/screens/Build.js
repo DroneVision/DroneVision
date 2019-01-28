@@ -75,6 +75,9 @@ class Build extends Component {
       const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
       this.addLine(currentPoint, newPoint);
       this.setState({ currentPoint: newPoint });
+    } else {
+      //To-do: add logic for when a hold command is sent
+      //create a new pub-sub channel that adds some marker to the canvas where the hold is occuring
     }
     this.setState({
       flightCommands: updatedFlightCommands,
