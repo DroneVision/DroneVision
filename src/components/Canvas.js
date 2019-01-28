@@ -31,6 +31,7 @@ class Canvas extends Component {
 
     //scene
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0xa9a9a9);
 
     //camera
     this.camera = new THREE.PerspectiveCamera(
@@ -51,7 +52,7 @@ class Canvas extends Component {
     this.controls.dampingFactor = 0.25;
     this.controls.minDistance = 1;
     this.controls.maxDistance = 1000;
-    // this.controls.maxPolarAngle = Math.PI / 2;
+    // this.controls.maxPolarAngle = Math.P;1I / 2;
 
     this.planeGeo = new THREE.PlaneBufferGeometry(
       10,

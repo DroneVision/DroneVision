@@ -4,7 +4,6 @@ import { createStore } from 'redux';
 import reducer from './store/reducer';
 import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
-import Footer from './components/Footer';
 
 const store = createStore(reducer);
 

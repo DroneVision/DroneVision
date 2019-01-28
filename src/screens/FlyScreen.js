@@ -4,8 +4,7 @@ import { Button } from 'semantic-ui-react';
 import FlyControls from '../components/FlyControls';
 import Stream from '../components/Stream';
 import StatusContainer from '../components/StatusContainer';
-
-// import { ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 
 class FlyScreen extends Component {
   constructor() {
@@ -14,12 +13,12 @@ class FlyScreen extends Component {
 
   realTimeFly = instruction => {
     console.log('sending single instruction to drone', instruction);
-    // ipcRenderer.sendSync('single-instruction', instruction);
+    ipcRenderer.sendSync('single-instruction', instruction);
   };
 
   realTimeTakeOff = () => {
     console.log('sending single instruction to drone', 'takeoff');
-    // ipcRenderer.sendSync('takeoff');
+    ipcRenderer.sendSync('takeoff');
   };
 
   render() {
