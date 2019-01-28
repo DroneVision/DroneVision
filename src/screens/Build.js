@@ -25,7 +25,7 @@ class Build extends Component {
     super(props);
     const { scale } = this.props;
     this.state = {
-      flightCommands: ['command', 'takeoff', 'land'],
+      flightCommands: ['takeoff', 'land'],
       limits: {
         maxX: scale / 2,
         maxY: scale / 2,
@@ -75,24 +75,22 @@ class Build extends Component {
   };
 
   deleteLast = () => {
-    if (this.state.flightCommands.length > 3) {
-      console.log(this.state.flightCommands);
-      let tmpArray = this.state.flightCommands.slice();
-      tmpArray.splice(-2, 1);
-      console.log(tmpArray);
-      this.setState({
-        flightCommands: tmpArray,
-      });
-    }
+    console.log(this.state.flightCommands);
+    let tmpArray = this.state.flightCommands.slice();
+    tmpArray.splice(-2, 1);
+    console.log(tmpArray);
+    this.setState({
+      flightCommands: tmpArray,
+    });
   };
 
   clear = () => {
-    this.setState({ flightCommands: ['command', 'takeoff', 'land'] });
+    this.setState({ flightCommands: ['takeoff', 'land'] });
   };
 
   runAutoPilot = () => {
     console.log('sending auto pilot to drone', this.state.flightCommands);
-    ipcRenderer.send('autopilot', this.state.flightCommands);
+    ipcRenderer.send('autopilot', ['command', ...this.state.flightCommands]);
   };
 
   addLine = (point1, point2) => {
@@ -100,15 +98,12 @@ class Build extends Component {
   };
 
   render() {
-    const { currentPoint, limits } = this.state;
+    const { currentPoint, limits, flightCommands } = this.state;
     return (
       <div id="build">
         <h1>AutoPilot Builder/Visualizer</h1>
         <Canvas />
-        <p>{`${this.state.flightCommands
-          .toString()
-          .split(',')
-          .join(' --> ')}`}</p>
+        <p>{`${this.state.flightCommands.join(' --> ')}`}</p>
         <br />
         <p>CREATE AUTOPILOT</p>
 
@@ -177,8 +172,18 @@ class Build extends Component {
             <tbody>
               <tr>
                 <td>
-                  <Button onClick={() => this.deleteLast()}>Delete</Button>
-                  <Button onClick={() => this.clear()}>Clear</Button>
+                  <Button
+                    disabled={flightCommands.length <= 2}
+                    onClick={() => this.deleteLast()}
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    disabled={flightCommands.length <= 2}
+                    onClick={() => this.clear()}
+                  >
+                    Clear
+                  </Button>
                   <br /> <br />
                   <Button onClick={() => this.runAutoPilot()}>
                     Send AutoPilot to Drone
