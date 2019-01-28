@@ -19,6 +19,7 @@
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "three": "^0.100.0",
+    "three-orbitcontrols": "^2.99.1",
     "waait": "^1.0.3"
   },
   "main": "src/main.js",

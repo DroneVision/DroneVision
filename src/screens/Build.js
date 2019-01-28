@@ -36,10 +36,12 @@ class Build extends Component {
     let tmpArray = flightCommands.slice();
     tmpArray.splice(-1, 0, newDirection);
     console.log(tmpArray);
-    const [x, y, z] = newDirection
+    let [x, y, z] = newDirection
       .split(' ')
       .slice(1, 4)
       .map(numStr => Number(numStr) / distance);
+    y = -1 * y;
+    x = -1 * x;
     console.log(x, y, z);
     const { x: x0, y: y0, z: z0 } = currentPoint;
     const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
