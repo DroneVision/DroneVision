@@ -45,18 +45,18 @@ module.exports = function() {
 
   ipcMain.on('getDroneState', async (event, arg) => {
     console.log('droneState from droneInit.js: ', formattedState);
-    // let updatedState = await getDroneState();
     event.sender.send('updatedDroneState', formattedState);
   });
-  // Get the drone state
-  // const getDroneState = () => formattedState;
 
   //DRONE VIDEO STREAM
   const droneStream = dgram.createSocket('udp4');
   droneStream.bind(STREAMPORT);
 
   droneStream.on('message', videoData => {
-    console.log('message', videoData);
+    // console.log('streamData from droneInit.js: ', videoData);
+    ipcMain.on('getStreamData', async (event, arg) => {
+      event.sender.send('streamData', videoData);
+    });
   });
 
   //ERROR HANDLER

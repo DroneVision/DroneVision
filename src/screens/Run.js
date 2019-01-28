@@ -9,6 +9,15 @@ const { ipcRenderer } = window.require('electron');
 class Run extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      stream: 'stream data here',
+    };
+  }
+
+  async componentDidMount() {
+    await this.streamVideo();
+    // await this.getStreamData();
   }
 
   connectToDroneHandler = () => {
@@ -23,6 +32,18 @@ class Run extends Component {
     ipcRenderer.send('disable-video-stream', 'streamoff');
   };
 
+  getStreamData = () => {
+    ipcRenderer.send('getStreamData');
+    ipcRenderer.on('streamData', (event, arg) => {
+      console.log('arg: ', arg);
+      if (arg) {
+        this.setState({
+          stream: arg,
+        });
+      }
+    });
+  };
+
   render() {
     return (
       <div id="run">
@@ -33,7 +54,8 @@ class Run extends Component {
               <Canvas />
             </td>
             <td>
-              <Stream />
+              <video src="udp://192.168.10.1:11111" id="stream" />
+              {/* <Stream /> */}
             </td>
           </tr>
           <tr>
@@ -51,6 +73,10 @@ class Run extends Component {
                 Stop Stream
               </Button>
             </td>
+          </tr>
+          <tr>
+            <td>Stream Data:</td>
+            <td>{this.state.stream}</td>
           </tr>
         </table>
       </div>

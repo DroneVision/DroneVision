@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
-// import { Button, Icon } from 'semantic-ui-react';
+import { Button, Icon } from 'semantic-ui-react';
 import UpPlane from '../components/UpPlane';
 import CurrentPlane from '../components/CurrentPlane';
 import DownPlane from '../components/DownPlane';
@@ -21,7 +21,7 @@ class Build extends Component {
   constructor() {
     super();
     this.state = {
-      flightCommands: ['command', 'takeoff', 'land'],
+      flightCommands: ['command'],
     };
   }
 
@@ -114,12 +114,12 @@ class Build extends Component {
             <tbody>
               <tr>
                 <td>
-                  <button onClick={() => this.deleteLast()}>Delete</button>
-                  <button onClick={() => this.clear()}>Clear</button>
+                  <Button onClick={() => this.deleteLast()}>Delete</Button>
+                  <Button onClick={() => this.clear()}>Clear</Button>
                   <br /> <br />
-                  <button onClick={() => this.runAutoPilot()}>
+                  <Button onClick={() => this.runAutoPilot()}>
                     Send AutoPilot to Drone
-                  </button>
+                  </Button>
                 </td>
               </tr>
             </tbody>
