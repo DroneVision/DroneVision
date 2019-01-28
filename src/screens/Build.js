@@ -25,7 +25,7 @@ class Build extends Component {
     super();
     this.state = {
       flightCommands: ['command', 'takeoff', 'land'],
-      currentPoint: { x: 0, y: 0, z: 0 },
+      currentPoint: { x: 0, y: 1, z: 0 },
     };
   }
 
