@@ -25,7 +25,7 @@ class Canvas extends Component {
     super();
 
     //renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+    this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(640, 360, false);
 
     //scene
