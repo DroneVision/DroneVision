@@ -80,6 +80,18 @@ ipcMain.on('autopilot', (evt, instructions) => {
   runInstructionList(instructions);
 });
 
+ipcMain.on('enable-video-stream', (event, instruction) => {
+  console.log('Enable Stream Request Sent from Browser:');
+  console.log(instruction);
+  runSingleInstruction(instruction);
+});
+
+ipcMain.on('disable-video-stream', (event, instruction) => {
+  console.log('Disable Stream Request Sent from Browser:');
+  console.log(instruction);
+  runSingleInstruction(instruction);
+});
+
 ipcMain.on('getDroneState', async (event, droneState) => {
   // console.log('droneState: ', droneState);
   let updatedState = await getDroneState();

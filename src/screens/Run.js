@@ -3,6 +3,7 @@ import StatusContainer from '../components/StatusContainer';
 import DroneModel from '../components/DroneModel';
 import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
+import { Button } from 'semantic-ui-react';
 const { ipcRenderer } = window.require('electron');
 
 class Run extends Component {
@@ -13,6 +14,15 @@ class Run extends Component {
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');
   };
+
+  streamVideo = () => {
+    ipcRenderer.send('enable-video-stream', 'streamon');
+  };
+
+  stopStreamingVideo = () => {
+    ipcRenderer.send('disable-video-stream', 'streamoff');
+  };
+
   render() {
     return (
       <div id="run">
@@ -32,6 +42,14 @@ class Run extends Component {
             </td>
             <td>
               <StatusContainer />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <Button onClick={() => this.streamVideo()}>Stream Video</Button>
+              <Button onClick={() => this.stopStreamingVideo()}>
+                Stop Stream
+              </Button>
             </td>
           </tr>
         </table>
