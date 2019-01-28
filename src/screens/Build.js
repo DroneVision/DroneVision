@@ -46,6 +46,15 @@ class Build extends Component {
 
     x = -tempy;
     y = tempx;
+
+    let newtempx = x;
+    let newtempy = y;
+    let newtempz = z;
+
+    z = newtempy;
+    x = -newtempx;
+    y = newtempz;
+
     console.log(x, y, z);
     const { x: x0, y: y0, z: z0 } = currentPoint;
     const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
