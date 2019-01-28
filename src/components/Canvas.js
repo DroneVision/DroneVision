@@ -24,6 +24,10 @@ class Canvas extends Component {
   constructor() {
     super();
 
+    this.state = {
+      landLine: null,
+    };
+
     //renderer
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(640, 360, false);
@@ -99,6 +103,22 @@ class Canvas extends Component {
 
       const line = new THREE.Line(geometry, material);
       this.scene.add(line);
+
+      //Land Line
+      if (this.state.landLine) {
+        this.scene.remove(this.state.landLine);
+      }
+      const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
+      const landLineGeometry = new THREE.Geometry();
+      landLineGeometry.vertices.push(
+        new THREE.Vector3(point2.x, point2.y, point2.z)
+      );
+      landLineGeometry.vertices.push(new THREE.Vector3(point2.x, 0, point2.z));
+
+      const landLine = new THREE.Line(landLineGeometry, landLineMaterial);
+      landLine.name = 'landLine';
+      this.scene.add(landLine);
+      this.setState({ landLine: landLine });
     });
   }
 
