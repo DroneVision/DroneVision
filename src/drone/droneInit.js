@@ -2,58 +2,12 @@ const dgram = require('dgram');
 const wait = require('waait');
 const throttle = require('lodash/throttle');
 const commandDelays = require('./commandDelays');
+const { ipcMain } = require('electron');
 
 const HOST = '192.168.10.1';
 const COMMANDPORT = 8889;
 const STATEPORT = 8890;
 const STREAMPORT = 11111;
-
-
-const { ipcMain } = require('electron');
-
-const autoPilot = [
-  'command',
-  'battery?',
-  'streamon',
-  // 'takeoff',
-  // 'curve 100 -100 0 200 0 40 50',
-  // 'ccw -180',
-  // 'curve 100 -100 0 200 0 -40 50',
-  // 'land',
-  // [FORWARD, 50],
-  // [BACK, 50],
-  // [LEFT, 50],
-  // [RIGHT, 50],
-  // [RIGHT, 50],
-  // [CW, 90],
-  // [CCW, 90],
-  // [CURVE, 50, 50, 0, 100, 0, 0, 10],
-  // [GO, -200, 0, 0, 10],
-];
-
-// testing purposes -> comment out when using frontend
-// runInstructionList(autoPilot);
-
-// io.on('connection', socket => {
-//   socket.on('takeoff', () => {
-//     console.log('Take-off Sent from Browser:');
-//     runSingleInstruction('command');
-//     runSingleInstruction('takeoff');
-//   });
-//   socket.on('single-instruction', instruction => {
-//     console.log('Single instruction Sent from Browser:');
-//     console.log(instruction);
-//     runSingleInstruction(instruction);
-//   });
-//   socket.on('autopilot', instructions => {
-//     console.log('Multiple instructions Sent from Browser:');
-//     console.log(instructions);
-//     runInstructionList(instructions);
-//   });
-
-//   socket.emit('status', 'CONNECTED');
-// });
-
 
 module.exports = function() {
   //DRONE COMMANDS
@@ -62,45 +16,47 @@ module.exports = function() {
 
   droneCommand.on('message', message => {
     console.log(`🤖 : ${message}`);
-    // io.sockets.emit('status', message.toString());
   });
 
   //DRONE STATE
   const droneState = dgram.createSocket('udp4');
   droneState.bind(STATEPORT);
-  let formattedState
 
-  
+  // let formattedState;
 
-  
   const parseState = state => {
     return state
-    .split(';')
-    .map(x => x.split(':'))
-    .reduce((data, [key, value]) => {
-      data[key] = value;
-      return data;
-    }, {});
+      .split(';')
+      .map(x => x.split(':'))
+      .reduce((data, [key, value]) => {
+        data[key] = value;
+        return data;
+      }, {});
   };
-  
+
+  let formattedState;
+
   droneState.on(
     'message',
     throttle(state => {
       formattedState = parseState(state.toString());
-    }, 100)
+    }, 10)
   );
 
-
-  
+  ipcMain.on('getDroneState', async (event, arg) => {
+    console.log('droneState from droneInit.js: ', formattedState);
+    // let updatedState = await getDroneState();
+    event.sender.send('updatedDroneState', formattedState);
+  });
   // Get the drone state
-  const getDroneState = () => formattedState ;
+  // const getDroneState = () => formattedState;
 
   //DRONE VIDEO STREAM
   const droneStream = dgram.createSocket('udp4');
   droneStream.bind(STREAMPORT);
 
-  droneStream.on('message', message => {
-    console.log('message', message);
+  droneStream.on('message', videoData => {
+    console.log('message', videoData);
   });
 
   //ERROR HANDLER
@@ -136,11 +92,12 @@ module.exports = function() {
     for (let i = 0; i < instructionList.length; i++) {
       await runSingleInstruction(instructionList[i]);
     }
-    console.log('flown');
+    console.log('Instruction List Flown');
   };
   return {
     runSingleInstruction,
     runInstructionList,
-    getDroneState
+    formattedState,
+    // getDroneState,
   };
 };

@@ -60,7 +60,12 @@ app.on('activate', function() {
 
 // Front-end - Back-end Communication
 // ipcMain.on('connect-to-drone', (event, arg) => {
-const { runSingleInstruction, runInstructionList, getDroneState } = droneInit();
+const {
+  runSingleInstruction,
+  runInstructionList,
+  getDroneState,
+  formattedState,
+} = droneInit();
 
 ipcMain.on('takeoff', () => {
   console.log('Take-off Sent from Browser:');
@@ -80,6 +85,17 @@ ipcMain.on('autopilot', (evt, instructions) => {
   runInstructionList(instructions);
 });
 
+// ipcMain.on('getDroneState', async (event, droneState) => {
+//   // console.log('droneState: ', droneState);
+//   let updatedState = await getDroneState();
+//   event.sender.send('updatedDroneState', updatedState);
+
+// ipcMain.on('getDroneState', async (event, arg) => {
+//   console.log('droneState from Main.js: ', formattedState);
+//   // let updatedState = await getDroneState();
+//   event.sender.send('updatedDroneState', formattedState);
+// });
+
 ipcMain.on('enable-video-stream', (event, instruction) => {
   console.log('Enable Stream Request Sent from Browser:');
   console.log(instruction);
@@ -92,9 +108,4 @@ ipcMain.on('disable-video-stream', (event, instruction) => {
   runSingleInstruction(instruction);
 });
 
-ipcMain.on('getDroneState', async (event, droneState) => {
-  // console.log('droneState: ', droneState);
-  let updatedState = await getDroneState();
-  event.sender.send('updatedDroneState', updatedState);
-});
 // });

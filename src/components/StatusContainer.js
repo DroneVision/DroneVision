@@ -21,9 +21,8 @@ class StatusSegment extends Component {
 
   async componentDidMount() {
     interval = setInterval(async () => {
-      await this.getDroneState();
-    }, 100);
-    console.log('this.state: ', this.state);
+      this.getDroneState();
+    }, 50);
   }
 
   componentWillUnmount() {
@@ -45,11 +44,6 @@ class StatusSegment extends Component {
         });
       }
     });
-    // ipcRenderer.send('getDroneState');
-    // console.log('getDroneState from StatusContainer invoked');
-    // ipcRenderer.on('returnedState', (event, arg) => {
-    //   console.log('getReturnedState: ', arg);
-    // })
   };
 
   render() {
