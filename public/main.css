@@ -39,6 +39,14 @@
   text-align: center;
 }
 
+#run {
+  text-align: center;
+}
+
+#about {
+  text-align: center;
+}
+
 #fly {
   text-align: center;
 }
@@ -83,6 +91,14 @@
   margin-left: 0.5em;
   width: 640px;
   height: 360px;
+  border-style: solid;
+  border-width: 5px;
+  border-color: black;
+}
+
+#drone-model {
+  height: 200px;
+  width: 125px;
   border-style: solid;
   border-width: 5px;
   border-color: black;

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import StatusContainer from '../components/StatusContainer';
+import DroneModel from '../components/DroneModel';
 import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
 const { ipcRenderer } = window.require('electron');
@@ -14,7 +15,8 @@ class Run extends Component {
   };
   render() {
     return (
-      <div>
+      <div id="run">
+        <h1>Run 3D Model</h1>
         <table>
           <tr>
             <td>
@@ -24,8 +26,15 @@ class Run extends Component {
               <Stream />
             </td>
           </tr>
+          <tr>
+            <td>
+              <DroneModel />
+            </td>
+            <td>
+              <StatusContainer />
+            </td>
+          </tr>
         </table>
-        <StatusContainer />
       </div>
     );
   }

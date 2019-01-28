@@ -4,52 +4,53 @@ import { connect } from 'react-redux';
 import { List, Segment } from 'semantic-ui-react';
 const { ipcRenderer } = window.require('electron');
 
-
-
-
-
-
 let interval;
 
 class StatusSegment extends Component {
   constructor() {
-    super()
+    super();
     this.state = {
       battery: 0,
-      // battery: 75
-    }
+      pitch: 'no data',
+      roll: 'no data',
+      yaw: 'no data',
+      temph: 'no data',
+      time: 'no data',
+    };
   }
+
   async componentDidMount() {
     interval = setInterval(async () => {
       await this.getDroneState();
-    }, 100)
+    }, 100);
     console.log('this.state: ', this.state);
   }
+
   componentWillUnmount() {
     clearInterval(interval);
   }
+
   getDroneState = () => {
     ipcRenderer.send('getDroneState');
     ipcRenderer.on('updatedDroneState', (event, arg) => {
       console.log('arg: ', arg);
-      if(arg) {
-        this.setState({ 
+      if (arg) {
+        this.setState({
           battery: arg.bat,
           pitch: arg.pitch,
           roll: arg.roll,
           yaw: arg.yaw,
           temph: arg.temph,
-          time: arg.time
-        })
+          time: arg.time,
+        });
       }
-    })
+    });
     // ipcRenderer.send('getDroneState');
     // console.log('getDroneState from StatusContainer invoked');
     // ipcRenderer.on('returnedState', (event, arg) => {
     //   console.log('getReturnedState: ', arg);
     // })
   };
-
 
   render() {
     const { speed } = this.props;
@@ -63,11 +64,12 @@ class StatusSegment extends Component {
               </List.Content>
             </List.Item>
             <List.Item>
-              <List.Content>Temp: {this.state.temph}</List.Content>
+              <List.Content>Flight Time: {this.state.time}</List.Content>
             </List.Item>
             <List.Item>
-              <List.Content>Current Flight Time: {this.state.time}</List.Content>
+              <List.Content>Temp: {this.state.temph}</List.Content>
             </List.Item>
+            <List.Item />
             <List.Item>
               <List.Content>Pitch: {this.state.pitch}</List.Content>
             </List.Item>
