@@ -26,6 +26,7 @@ class Build extends Component {
     const { scale } = this.props;
     this.state = {
       flightCommands: ['takeoff', 'land'],
+      flightMessages: ['Takeoff', 'Land'],
       limits: {
         maxX: scale / 2,
         maxY: scale / 2,
@@ -34,18 +35,22 @@ class Build extends Component {
         minY: -scale / 2,
         minZ: 1,
       },
-      currentPoint: { x: 0, y: 0, z: 1 },
+      currentPoint: { x: 0, y: 1, z: 0 },
     };
   }
 
-  addDirection = newDirection => {
-    const { flightCommands, currentPoint } = this.state;
+  addDirection = (flightCommand, flightMessage) => {
+    const { flightCommands, flightMessages, currentPoint } = this.state;
     const { distance } = this.props;
     // console.log(flightCommands);
-    let tmpArray = flightCommands.slice();
-    tmpArray.splice(-1, 0, newDirection);
+    let updatedFlightCommands = flightCommands.slice();
+    updatedFlightCommands.splice(-1, 0, flightCommand);
+
+    let updatedFlightMessages = flightMessages.slice();
+    updatedFlightMessages.splice(-1, 0, flightMessage);
+
     // console.log(tmpArray);
-    let [x, y, z] = newDirection
+    let [x, y, z] = flightCommand
       .split(' ')
       .slice(1, 4)
       .map(numStr => Number(numStr) / distance);
@@ -69,7 +74,8 @@ class Build extends Component {
     const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
     this.addLine(currentPoint, newPoint);
     this.setState({
-      flightCommands: tmpArray,
+      flightCommands: updatedFlightCommands,
+      flightMessages: updatedFlightMessages,
       currentPoint: newPoint,
     });
   };
@@ -85,7 +91,10 @@ class Build extends Component {
   };
 
   clear = () => {
-    this.setState({ flightCommands: ['takeoff', 'land'] });
+    this.setState({
+      flightCommands: ['takeoff', 'land'],
+      flightMessages: ['Takeoff', 'Land'],
+    });
   };
 
   runAutoPilot = () => {
@@ -98,12 +107,12 @@ class Build extends Component {
   };
 
   render() {
-    const { currentPoint, limits, flightCommands } = this.state;
+    const { currentPoint, limits, flightCommands, flightMessages } = this.state;
     return (
       <div id="build">
         <h1>AutoPilot Builder/Visualizer</h1>
         <Canvas />
-        <p>{`${this.state.flightCommands.join(' --> ')}`}</p>
+        <p>{`${flightMessages.join(' --> ')}`}</p>
         <br />
         <p>CREATE AUTOPILOT</p>
 
@@ -132,7 +141,7 @@ class Build extends Component {
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
-                    type="up"
+                    type="Up"
                   />
                 </td>
                 <td>
@@ -145,7 +154,7 @@ class Build extends Component {
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
-                    type="current"
+                    type="Current"
                   />
                 </td>
                 <td>
@@ -159,7 +168,7 @@ class Build extends Component {
                     addDirection={this.addDirection}
                     distance={this.props.distance}
                     speed={this.props.speed}
-                    type="down"
+                    type="Down"
                   />
                 </td>
               </tr>
