@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { Button } from 'semantic-ui-react';
 import FlyControls from '../components/FlyControls';
 import Stream from '../components/Stream';
+import StatusContainer from '../components/StatusContainer';
+
 // import { ipcRenderer } from 'electron';
 
 class FlyScreen extends Component {
@@ -25,8 +27,8 @@ class FlyScreen extends Component {
       <div id="fly">
         <h1>Fly in Real Time</h1>
         <Stream />
-        <FlyControls distance={this.props.distance}
-            speed={this.props.speed}/>
+        <StatusContainer />
+        <FlyControls distance={this.props.distance} speed={this.props.speed} />
       </div>
     );
   }
