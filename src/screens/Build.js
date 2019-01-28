@@ -49,34 +49,36 @@ class Build extends Component {
     let updatedFlightMessages = flightMessages.slice();
     updatedFlightMessages.splice(-1, 0, flightMessage);
 
-    // console.log(tmpArray);
-    let [x, y, z] = flightCommand
-      .split(' ')
-      .slice(1, 4)
-      .map(numStr => Number(numStr) / distance);
+    if (flightCommand !== 'hold') {
+      // console.log(tmpArray);
+      let [x, y, z] = flightCommand
+        .split(' ')
+        .slice(1, 4)
+        .map(numStr => Number(numStr) / distance);
 
-    let tempx = x;
-    let tempy = y;
+      let tempx = x;
+      let tempy = y;
 
-    x = -tempy;
-    y = tempx;
+      x = -tempy;
+      y = tempx;
 
-    let newtempx = x;
-    let newtempy = y;
-    let newtempz = z;
+      let newtempx = x;
+      let newtempy = y;
+      let newtempz = z;
 
-    z = newtempy;
-    x = -newtempx;
-    y = newtempz;
+      z = newtempy;
+      x = -newtempx;
+      y = newtempz;
 
-    console.log(x, y, z);
-    const { x: x0, y: y0, z: z0 } = currentPoint;
-    const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
-    this.addLine(currentPoint, newPoint);
+      console.log(x, y, z);
+      const { x: x0, y: y0, z: z0 } = currentPoint;
+      const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
+      this.addLine(currentPoint, newPoint);
+      this.setState({ currentPoint: newPoint });
+    }
     this.setState({
       flightCommands: updatedFlightCommands,
       flightMessages: updatedFlightMessages,
-      currentPoint: newPoint,
     });
   };
 

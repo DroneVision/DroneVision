@@ -66,7 +66,7 @@ const renderCenterButton = (
       return (
         <Button
           disabled={allDisabled}
-          onClick={() => addDirection('hold', 'hold')}
+          onClick={() => addDirection('hold', 'Hold')}
         >
           <Button.Content visible>
             <Icon className="hold" name="hourglass half" />
