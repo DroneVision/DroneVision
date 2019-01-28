@@ -41,10 +41,10 @@ class Build extends Component {
   addDirection = newDirection => {
     const { flightCommands, currentPoint } = this.state;
     const { distance } = this.props;
-    console.log(flightCommands);
+    // console.log(flightCommands);
     let tmpArray = flightCommands.slice();
     tmpArray.splice(-1, 0, newDirection);
-    console.log(tmpArray);
+    // console.log(tmpArray);
     let [x, y, z] = newDirection
       .split(' ')
       .slice(1, 4)

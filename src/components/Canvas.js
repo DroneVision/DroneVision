@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
@@ -22,8 +21,8 @@ window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
 class Canvas extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     //renderer
     this.renderer = new THREE.WebGLRenderer();
@@ -40,11 +39,8 @@ class Canvas extends Component {
       1,
       1000
     );
-    this.camera.position.set(
-      0,
-      -this.props.scale - 3,
-      -(this.props.scale + 3) / 2
-    );
+    this.camera.position.set(0, -13, 6.5);
+    // this.camera.rotateOnWorldAxis()
 
     //controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -54,37 +50,24 @@ class Canvas extends Component {
     this.controls.maxDistance = 1000;
     // this.controls.maxPolarAngle = Math.P;1I / 2;
 
-    this.planeGeo = new THREE.PlaneBufferGeometry(
-      10,
-      10,
-      this.props.scale,
-      this.props.scale
-    );
+    this.planeGeo = new THREE.PlaneBufferGeometry(10, 10, 10, 10);
     this.planeMaterial = new THREE.MeshBasicMaterial({
       color: 0x488384,
       wireframe: true,
     });
-
     this.floor = new THREE.Mesh(this.planeGeo, this.planeMaterial);
-    // this.floor.rotation.y = Math.PI / 2;
-    // this.floor.rotation.x = Math.PI / 2;
-    // this.floor.rotation.z = Math.PI / 2;
-
-    var axesHelper = new THREE.AxesHelper(5);
-    this.scene.add(axesHelper);
 
     this.scene.add(this.floor);
-    this.scene.background = new THREE.Color(0x123456);
 
-    // // lights
-    // var light1 = new THREE.DirectionalLight(0xffffff);
-    // light1.position.set(1, 1, 1);
-    // this.scene.add(light1);
-    // var light2 = new THREE.DirectionalLight(0x002288);
-    // light2.position.set(-1, -1, -1);
-    // this.scene.add(light2);
-    // var light3 = new THREE.AmbientLight(0x222222);
-    // this.scene.add(light3);
+    // lights
+    var light1 = new THREE.DirectionalLight(0xffffff);
+    light1.position.set(1, 1, 1);
+    this.scene.add(light1);
+    var light2 = new THREE.DirectionalLight(0x002288);
+    light2.position.set(-1, -1, -1);
+    this.scene.add(light2);
+    var light3 = new THREE.AmbientLight(0x222222);
+    this.scene.add(light3);
   }
 
   componentDidMount() {
@@ -108,41 +91,6 @@ class Canvas extends Component {
     // console.dir(this.camera);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
-    // if (keyboard[87]) {
-    //   // W key
-    //   this.camera.position.x -= Math.sin(this.camera.rotation.y) * 0.5;
-    //   this.camera.position.z -= -Math.cos(this.camera.rotation.y) * 0.5;
-    // }
-    // if (keyboard[83]) {
-    //   // S key
-    //   this.camera.position.x += Math.sin(this.camera.rotation.y) * 0.5;
-    //   this.camera.position.z += -Math.cos(this.camera.rotation.y) * 0.5;
-    // }
-    // if (keyboard[68]) {
-    //   // D key
-    //   this.camera.position.x +=
-    //     Math.sin(this.camera.rotation.y + Math.PI / 2) * 0.5;
-    //   this.camera.position.z +=
-    //     -Math.cos(this.camera.rotation.y + Math.PI / 2) * 0.5;
-    // }
-    // if (keyboard[65]) {
-    //   // A key
-    //   this.camera.position.x +=
-    //     Math.sin(this.camera.rotation.y - Math.PI / 2) * 0.5;
-    //   this.camera.position.z +=
-    //     -Math.cos(this.camera.rotation.y - Math.PI / 2) * 0.5;
-    // }
-    // if (keyboard[37]) {
-    //   //left arrow
-    //   this.camera.rotation.y -= 0.01;
-    // }
-    // if (keyboard[39]) {
-    //   //right arrow
-    //   this.camera.rotation.y += 0.01;
-    // }
-
-    // this.floor.rotation.x += 0.01;
-    // this.floor.rotation.y += 0.01;
   };
 
   render() {
@@ -150,11 +98,4 @@ class Canvas extends Component {
   }
 }
 
-const mapState = state => {
-  return { scale: state.scale };
-};
-
-export default connect(
-  mapState,
-  null
-)(Canvas);
+export default Canvas;

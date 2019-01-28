@@ -17,7 +17,7 @@ const Routes = props => (
       <Route path="/fly" component={FlyScreen} />
       <Route path="/about" component={About} />
     </Switch>
-    <Footer />
+    {/* <Footer /> */}
   </div>
 );
 
