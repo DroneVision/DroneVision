@@ -60,7 +60,7 @@ class Canvas extends Component {
 
     this.scene.add(this.floor);
 
-    //World
+    //Triangle
     const geometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
     const material = new THREE.MeshPhongMaterial({
       color: 0xffffff,
@@ -75,6 +75,15 @@ class Canvas extends Component {
       triangle.matrixAutoUpdate = false;
       this.scene.add(triangle);
     }
+
+    //Takeoff Yellow Line
+    const yellowLineMaterial = new THREE.LineBasicMaterial({ color: 'yellow' });
+    const yellowLineGeometry = new THREE.Geometry();
+    yellowLineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    yellowLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
+
+    const yellowLine = new THREE.Line(yellowLineGeometry, yellowLineMaterial);
+    this.scene.add(yellowLine);
   }
 
   componentDidMount() {
@@ -83,12 +92,12 @@ class Canvas extends Component {
     PubSub.subscribe('new-line', (msg, points) => {
       const { point1, point2 } = points;
       //create a LineBasicMaterial
-      var material = new THREE.LineBasicMaterial({ color: 'red' });
-      var geometry = new THREE.Geometry();
+      const material = new THREE.LineBasicMaterial({ color: 'red' });
+      const geometry = new THREE.Geometry();
       geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
       geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
 
-      var line = new THREE.Line(geometry, material);
+      const line = new THREE.Line(geometry, material);
       this.scene.add(line);
     });
   }

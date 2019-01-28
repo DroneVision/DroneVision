@@ -25,6 +25,7 @@ class Build extends Component {
     super(props);
     const { scale } = this.props;
     this.state = {
+<<<<<<< HEAD
       flightCommands: ['takeoff', 'land'],
       limits: {
         maxX: scale / 2,
@@ -35,6 +36,10 @@ class Build extends Component {
         minZ: 1,
       },
       currentPoint: { x: 0, y: 0, z: 1 },
+=======
+      flightCommands: ['command', 'takeoff', 'land'],
+      currentPoint: { x: 0, y: 1, z: 0 },
+>>>>>>> master
     };
   }
 
