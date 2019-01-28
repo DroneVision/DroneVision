@@ -39,16 +39,15 @@ class Canvas extends Component {
       1,
       1000
     );
-    this.camera.position.set(0, -13, 6.5);
-    // this.camera.rotateOnWorldAxis()
+    this.camera.position.set(-2.8, 5.4, -14.8);
 
     //controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true; //an animation loop is required when damping or auto-rotation are enabled
-    this.controls.dampingFactor = 0.25;
-    this.controls.minDistance = 1;
-    this.controls.maxDistance = 1000;
-    // this.controls.maxPolarAngle = Math.P;1I / 2;
+    this.controls.dampingFactor = 1;
+    this.controls.minDistance = 2;
+    this.controls.maxDistance = 50;
+    this.controls.maxPolarAngle = Math.PI / 2;
 
     this.planeGeo = new THREE.PlaneBufferGeometry(10, 10, 10, 10);
     this.planeMaterial = new THREE.MeshBasicMaterial({
@@ -56,18 +55,26 @@ class Canvas extends Component {
       wireframe: true,
     });
     this.floor = new THREE.Mesh(this.planeGeo, this.planeMaterial);
+    this.floor.rotation.x = Math.PI / 2;
+    // this.floor.position.x = 0;
 
     this.scene.add(this.floor);
 
-    // lights
-    var light1 = new THREE.DirectionalLight(0xffffff);
-    light1.position.set(1, 1, 1);
-    this.scene.add(light1);
-    var light2 = new THREE.DirectionalLight(0x002288);
-    light2.position.set(-1, -1, -1);
-    this.scene.add(light2);
-    var light3 = new THREE.AmbientLight(0x222222);
-    this.scene.add(light3);
+    //World
+    const geometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
+    const material = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      flatShading: true,
+    });
+    for (let i = 0; i < 5; i++) {
+      const triangle = new THREE.Mesh(geometry, material);
+      triangle.position.x = 0;
+      triangle.position.y = 0;
+      triangle.position.z = 200;
+      triangle.updateMatrix();
+      triangle.matrixAutoUpdate = false;
+      this.scene.add(triangle);
+    }
   }
 
   componentDidMount() {
