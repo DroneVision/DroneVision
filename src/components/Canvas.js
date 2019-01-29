@@ -1,28 +1,22 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
+import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
-
-const backImage = require('../assets/skybox/back.png');
-const frontImage = require('../assets/skybox/front.png');
-const upImage = require('../assets/skybox/up.png');
-const downImage = require('../assets/skybox/down.png');
-const rightImage = require('../assets/skybox/right.png');
-const leftImage = require('../assets/skybox/left.png');
+import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
 
 class Canvas extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
-    //renderer
+    //RENDERER
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(640, 360, false);
 
-    //scene
+    //SCENE
     this.scene = new THREE.Scene();
-    // this.scene.background = new THREE.Color(0xa9a9a9);
 
-    //camera
+    //CAMERA
     this.camera = new THREE.PerspectiveCamera(
       60,
       window.innerWidth / window.innerHeight,
@@ -31,7 +25,7 @@ class Canvas extends Component {
     );
     this.camera.position.set(-2.8, 5.4, -14.8);
 
-    //controls
+    //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true; //an animation loop is required when damping or auto-rotation are enabled
     this.controls.dampingFactor = 1;
@@ -39,90 +33,70 @@ class Canvas extends Component {
     this.controls.maxDistance = 50;
     this.controls.maxPolarAngle = Math.PI / 2;
 
-    //SKYBOX
-    let skyboxCube = new THREE.CubeGeometry(1000, 1000, 1000);
-
-    let textureBack = new THREE.TextureLoader().load(backImage);
-    let textureFront = new THREE.TextureLoader().load(frontImage);
-    let textureUp = new THREE.TextureLoader().load(upImage);
-    let textureDown = new THREE.TextureLoader().load(downImage);
-    let textureRight = new THREE.TextureLoader().load(rightImage);
-    let textureLeft = new THREE.TextureLoader().load(leftImage);
-
-    let skyboxCubeMaterials = [
-      // back side
-      new THREE.MeshBasicMaterial({
-        map: textureBack,
-        side: THREE.DoubleSide,
-      }),
-      // front side
-      new THREE.MeshBasicMaterial({
-        map: textureFront,
-        side: THREE.DoubleSide,
-      }),
-      // Top side
-      new THREE.MeshBasicMaterial({
-        map: textureUp,
-        side: THREE.DoubleSide,
-      }),
-      // Bottom side
-      new THREE.MeshBasicMaterial({
-        map: textureDown,
-        side: THREE.DoubleSide,
-      }),
-      // left side
-      new THREE.MeshBasicMaterial({
-        map: textureLeft,
-        side: THREE.DoubleSide,
-      }),
-      // right side
-      new THREE.MeshBasicMaterial({
-        map: textureRight,
-        side: THREE.DoubleSide,
-      }),
-    ];
-
-    //add cube & materials
-    let skyboxCubeMaterial = new THREE.MeshFaceMaterial(skyboxCubeMaterials);
-    let skyboxMesh = new THREE.Mesh(skyboxCube, skyboxCubeMaterial);
-    this.scene.add(skyboxMesh);
+    // //SKYBOX
+    this.scene.add(canvasSkybox);
 
     //GRID
-    this.planeGeo = new THREE.PlaneBufferGeometry(10, 10, 10, 10);
-    this.planeMaterial = new THREE.MeshBasicMaterial({
+    const gridEdgeLength =
+      this.props.scale / (this.props.scale / this.props.voxelSize);
+
+    this.gridGeo = new THREE.PlaneBufferGeometry(
+      this.props.voxelSize,
+      this.props.voxelSize,
+      this.props.scale,
+      this.props.scale
+    );
+    this.gridMaterial = new THREE.MeshBasicMaterial({
       color: 0x488384,
       wireframe: true,
     });
-    this.grid = new THREE.Mesh(this.planeGeo, this.planeMaterial);
+    this.grid = new THREE.Mesh(this.gridGeo, this.gridMaterial);
     this.grid.rotation.x = Math.PI / 2;
+    this.grid.position.set(0, gridEdgeLength * -0.5, 0);
     this.scene.add(this.grid);
 
-    //TRIANGLE
-    const geometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
-    const material = new THREE.MeshPhongMaterial({
+    // GRID CUBE
+    const gridCubeGeometry = new THREE.BoxGeometry(
+      gridEdgeLength,
+      gridEdgeLength,
+      gridEdgeLength
+    );
+
+    const gridCubeEdges = new THREE.EdgesGeometry(gridCubeGeometry);
+    const gridCubeLines = new THREE.LineSegments(
+      gridCubeEdges,
+      new THREE.LineBasicMaterial({ color: 0x488384 })
+    );
+    //This line is to remind readers that the cube is centered
+    gridCubeLines.position.set(0, 0, 0);
+    this.scene.add(gridCubeLines);
+
+    //NORTH STAR
+    const northStarGeometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
+    const northStarMaterial = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       flatShading: true,
     });
-    for (let i = 0; i < 5; i++) {
-      const triangle = new THREE.Mesh(geometry, material);
-      triangle.position.x = 0;
-      triangle.position.y = 0;
-      triangle.position.z = 200;
-      triangle.updateMatrix();
-      triangle.matrixAutoUpdate = false;
-      this.scene.add(triangle);
-    }
 
-    //TAKEOFF YELLOW LINE
-    const yellowLineMaterial = new THREE.LineBasicMaterial({
+    const northStar = new THREE.Mesh(northStarGeometry, northStarMaterial);
+
+    northStar.position.set(0, 0, 200);
+    northStar.updateMatrix();
+    northStar.matrixAutoUpdate = false;
+    northStar.position.set(0, gridEdgeLength * -0.5, 0);
+    this.scene.add(northStar);
+
+    //TAKEOFF LINE
+    const takeoffLineMaterial = new THREE.LineBasicMaterial({
       color: 'yellow',
     });
-    const yellowLineGeometry = new THREE.Geometry();
-    yellowLineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    yellowLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
+    const takeoffLineGeometry = new THREE.Geometry();
+    takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
 
-    const yellowLine = new THREE.Line(yellowLineGeometry, yellowLineMaterial);
-    this.scene.add(yellowLine);
+    this.takeoffLine = new THREE.Line(takeoffLineGeometry, takeoffLineMaterial);
+    this.takeoffLine.position.set(0, gridEdgeLength * -0.5, 0);
+    this.scene.add(this.takeoffLine);
 
     //AMBIENT LIGHT
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -216,4 +190,28 @@ class Canvas extends Component {
   }
 }
 
-export default Canvas;
+const mapState = state => {
+  return {
+    scale: state.scale,
+    voxelSize: state.voxelSize,
+  };
+};
+
+// const mapDispatch = dispatch => {
+//   return {
+//     changeRoll: newRoll => {
+//       dispatch(changeRoll(newRoll));
+//     },
+//     changePitch: newPitch => {
+//       dispatch(changePitch(newPitch));
+//     },
+//     changeYaw: newYaw => {
+//       dispatch(changeYaw(newYaw));
+//     },
+//   };
+// };
+
+export default connect(
+  mapState,
+  null
+)(Canvas);
