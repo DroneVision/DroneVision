@@ -184,7 +184,7 @@ class DroneModel extends Component {
     //Back Left Propellor
     const backLeftCircleGeometry = new THREE.CylinderGeometry(2, 2, 0.75, 32);
     const backLeftCircleMaterial = new THREE.MeshBasicMaterial({
-      color: 0xff0000,
+      color: 0xff4c4c,
       side: THREE.DoubleSide,
     });
     this.backLeftCircle = new THREE.Mesh(
@@ -197,7 +197,7 @@ class DroneModel extends Component {
     //Back Right Propellor
     const backRightCircleGeometry = new THREE.CylinderGeometry(2, 2, 0.75, 32);
     const backRightCircleMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
+      color: 0x7fff7f,
       side: THREE.DoubleSide,
     });
     this.backRightCircle = new THREE.Mesh(
@@ -239,13 +239,13 @@ class DroneModel extends Component {
 
     let yaw = this.props.yaw;
 
-    if (yaw < 0) {
-      yaw = yaw + 360;
-    }
+    // if (yaw < 0) {
+    //   yaw = yaw + 360;
+    // }
 
     this.droneGroup.rotation.set(
       this.props.pitch * 0.01,
-      yaw * 0.01,
+      this.props.yaw * -0.019,
       this.props.roll * -0.01
     );
 
