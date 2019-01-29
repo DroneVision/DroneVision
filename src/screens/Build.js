@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, Icon, List } from 'semantic-ui-react';
-<<<<<<< HEAD
 import ButtonPanel from '../components/ButtonPanel';
 import Canvas from '../components/Canvas';
 
-=======
-import Plane from '../components/Plane';
-import Canvas from '../components/Canvas';
->>>>>>> grid-cube
 import PubSub from 'pubsub-js';
 
 const { ipcRenderer } = window.require('electron');
