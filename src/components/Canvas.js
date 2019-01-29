@@ -151,6 +151,9 @@ class Canvas extends Component {
         point.x += x;
         point.y += y;
         point.z += z;
+        // x -> z
+        // y -> x
+        // z -> y
         geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
       });
       this.line = new THREE.Line(geometry, material);
