@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import StatusContainer from '../components/StatusContainer';
-import DroneModel from '../components/DroneModel';
+import DroneTelemetry from '../components/DroneTelemetry';
 import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
 import { Button } from 'semantic-ui-react';
@@ -34,7 +34,7 @@ class Run extends Component {
           </tr>
           <tr>
             <td>
-              <DroneModel />
+              <DroneTelemetry />
             </td>
             <td>
               <StatusContainer />
