@@ -111,7 +111,7 @@ class Build extends Component {
   render() {
     const { currentPoint, limits, flightCommands } = this.state;
     const latestCommandMessage =
-      flightCommands[flightCommands.length - 1].message;
+      flightCommands[flightCommands.length - 2].message;
     const leftDisabled = currentPoint.x === limits.maxX;
     const rightDisabled = currentPoint.x === limits.minX;
     const forwardDisabled = currentPoint.z === limits.maxZ;
