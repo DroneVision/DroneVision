@@ -25,85 +25,78 @@ class Build extends Component {
     super(props);
     const { scale } = this.props;
     this.state = {
-      flightCommands: ['takeoff', 'land'],
-      flightMessages: ['Takeoff', 'Land'],
+      flightCommands: [
+        { command: 'takeoff', message: 'Takeoff', line: null },
+        { command: 'land', message: 'Land', line: null },
+      ],
+      // flightMessages: ['Takeoff', 'Land'],
       limits: {
         maxX: scale / 2,
-        maxY: scale / 2,
-        maxZ: scale,
+        maxY: scale,
+        maxZ: scale / 2,
         minX: -scale / 2,
-        minY: -scale / 2,
-        minZ: 1,
+        minY: 1,
+        minZ: -scale / 2,
       },
       currentPoint: { x: 0, y: 1, z: 0 },
     };
   }
 
   addDirection = (flightCommand, flightMessage) => {
-    const { flightCommands, flightMessages, currentPoint } = this.state;
+    const { flightCommands, currentPoint } = this.state;
     const { distance } = this.props;
     // console.log(flightCommands);
     let updatedFlightCommands = flightCommands.slice();
-    updatedFlightCommands.splice(-1, 0, flightCommand);
 
-    let updatedFlightMessages = flightMessages.slice();
-    updatedFlightMessages.splice(-1, 0, flightMessage);
+    const flightCommandObj = { command: flightCommand, message: flightMessage };
 
-    if (flightCommand !== 'hold') {
-      // console.log(tmpArray);
-      let [x, y, z] = flightCommand
-        .split(' ')
-        .slice(1, 4)
-        .map(numStr => Number(numStr) / distance);
+    // if (flightCommand !== 'hold') {
+    //   // console.log(tmpArray);
+    //   let [z, x, y] = flightCommand
+    //     .split(' ')
+    //     .slice(1, 4)
+    //     .map(numStr => Number(numStr) / distance);
 
-      let tempx = x;
-      let tempy = y;
+    //   // x -> z
+    //   // y -> x
+    //   // z -> y
 
-      x = -tempy;
-      y = tempx;
-
-      let newtempx = x;
-      let newtempy = y;
-      let newtempz = z;
-
-      z = newtempy;
-      x = -newtempx;
-      y = newtempz;
-
-      console.log(x, y, z);
-      const { x: x0, y: y0, z: z0 } = currentPoint;
-      const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
-      this.addLine(currentPoint, newPoint);
-      this.setState({ currentPoint: newPoint });
-    } else {
-      //To-do: add logic for when a hold command is sent
-      //create a new pub-sub channel that adds some marker to the canvas where the hold is occuring
-    }
+    //   console.log(x, y, z);
+    //   const { x: x0, y: y0, z: z0 } = currentPoint;
+    //   const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
+    //   flightCommandObj.line = { p1: currentPoint, p2: newPoint };
+    //   this.addLine(currentPoint, newPoint);
+    //   this.setState({ currentPoint: newPoint });
+    // } else {
+    //   //To-do: add logic for when a hold command is sent
+    //   //create a new pub-sub channel that adds some marker to the canvas where the hold is occuring
+    // }
+    updatedFlightCommands.splice(-1, 0, flightCommandObj);
+    this.drawPath(updatedFlightCommands);
     this.setState({
       flightCommands: updatedFlightCommands,
-      flightMessages: updatedFlightMessages,
+      // flightMessages: updatedFlightMessages,
     });
   };
 
   deleteLast = () => {
     // console.log(this.state.flightCommands);
-    const { flightCommands, flightMessages } = this.state;
+    const { flightCommands } = this.state;
     let updatedFlightCommands = flightCommands.slice();
     updatedFlightCommands.splice(-2, 1);
 
-    let updatedFlightMessages = flightMessages.slice();
-    updatedFlightMessages.splice(-2, 1);
     // console.log(updatedFlightCommands);
     this.setState({
       flightCommands: updatedFlightCommands,
-      flightMessages: updatedFlightMessages,
     });
   };
 
   clear = () => {
     this.setState({
-      flightCommands: ['takeoff', 'land'],
-      flightMessages: ['Takeoff', 'Land'],
+      flightCommands: [
+        { command: 'takeoff', message: 'Takeoff', line: null },
+        { command: 'land', message: 'Land', line: null },
+      ],
     });
   };
 
@@ -116,34 +109,67 @@ class Build extends Component {
     PubSub.publish('new-line', { point1, point2 });
   };
 
+  drawPath = flightCommands => {
+    const { distance } = this.props;
+    const relevantCommands = flightCommands.slice(1, -1).map(commandObj =>
+      commandObj.command
+        .split(' ')
+        .slice(1, 4)
+        .map(numStr => Number(numStr) / distance)
+    );
+
+    const [z, x, y] = relevantCommands[relevantCommands.length - 1];
+    const lastPoint = this.state.currentPoint;
+
+    this.setState({
+      currentPoint: {
+        x: lastPoint.x + x,
+        y: lastPoint.y + y,
+        z: lastPoint.z + z,
+      },
+    });
+    PubSub.publish('draw-path', relevantCommands);
+  };
+
   render() {
-    const { currentPoint, limits, flightCommands, flightMessages } = this.state;
+    const { currentPoint, limits, flightCommands } = this.state;
+    console.log(currentPoint);
+    const latestCommandMessage =
+      flightCommands[flightCommands.length - 2].message;
+    const leftDisabled = currentPoint.x === limits.maxX;
+    const rightDisabled = currentPoint.x === limits.minX;
+    const forwardDisabled = currentPoint.z === limits.maxZ;
+    const reverseDisabled = currentPoint.z === limits.minZ;
+    const upDisabled = currentPoint.y === limits.maxY;
+    const downDisabled = currentPoint.y === limits.minY;
     return (
       <div id="build-screen">
         <h1>AutoPilot Builder/Visualizer</h1>
         <div id="build-content">
           <div id="flight-messages">
             <List divided>
-              {flightMessages.map((message, ind) => {
-                let icon;
-                if (message === 'Takeoff') {
-                  icon = 'hand point up';
-                } else if (message === 'Land') {
-                  icon = 'hand point down';
-                } else if (message === 'Hold') {
-                  icon = 'hourglass half';
-                } else {
-                  icon = 'dot circle';
-                }
-                return (
-                  <List.Item
-                    className="flight-message"
-                    key={ind}
-                    content={message}
-                    icon={icon}
-                  />
-                );
-              })}
+              {flightCommands
+                .map(commandObj => commandObj.message)
+                .map((message, ind) => {
+                  let icon;
+                  if (message === 'Takeoff') {
+                    icon = 'hand point up';
+                  } else if (message === 'Land') {
+                    icon = 'hand point down';
+                  } else if (message === 'Hold') {
+                    icon = 'hourglass half';
+                  } else {
+                    icon = 'dot circle';
+                  }
+                  return (
+                    <List.Item
+                      className="flight-message-single"
+                      key={ind}
+                      content={message}
+                      icon={icon}
+                    />
+                  );
+                })}
             </List>
           </div>
           <div id="builder">
@@ -170,11 +196,12 @@ class Build extends Component {
                   <tr>
                     <td>
                       <Plane
-                        leftDisabled={currentPoint.y === limits.minY}
-                        rightDisabled={currentPoint.y === limits.maxY}
-                        forwardDisabled={currentPoint.x === limits.maxX}
-                        reverseDisabled={currentPoint.x === limits.minY}
-                        allDisabled={currentPoint.z === limits.maxZ}
+                        latestCommandMessage={latestCommandMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={upDisabled}
                         addDirection={this.addDirection}
                         distance={this.props.distance}
                         speed={this.props.speed}
@@ -183,10 +210,11 @@ class Build extends Component {
                     </td>
                     <td>
                       <Plane
-                        leftDisabled={currentPoint.y === limits.minY}
-                        rightDisabled={currentPoint.y === limits.maxY}
-                        forwardDisabled={currentPoint.x === limits.maxX}
-                        reverseDisabled={currentPoint.x === limits.minY}
+                        latestCommandMessage={latestCommandMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
                         allDisabled={false}
                         addDirection={this.addDirection}
                         distance={this.props.distance}
@@ -196,11 +224,12 @@ class Build extends Component {
                     </td>
                     <td>
                       <Plane
-                        leftDisabled={currentPoint.y === limits.minY}
-                        rightDisabled={currentPoint.y === limits.maxY}
-                        forwardDisabled={currentPoint.x === limits.maxX}
-                        reverseDisabled={currentPoint.x === limits.minY}
-                        allDisabled={currentPoint.z === limits.minZ}
+                        latestCommandMessage={latestCommandMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={downDisabled}
                         currentPoint={currentPoint}
                         addDirection={this.addDirection}
                         distance={this.props.distance}
