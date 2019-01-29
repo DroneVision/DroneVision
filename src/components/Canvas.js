@@ -2,23 +2,6 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
-const keyboard = {};
-
-function keyDown(event) {
-  keyboard[event.keyCode] = true;
-}
-
-function keyUp(event) {
-  keyboard[event.keyCode] = false;
-}
-
-// var geometry = new THREE.BoxGeometry(1, 1, 1);
-// var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-// var cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
-
-window.addEventListener('keydown', keyDown);
-window.addEventListener('keyup', keyUp);
 
 class Canvas extends Component {
   constructor() {

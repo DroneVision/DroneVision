@@ -80,7 +80,7 @@ const renderCenterButton = (
           onClick={() =>
             addDirection(
               getInstruction('straight-up', distance, speed, type),
-              'straight-up'
+              'Up'
             )
           }
         >
@@ -96,7 +96,7 @@ const renderCenterButton = (
           onClick={() =>
             addDirection(
               getInstruction('straight-down', distance, speed, type),
-              'straight-down'
+              'Down'
             )
           }
         >

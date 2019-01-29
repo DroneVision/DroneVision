@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import socket from '../socket';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button, Icon, List } from 'semantic-ui-react';
 // import UpPlane from '../components/UpPlane';
 import Plane from '../components/Plane';
 // import DownPlane from '../components/DownPlane';
@@ -86,12 +86,17 @@ class Build extends Component {
   };
 
   deleteLast = () => {
-    console.log(this.state.flightCommands);
-    let tmpArray = this.state.flightCommands.slice();
-    tmpArray.splice(-2, 1);
-    console.log(tmpArray);
+    // console.log(this.state.flightCommands);
+    const { flightCommands, flightMessages } = this.state;
+    let updatedFlightCommands = flightCommands.slice();
+    updatedFlightCommands.splice(-2, 1);
+
+    let updatedFlightMessages = flightMessages.slice();
+    updatedFlightMessages.splice(-2, 1);
+    // console.log(updatedFlightCommands);
     this.setState({
-      flightCommands: tmpArray,
+      flightCommands: updatedFlightCommands,
+      flightMessages: updatedFlightMessages,
     });
   };
 
@@ -114,98 +119,127 @@ class Build extends Component {
   render() {
     const { currentPoint, limits, flightCommands, flightMessages } = this.state;
     return (
-      <div id="build">
+      <div id="build-screen">
         <h1>AutoPilot Builder/Visualizer</h1>
-        <Canvas />
-        <p>{`${flightMessages.join(' --> ')}`}</p>
-        <br />
-        <p>CREATE AUTOPILOT</p>
+        <div id="build-content">
+          <div id="flight-messages">
+            <List divided>
+              {flightMessages.map((message, ind) => {
+                let icon;
+                if (message === 'Takeoff') {
+                  icon = 'hand point up';
+                } else if (message === 'Land') {
+                  icon = 'hand point down';
+                } else if (message === 'Hold') {
+                  icon = 'hourglass half';
+                } else {
+                  icon = 'dot circle';
+                }
+                return (
+                  <List.Item
+                    className="flight-message"
+                    key={ind}
+                    content={message}
+                    icon={icon}
+                  />
+                );
+              })}
+            </List>
+          </div>
+          <div id="builder">
+            <Canvas />
+            {/* <p>{`${flightMessages.join(' --> ')}`}</p> */}
 
-        <div id="controls-3d">
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <h1>Up</h1>
-                </td>
-                <td>
-                  <h1>Horizontal</h1>
-                </td>
-                <td>
-                  <h1>Down</h1>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <Plane
-                    leftDisabled={currentPoint.y === limits.minY}
-                    rightDisabled={currentPoint.y === limits.maxY}
-                    forwardDisabled={currentPoint.x === limits.maxX}
-                    reverseDisabled={currentPoint.x === limits.minY}
-                    allDisabled={currentPoint.z === limits.maxZ}
-                    addDirection={this.addDirection}
-                    distance={this.props.distance}
-                    speed={this.props.speed}
-                    type="Up"
-                  />
-                </td>
-                <td>
-                  <Plane
-                    leftDisabled={currentPoint.y === limits.minY}
-                    rightDisabled={currentPoint.y === limits.maxY}
-                    forwardDisabled={currentPoint.x === limits.maxX}
-                    reverseDisabled={currentPoint.x === limits.minY}
-                    allDisabled={false}
-                    addDirection={this.addDirection}
-                    distance={this.props.distance}
-                    speed={this.props.speed}
-                    type="Current"
-                  />
-                </td>
-                <td>
-                  <Plane
-                    leftDisabled={currentPoint.y === limits.minY}
-                    rightDisabled={currentPoint.y === limits.maxY}
-                    forwardDisabled={currentPoint.x === limits.maxX}
-                    reverseDisabled={currentPoint.x === limits.minY}
-                    allDisabled={currentPoint.z === limits.minZ}
-                    currentPoint={currentPoint}
-                    addDirection={this.addDirection}
-                    distance={this.props.distance}
-                    speed={this.props.speed}
-                    type="Down"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            <br />
+            <p>CREATE AUTOPILOT</p>
 
-        <div id="delete-clear-send">
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <Button
-                    disabled={flightCommands.length <= 2}
-                    onClick={() => this.deleteLast()}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    disabled={flightCommands.length <= 2}
-                    onClick={() => this.clear()}
-                  >
-                    Clear
-                  </Button>
-                  <br /> <br />
-                  <Button onClick={() => this.runAutoPilot()}>
-                    Send AutoPilot to Drone
-                  </Button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            <div id="controls-3d">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>
+                      <h1>Up</h1>
+                    </td>
+                    <td>
+                      <h1>Horizontal</h1>
+                    </td>
+                    <td>
+                      <h1>Down</h1>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <Plane
+                        leftDisabled={currentPoint.y === limits.minY}
+                        rightDisabled={currentPoint.y === limits.maxY}
+                        forwardDisabled={currentPoint.x === limits.maxX}
+                        reverseDisabled={currentPoint.x === limits.minY}
+                        allDisabled={currentPoint.z === limits.maxZ}
+                        addDirection={this.addDirection}
+                        distance={this.props.distance}
+                        speed={this.props.speed}
+                        type="Up"
+                      />
+                    </td>
+                    <td>
+                      <Plane
+                        leftDisabled={currentPoint.y === limits.minY}
+                        rightDisabled={currentPoint.y === limits.maxY}
+                        forwardDisabled={currentPoint.x === limits.maxX}
+                        reverseDisabled={currentPoint.x === limits.minY}
+                        allDisabled={false}
+                        addDirection={this.addDirection}
+                        distance={this.props.distance}
+                        speed={this.props.speed}
+                        type="Current"
+                      />
+                    </td>
+                    <td>
+                      <Plane
+                        leftDisabled={currentPoint.y === limits.minY}
+                        rightDisabled={currentPoint.y === limits.maxY}
+                        forwardDisabled={currentPoint.x === limits.maxX}
+                        reverseDisabled={currentPoint.x === limits.minY}
+                        allDisabled={currentPoint.z === limits.minZ}
+                        currentPoint={currentPoint}
+                        addDirection={this.addDirection}
+                        distance={this.props.distance}
+                        speed={this.props.speed}
+                        type="Down"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div id="delete-clear-send">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>
+                      <Button
+                        disabled={flightCommands.length <= 2}
+                        onClick={() => this.deleteLast()}
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        disabled={flightCommands.length <= 2}
+                        onClick={() => this.clear()}
+                      >
+                        Clear
+                      </Button>
+                      <br /> <br />
+                      <Button onClick={() => this.runAutoPilot()}>
+                        Send AutoPilot to Drone
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     );
