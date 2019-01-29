@@ -122,7 +122,7 @@ const Plane = props => {
     reverseDisabled,
     allDisabled,
   } = props;
-  const prefix = type === 'Current' ? '' : `${type} & `;
+  const prefix = type === 'Current' ? '' : `${type} + `;
   return (
     <table>
       <tbody>
@@ -137,7 +137,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('forward-left', distance, speed, type),
-                  `${prefix}Forward-Left`
+                  `${prefix}Forward + Left`
                 )
               }
             >
@@ -167,7 +167,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('forward-right', distance, speed, type),
-                  `${prefix}Forward-Right`
+                  `${prefix}Forward + Right`
                 )
               }
             >
@@ -225,7 +225,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('reverse-left', distance, speed, type),
-                  `${prefix}Reverse-Left`
+                  `${prefix}Reverse + Left`
                 )
               }
             >
@@ -255,7 +255,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('reverse-right', distance, speed, type),
-                  `${prefix}Reverse-Right`
+                  `${prefix}Reverse + Right`
                 )
               }
             >

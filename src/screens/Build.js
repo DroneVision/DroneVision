@@ -110,6 +110,8 @@ class Build extends Component {
 
   render() {
     const { currentPoint, limits, flightCommands } = this.state;
+    const latestCommandMessage =
+      flightCommands[flightCommands.length - 1].message;
     const leftDisabled = currentPoint.x === limits.maxX;
     const rightDisabled = currentPoint.x === limits.minX;
     const forwardDisabled = currentPoint.z === limits.maxZ;
@@ -170,6 +172,7 @@ class Build extends Component {
                   <tr>
                     <td>
                       <Plane
+                        latestCommandMessage={latestCommandMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
@@ -183,6 +186,7 @@ class Build extends Component {
                     </td>
                     <td>
                       <Plane
+                        latestCommandMessage={latestCommandMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
@@ -196,6 +200,7 @@ class Build extends Component {
                     </td>
                     <td>
                       <Plane
+                        latestCommandMessage={latestCommandMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
