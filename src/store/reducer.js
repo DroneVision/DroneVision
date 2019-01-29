@@ -7,6 +7,7 @@ const INITIAL_STATE = {
   roll: 0,
   pitch: 0,
   yaw: 0,
+  debugMode: true,
 };
 
 //ACTION CONSTANTS
@@ -15,6 +16,8 @@ const DECREASE_DISTANCE = 'DECREASE_DISTANCE';
 
 const INCREASE_SPEED = 'INCREASE_SPEED';
 const DECREASE_SPEED = 'DECREASE_SPEED';
+
+const TOGGLE_DEBUGMODE = 'TOGGLE_DEBUGMODE';
 
 const CHANGE_ROLL = 'CHANGE_ROLL';
 const CHANGE_PITCH = 'CHANGE_PITCH';
@@ -26,6 +29,8 @@ export const decreaseDistance = () => ({ type: DECREASE_DISTANCE });
 
 export const increaseSpeed = () => ({ type: INCREASE_SPEED });
 export const decreaseSpeed = () => ({ type: DECREASE_SPEED });
+
+export const toggleDebugMode = () => ({ type: TOGGLE_DEBUGMODE });
 
 export const changeRoll = newRoll => ({ type: CHANGE_ROLL, newRoll });
 export const changePitch = newPitch => ({ type: CHANGE_PITCH, newPitch });
@@ -41,6 +46,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, speed: state.speed + 10 };
     case DECREASE_SPEED:
       return { ...state, speed: state.speed - 10 };
+    case TOGGLE_DEBUGMODE:
+      return { ...state, debugMode: !state.debugMode };
     case CHANGE_ROLL:
       return { ...state, roll: action.newRoll };
     case CHANGE_PITCH:
