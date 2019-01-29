@@ -1,24 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import socket from '../socket';
 import { Button, Icon, List } from 'semantic-ui-react';
-// import UpPlane from '../components/UpPlane';
 import Plane from '../components/Plane';
-// import DownPlane from '../components/DownPlane';
 import Canvas from '../components/Canvas';
-import FlyControls from '../components/FlyControls';
-
 import PubSub from 'pubsub-js';
 
 const { ipcRenderer } = window.require('electron');
-
-// import {
-//   increaseDistance,
-//   decreaseDistance,
-//   increaseSpeed,
-//   decreaseSpeed,
-// } from '../store/reducer';
-// import StatusContainer from '../components/StatusContainer';
 
 class Build extends Component {
   constructor(props) {

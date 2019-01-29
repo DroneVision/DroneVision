@@ -3,6 +3,7 @@ const INITIAL_STATE = {
   speed: 50,
   battery: 100,
   scale: 10,
+  voxelSize: 10,
   roll: 0,
   pitch: 0,
   yaw: 0,
