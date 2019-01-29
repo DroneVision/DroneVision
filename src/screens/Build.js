@@ -85,6 +85,7 @@ class Build extends Component {
     let updatedFlightCommands = flightCommands.slice();
     updatedFlightCommands.splice(-2, 1);
 
+    this.drawPath(updatedFlightCommands);
     // console.log(updatedFlightCommands);
     this.setState({
       flightCommands: updatedFlightCommands,
@@ -133,7 +134,7 @@ class Build extends Component {
 
   render() {
     const { currentPoint, limits, flightCommands } = this.state;
-    console.log(currentPoint);
+
     const latestCommandMessage =
       flightCommands[flightCommands.length - 2].message;
     const leftDisabled = currentPoint.x === limits.maxX;
