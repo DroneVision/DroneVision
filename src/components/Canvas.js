@@ -4,6 +4,13 @@ import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
 const keyboard = {};
 
+const backImage = require('../assets/skybox/back.png');
+const frontImage = require('../assets/skybox/front.png');
+const upImage = require('../assets/skybox/up.png');
+const downImage = require('../assets/skybox/down.png');
+const rightImage = require('../assets/skybox/right.png');
+const leftImage = require('../assets/skybox/left.png');
+
 function keyDown(event) {
   keyboard[event.keyCode] = true;
 }
@@ -34,7 +41,7 @@ class Canvas extends Component {
 
     //scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xa9a9a9);
+    // this.scene.background = new THREE.Color(0xa9a9a9);
 
     //camera
     this.camera = new THREE.PerspectiveCamera(
@@ -53,18 +60,70 @@ class Canvas extends Component {
     this.controls.maxDistance = 50;
     this.controls.maxPolarAngle = Math.PI / 2;
 
+    //SKYBOX
+    let skyboxCube = new THREE.CubeGeometry(1000, 1000, 1000);
+
+    let textureBack = new THREE.TextureLoader().load(backImage);
+    let textureFront = new THREE.TextureLoader().load(frontImage);
+    let textureUp = new THREE.TextureLoader().load(upImage);
+    let textureDown = new THREE.TextureLoader().load(downImage);
+    let textureRight = new THREE.TextureLoader().load(rightImage);
+    let textureLeft = new THREE.TextureLoader().load(leftImage);
+
+    let skyboxCubeMaterials = [
+      // back side
+      new THREE.MeshBasicMaterial({
+        map: textureBack,
+        side: THREE.DoubleSide,
+      }),
+      // front side
+      new THREE.MeshBasicMaterial({
+        map: textureFront,
+        side: THREE.DoubleSide,
+      }),
+      // Top side
+      new THREE.MeshBasicMaterial({
+        map: textureUp,
+        side: THREE.DoubleSide,
+      }),
+      // Bottom side
+      new THREE.MeshBasicMaterial({
+        map: textureDown,
+        side: THREE.DoubleSide,
+      }),
+      // left side
+      new THREE.MeshBasicMaterial({
+        map: textureLeft,
+        side: THREE.DoubleSide,
+      }),
+      // right side
+      new THREE.MeshBasicMaterial({
+        map: textureRight,
+        side: THREE.DoubleSide,
+      }),
+    ];
+
+    //add cube & materials
+    let skyboxCubeMaterial = new THREE.MeshFaceMaterial(skyboxCubeMaterials);
+    let skyboxMesh = new THREE.Mesh(skyboxCube, skyboxCubeMaterial);
+    this.scene.add(skyboxMesh);
+
+    //add light
+    let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    this.scene.add(ambientLight);
+    // this.scene.add(this.controls.getObject());
+
+    //GRID
     this.planeGeo = new THREE.PlaneBufferGeometry(10, 10, 10, 10);
     this.planeMaterial = new THREE.MeshBasicMaterial({
       color: 0x488384,
       wireframe: true,
     });
-    this.floor = new THREE.Mesh(this.planeGeo, this.planeMaterial);
-    this.floor.rotation.x = Math.PI / 2;
-    // this.floor.position.x = 0;
+    this.grid = new THREE.Mesh(this.planeGeo, this.planeMaterial);
+    this.grid.rotation.x = Math.PI / 2;
+    this.scene.add(this.grid);
 
-    this.scene.add(this.floor);
-
-    //Triangle
+    //TRIANGLE
     const geometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
     const material = new THREE.MeshPhongMaterial({
       color: 0xffffff,
@@ -80,14 +139,20 @@ class Canvas extends Component {
       this.scene.add(triangle);
     }
 
-    //Takeoff Yellow Line
-    const yellowLineMaterial = new THREE.LineBasicMaterial({ color: 'yellow' });
+    //TAKEOFF YELLOW LINE
+    const yellowLineMaterial = new THREE.LineBasicMaterial({
+      color: 'yellow',
+    });
     const yellowLineGeometry = new THREE.Geometry();
     yellowLineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
     yellowLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
 
     const yellowLine = new THREE.Line(yellowLineGeometry, yellowLineMaterial);
     this.scene.add(yellowLine);
+
+    // //AMBIENT LIGHT
+    // const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    // this.scene.add(ambientLight);
   }
 
   componentDidMount() {
@@ -96,7 +161,11 @@ class Canvas extends Component {
     PubSub.subscribe('new-line', (msg, points) => {
       const { point1, point2 } = points;
       //create a LineBasicMaterial
-      const material = new THREE.LineBasicMaterial({ color: 'red' });
+      const material = new THREE.LineBasicMaterial({
+        color: 'red',
+        linewidth: 5,
+      });
+
       const geometry = new THREE.Geometry();
       geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
       geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
@@ -104,7 +173,7 @@ class Canvas extends Component {
       const line = new THREE.Line(geometry, material);
       this.scene.add(line);
 
-      //Land Line
+      //BLUE LAND LINE
       if (this.state.landLine) {
         this.scene.remove(this.state.landLine);
       }
@@ -124,7 +193,7 @@ class Canvas extends Component {
 
   animate = () => {
     requestAnimationFrame(this.animate);
-    console.dir(this.camera);
+    // console.dir(this.camera);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
     // if (keyboard[87]) {
