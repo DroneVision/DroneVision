@@ -26,8 +26,8 @@ class Build extends Component {
     const { scale } = this.props;
     this.state = {
       flightCommands: [
-        { command: 'takeoff', message: 'Takeoff', line: null },
-        { command: 'land', message: 'Land', line: null },
+        { command: 'takeoff', message: 'Takeoff' },
+        { command: 'land', message: 'Land' },
       ],
       // flightMessages: ['Takeoff', 'Land'],
       limits: {
@@ -38,44 +38,26 @@ class Build extends Component {
         minY: 1,
         minZ: -scale / 2,
       },
-      currentPoint: { x: 0, y: 1, z: 0 },
+      startingPoint: { x: 0, y: 1, z: 0 },
     };
   }
 
+  drawPath = flightCommands => {
+    const flightCoords = this.getFlightCoords(flightCommands);
+    PubSub.publish('draw-path', flightCoords);
+  };
+
   addDirection = (flightCommand, flightMessage) => {
-    const { flightCommands, currentPoint } = this.state;
-    const { distance } = this.props;
-    // console.log(flightCommands);
+    const { flightCommands } = this.state;
+
     let updatedFlightCommands = flightCommands.slice();
 
     const flightCommandObj = { command: flightCommand, message: flightMessage };
 
-    // if (flightCommand !== 'hold') {
-    //   // console.log(tmpArray);
-    //   let [z, x, y] = flightCommand
-    //     .split(' ')
-    //     .slice(1, 4)
-    //     .map(numStr => Number(numStr) / distance);
-
-    //   // x -> z
-    //   // y -> x
-    //   // z -> y
-
-    //   console.log(x, y, z);
-    //   const { x: x0, y: y0, z: z0 } = currentPoint;
-    //   const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
-    //   flightCommandObj.line = { p1: currentPoint, p2: newPoint };
-    //   this.addLine(currentPoint, newPoint);
-    //   this.setState({ currentPoint: newPoint });
-    // } else {
-    //   //To-do: add logic for when a hold command is sent
-    //   //create a new pub-sub channel that adds some marker to the canvas where the hold is occuring
-    // }
     updatedFlightCommands.splice(-1, 0, flightCommandObj);
     this.drawPath(updatedFlightCommands);
     this.setState({
       flightCommands: updatedFlightCommands,
-      // flightMessages: updatedFlightMessages,
     });
   };
 
@@ -85,19 +67,49 @@ class Build extends Component {
     let updatedFlightCommands = flightCommands.slice();
     updatedFlightCommands.splice(-2, 1);
 
-    // console.log(updatedFlightCommands);
+    this.drawPath(updatedFlightCommands);
     this.setState({
       flightCommands: updatedFlightCommands,
     });
   };
 
   clear = () => {
+    this.drawPath([]);
     this.setState({
       flightCommands: [
-        { command: 'takeoff', message: 'Takeoff', line: null },
-        { command: 'land', message: 'Land', line: null },
+        { command: 'takeoff', message: 'Takeoff' },
+        { command: 'land', message: 'Land' },
       ],
     });
+  };
+
+  addLine = (point1, point2) => {
+    PubSub.publish('new-line', { point1, point2 });
+  };
+
+  getCurrentPoint = flightCoords => {
+    const currentPoint = flightCoords.reduce(
+      (currentPoint, item) => {
+        const [z, x, y] = item;
+        currentPoint.x = currentPoint.x + x;
+        currentPoint.y = currentPoint.y + y;
+        currentPoint.z += currentPoint.z = z;
+        return currentPoint;
+      },
+      { ...this.state.startingPoint }
+    );
+    return currentPoint;
+  };
+
+  getFlightCoords = flightCommands => {
+    const { distance } = this.props;
+
+    return flightCommands.slice(1, -1).map(commandObj =>
+      commandObj.command
+        .split(' ')
+        .slice(1, 4)
+        .map(numStr => Number(numStr) / distance)
+    );
   };
 
   runAutoPilot = () => {
@@ -105,35 +117,11 @@ class Build extends Component {
     ipcRenderer.send('autopilot', ['command', ...this.state.flightCommands]);
   };
 
-  addLine = (point1, point2) => {
-    PubSub.publish('new-line', { point1, point2 });
-  };
-
-  drawPath = flightCommands => {
-    const { distance } = this.props;
-    const relevantCommands = flightCommands.slice(1, -1).map(commandObj =>
-      commandObj.command
-        .split(' ')
-        .slice(1, 4)
-        .map(numStr => Number(numStr) / distance)
-    );
-
-    const [z, x, y] = relevantCommands[relevantCommands.length - 1];
-    const lastPoint = this.state.currentPoint;
-
-    this.setState({
-      currentPoint: {
-        x: lastPoint.x + x,
-        y: lastPoint.y + y,
-        z: lastPoint.z + z,
-      },
-    });
-    PubSub.publish('draw-path', relevantCommands);
-  };
-
   render() {
-    const { currentPoint, limits, flightCommands } = this.state;
-    console.log(currentPoint);
+    const { limits, flightCommands } = this.state;
+    const flightCoords = this.getFlightCoords(flightCommands);
+    const currentPoint = this.getCurrentPoint(flightCoords);
+
     const latestCommandMessage =
       flightCommands[flightCommands.length - 2].message;
     const leftDisabled = currentPoint.x === limits.maxX;
@@ -230,7 +218,6 @@ class Build extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={downDisabled}
-                        currentPoint={currentPoint}
                         addDirection={this.addDirection}
                         distance={this.props.distance}
                         speed={this.props.speed}
