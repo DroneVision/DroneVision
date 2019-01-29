@@ -50,28 +50,29 @@ class Build extends Component {
 
     const flightCommandObj = { command: flightCommand, message: flightMessage };
 
-    if (flightCommand !== 'hold') {
-      // console.log(tmpArray);
-      let [z, x, y] = flightCommand
-        .split(' ')
-        .slice(1, 4)
-        .map(numStr => Number(numStr) / distance);
+    // if (flightCommand !== 'hold') {
+    //   // console.log(tmpArray);
+    //   let [z, x, y] = flightCommand
+    //     .split(' ')
+    //     .slice(1, 4)
+    //     .map(numStr => Number(numStr) / distance);
 
-      // x -> z
-      // y -> x
-      // z -> y
+    //   // x -> z
+    //   // y -> x
+    //   // z -> y
 
-      console.log(x, y, z);
-      const { x: x0, y: y0, z: z0 } = currentPoint;
-      const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
-      flightCommandObj.line = { p1: currentPoint, p2: newPoint };
-      this.addLine(currentPoint, newPoint);
-      this.setState({ currentPoint: newPoint });
-    } else {
-      //To-do: add logic for when a hold command is sent
-      //create a new pub-sub channel that adds some marker to the canvas where the hold is occuring
-    }
+    //   console.log(x, y, z);
+    //   const { x: x0, y: y0, z: z0 } = currentPoint;
+    //   const newPoint = { x: x0 + x, y: y0 + y, z: z0 + z };
+    //   flightCommandObj.line = { p1: currentPoint, p2: newPoint };
+    //   this.addLine(currentPoint, newPoint);
+    //   this.setState({ currentPoint: newPoint });
+    // } else {
+    //   //To-do: add logic for when a hold command is sent
+    //   //create a new pub-sub channel that adds some marker to the canvas where the hold is occuring
+    // }
     updatedFlightCommands.splice(-1, 0, flightCommandObj);
+    this.drawPath(updatedFlightCommands);
     this.setState({
       flightCommands: updatedFlightCommands,
       // flightMessages: updatedFlightMessages,
@@ -106,6 +107,17 @@ class Build extends Component {
 
   addLine = (point1, point2) => {
     PubSub.publish('new-line', { point1, point2 });
+  };
+
+  drawPath = flightCommands => {
+    const { distance } = this.props;
+    const relevantCommands = flightCommands.slice(1, -1).map(commandObj =>
+      commandObj.command
+        .split(' ')
+        .slice(1, 4)
+        .map(numStr => Number(numStr) / distance)
+    );
+    PubSub.publish('draw-path', relevantCommands);
   };
 
   render() {

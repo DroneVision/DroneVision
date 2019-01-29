@@ -14,10 +14,6 @@ class Canvas extends Component {
   constructor() {
     super();
 
-    this.state = {
-      landLine: null,
-    };
-
     //renderer
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(640, 360, false);
@@ -136,37 +132,73 @@ class Canvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
-    PubSub.subscribe('new-line', (msg, points) => {
-      const { point1, point2 } = points;
+    PubSub.subscribe('draw-path', (msg, flightCommands) => {
+      if (this.line) {
+        this.scene.remove(this.line);
+        this.scene.remove(this.landLine);
+      }
+
       //create a LineBasicMaterial
       const material = new THREE.LineBasicMaterial({
         color: 'red',
         linewidth: 5,
       });
-
       const geometry = new THREE.Geometry();
-      geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
-      geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
+      const point = { x: 0, y: 1, z: 0 };
+      geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+      flightCommands.forEach(command => {
+        const [z, x, y] = command;
+        point.x += x;
+        point.y += y;
+        point.z += z;
+        geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+      });
+      this.line = new THREE.Line(geometry, material);
+      this.scene.add(this.line);
 
-      const line = new THREE.Line(geometry, material);
-      this.scene.add(line);
-
-      //BLUE LAND LINE
-      if (this.state.landLine) {
-        this.scene.remove(this.state.landLine);
-      }
       const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
       const landLineGeometry = new THREE.Geometry();
       landLineGeometry.vertices.push(
-        new THREE.Vector3(point2.x, point2.y, point2.z)
+        new THREE.Vector3(point.x, point.y, point.z)
       );
-      landLineGeometry.vertices.push(new THREE.Vector3(point2.x, 0, point2.z));
+      landLineGeometry.vertices.push(new THREE.Vector3(point.x, 0, point.z));
 
-      const landLine = new THREE.Line(landLineGeometry, landLineMaterial);
-      landLine.name = 'landLine';
-      this.scene.add(landLine);
-      this.setState({ landLine: landLine });
+      this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
+
+      this.scene.add(this.landLine);
     });
+
+    // PubSub.subscribe('new-line', (msg, points) => {
+    //   const { point1, point2 } = points;
+    //   //create a LineBasicMaterial
+    //   const material = new THREE.LineBasicMaterial({
+    //     color: 'red',
+    //     linewidth: 5,
+    //   });
+
+    //   const geometry = new THREE.Geometry();
+    //   geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
+    //   geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
+
+    //   const line = new THREE.Line(geometry, material);
+    //   this.scene.add(line);
+
+    //   //BLUE LAND LINE
+    //   if (this.state.landLine) {
+    //     this.scene.remove(this.state.landLine);
+    //   }
+    //   const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
+    //   const landLineGeometry = new THREE.Geometry();
+    //   landLineGeometry.vertices.push(
+    //     new THREE.Vector3(point2.x, point2.y, point2.z)
+    //   );
+    //   landLineGeometry.vertices.push(new THREE.Vector3(point2.x, 0, point2.z));
+
+    //   const landLine = new THREE.Line(landLineGeometry, landLineMaterial);
+    //   landLine.name = 'landLine';
+    //   this.scene.add(landLine);
+    //   this.setState({ landLine: landLine });
+    // });
   }
 
   animate = () => {
