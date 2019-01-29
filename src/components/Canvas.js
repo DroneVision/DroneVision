@@ -24,6 +24,7 @@ class Canvas extends Component {
       1000
     );
     this.camera.position.set(-2.8, 5.4, -14.8);
+    // this.camera.position.set(15, -15, -30);
 
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -37,7 +38,7 @@ class Canvas extends Component {
     this.scene.add(canvasSkybox);
 
     //GRID
-    const gridEdgeLength =
+    this.gridEdgeLength =
       this.props.scale / (this.props.scale / this.props.voxelSize);
 
     this.gridGeo = new THREE.PlaneBufferGeometry(
@@ -52,14 +53,14 @@ class Canvas extends Component {
     });
     this.grid = new THREE.Mesh(this.gridGeo, this.gridMaterial);
     this.grid.rotation.x = Math.PI / 2;
-    this.grid.position.set(0, gridEdgeLength * -0.5, 0);
+    this.grid.position.set(0, this.gridEdgeLength * -0.5, 0);
     this.scene.add(this.grid);
 
     // GRID CUBE
     const gridCubeGeometry = new THREE.BoxGeometry(
-      gridEdgeLength,
-      gridEdgeLength,
-      gridEdgeLength
+      this.gridEdgeLength,
+      this.gridEdgeLength,
+      this.gridEdgeLength
     );
 
     const gridCubeEdges = new THREE.EdgesGeometry(gridCubeGeometry);
@@ -83,7 +84,7 @@ class Canvas extends Component {
     northStar.position.set(0, 0, 200);
     northStar.updateMatrix();
     northStar.matrixAutoUpdate = false;
-    northStar.position.set(0, gridEdgeLength * -0.5, 0);
+    northStar.position.set(0, this.gridEdgeLength * -0.5, 0);
     this.scene.add(northStar);
 
     //TAKEOFF LINE
@@ -95,7 +96,7 @@ class Canvas extends Component {
     takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
 
     this.takeoffLine = new THREE.Line(takeoffLineGeometry, takeoffLineMaterial);
-    this.takeoffLine.position.set(0, gridEdgeLength * -0.5, 0);
+    this.takeoffLine.position.set(0, this.gridEdgeLength * -0.5, 0);
     this.scene.add(this.takeoffLine);
 
     //AMBIENT LIGHT
@@ -112,10 +113,9 @@ class Canvas extends Component {
         this.scene.remove(this.landLine);
       }
 
-      //create a LineBasicMaterial
+      //DRAWS FLIGHT PATH
       const material = new THREE.LineBasicMaterial({
-        color: 'red',
-        linewidth: 5,
+        color: 0xff0000,
       });
       const geometry = new THREE.Geometry();
       const point = { x: 0, y: 1, z: 0 };
@@ -131,6 +131,7 @@ class Canvas extends Component {
         geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
       });
       this.line = new THREE.Line(geometry, material);
+      this.line.position.set(0, this.gridEdgeLength * -0.5, 0);
       this.scene.add(this.line);
 
       const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
@@ -141,7 +142,7 @@ class Canvas extends Component {
       landLineGeometry.vertices.push(new THREE.Vector3(point.x, 0, point.z));
 
       this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
-
+      this.landLine.position.set(0, this.gridEdgeLength * -0.5, 0);
       this.scene.add(this.landLine);
     });
 
