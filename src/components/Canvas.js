@@ -20,7 +20,6 @@ class Canvas extends Component {
 
     //scene
     this.scene = new THREE.Scene();
-    // this.scene.background = new THREE.Color(0xa9a9a9);
 
     //camera
     this.camera = new THREE.PerspectiveCamera(

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Battery from './Battery';
 import { connect } from 'react-redux';
 import { List, Segment } from 'semantic-ui-react';
+import { changeRoll, changePitch, changeYaw } from '../store/reducer';
 const { ipcRenderer } = window.require('electron');
 
 let interval;
@@ -23,7 +24,7 @@ class StatusSegment extends Component {
     interval = setInterval(async () => {
       await this.getDroneState();
     }, 100);
-    console.log('this.state: ', this.state);
+    // console.log('this.state: ', this.state);
   }
 
   componentWillUnmount() {
@@ -33,7 +34,7 @@ class StatusSegment extends Component {
   getDroneState = () => {
     ipcRenderer.send('getDroneState');
     ipcRenderer.on('updatedDroneState', (event, arg) => {
-      console.log('arg: ', arg);
+      // console.log('arg: ', arg);
       if (arg) {
         this.setState({
           battery: arg.bat,
@@ -43,6 +44,10 @@ class StatusSegment extends Component {
           temph: arg.temph,
           time: arg.time,
         });
+
+        this.props.changeRoll(arg.roll);
+        this.props.changePitch(arg.pitch);
+        this.props.changeYaw(arg.yaw);
       }
     });
     // ipcRenderer.send('getDroneState');
@@ -53,7 +58,6 @@ class StatusSegment extends Component {
   };
 
   render() {
-    const { speed } = this.props;
     return (
       <div id="status-segment">
         <Segment compact tertiary padded floated="right">
@@ -88,19 +92,25 @@ class StatusSegment extends Component {
 
 const mapState = state => {
   return {
-    state: state.speed,
+    speed: state.speed,
   };
 };
 
-// const mapDispatch = dispatch => {
-//   return {
-//     functionName: () => {
-//       dispatch(functionName());
-//     },
-//   };
-// };
+const mapDispatch = dispatch => {
+  return {
+    changeRoll: newRoll => {
+      dispatch(changeRoll(newRoll));
+    },
+    changePitch: newPitch => {
+      dispatch(changePitch(newPitch));
+    },
+    changeYaw: newYaw => {
+      dispatch(changeYaw(newYaw));
+    },
+  };
+};
 
 export default connect(
   mapState,
-  null
+  mapDispatch
 )(StatusSegment);
