@@ -2,6 +2,7 @@ const INITIAL_STATE = {
   distance: 50,
   speed: 50,
   battery: 100,
+  scale: 10,
 };
 
 //ACTION CONSTANTS

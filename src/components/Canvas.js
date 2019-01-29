@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
-const keyboard = {};
 
 const backImage = require('../assets/skybox/back.png');
 const frontImage = require('../assets/skybox/front.png');
@@ -10,22 +9,6 @@ const upImage = require('../assets/skybox/up.png');
 const downImage = require('../assets/skybox/down.png');
 const rightImage = require('../assets/skybox/right.png');
 const leftImage = require('../assets/skybox/left.png');
-
-function keyDown(event) {
-  keyboard[event.keyCode] = true;
-}
-
-function keyUp(event) {
-  keyboard[event.keyCode] = false;
-}
-
-// var geometry = new THREE.BoxGeometry(1, 1, 1);
-// var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-// var cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
-
-window.addEventListener('keydown', keyDown);
-window.addEventListener('keyup', keyUp);
 
 class Canvas extends Component {
   constructor() {
@@ -150,9 +133,9 @@ class Canvas extends Component {
     const yellowLine = new THREE.Line(yellowLineGeometry, yellowLineMaterial);
     this.scene.add(yellowLine);
 
-    // //AMBIENT LIGHT
-    // const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-    // this.scene.add(ambientLight);
+    //AMBIENT LIGHT
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    this.scene.add(ambientLight);
   }
 
   componentDidMount() {
@@ -196,41 +179,6 @@ class Canvas extends Component {
     // console.dir(this.camera);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
-    // if (keyboard[87]) {
-    //   // W key
-    //   this.camera.position.x -= Math.sin(this.camera.rotation.y) * 0.5;
-    //   this.camera.position.z -= -Math.cos(this.camera.rotation.y) * 0.5;
-    // }
-    // if (keyboard[83]) {
-    //   // S key
-    //   this.camera.position.x += Math.sin(this.camera.rotation.y) * 0.5;
-    //   this.camera.position.z += -Math.cos(this.camera.rotation.y) * 0.5;
-    // }
-    // if (keyboard[68]) {
-    //   // D key
-    //   this.camera.position.x +=
-    //     Math.sin(this.camera.rotation.y + Math.PI / 2) * 0.5;
-    //   this.camera.position.z +=
-    //     -Math.cos(this.camera.rotation.y + Math.PI / 2) * 0.5;
-    // }
-    // if (keyboard[65]) {
-    //   // A key
-    //   this.camera.position.x +=
-    //     Math.sin(this.camera.rotation.y - Math.PI / 2) * 0.5;
-    //   this.camera.position.z +=
-    //     -Math.cos(this.camera.rotation.y - Math.PI / 2) * 0.5;
-    // }
-    // if (keyboard[37]) {
-    //   //left arrow
-    //   this.camera.rotation.y -= 0.01;
-    // }
-    // if (keyboard[39]) {
-    //   //right arrow
-    //   this.camera.rotation.y += 0.01;
-    // }
-
-    // this.floor.rotation.x += 0.01;
-    // this.floor.rotation.y += 0.01;
   };
 
   render() {

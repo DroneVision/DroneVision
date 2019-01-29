@@ -35,8 +35,23 @@
 .straight-down {
 }
 
-#build {
+#flight-messages {
+  padding: 100px;
+  text-align: left;
+}
+
+.flight-message-single {
+  margin: 2px 0px;
+}
+
+#build-screen {
   text-align: center;
+  display: inline-block;
+}
+
+#build-content {
+  display: flex;
+  flex-direction: row;
 }
 
 #run {
