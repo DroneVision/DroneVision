@@ -91,11 +91,6 @@ class Canvas extends Component {
     let skyboxMesh = new THREE.Mesh(skyboxCube, skyboxCubeMaterial);
     this.scene.add(skyboxMesh);
 
-    //add light
-    let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    this.scene.add(ambientLight);
-    // this.scene.add(this.controls.getObject());
-
     //GRID
     this.planeGeo = new THREE.PlaneBufferGeometry(10, 10, 10, 10);
     this.planeMaterial = new THREE.MeshBasicMaterial({
