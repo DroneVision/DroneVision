@@ -35,7 +35,7 @@ class Build extends Component {
         maxY: scale,
         maxZ: scale / 2,
         minX: -scale / 2,
-        minY: 2,
+        minY: 1,
         minZ: -scale / 2,
       },
       currentPoint: { x: 0, y: 1, z: 0 },
