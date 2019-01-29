@@ -117,11 +117,23 @@ class Build extends Component {
         .slice(1, 4)
         .map(numStr => Number(numStr) / distance)
     );
+
+    const [z, x, y] = relevantCommands[relevantCommands.length - 1];
+    const lastPoint = this.state.currentPoint;
+
+    this.setState({
+      currentPoint: {
+        x: lastPoint.x + x,
+        y: lastPoint.y + y,
+        z: lastPoint.z + z,
+      },
+    });
     PubSub.publish('draw-path', relevantCommands);
   };
 
   render() {
     const { currentPoint, limits, flightCommands } = this.state;
+    console.log(currentPoint);
     const latestCommandMessage =
       flightCommands[flightCommands.length - 2].message;
     const leftDisabled = currentPoint.x === limits.maxX;
