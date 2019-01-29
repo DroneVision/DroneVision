@@ -132,7 +132,7 @@ class Canvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
-    PubSub.subscribe('draw-path', (msg, flightCommands) => {
+    PubSub.subscribe('draw-path', (msg, flightCoords) => {
       if (this.line) {
         this.scene.remove(this.line);
         this.scene.remove(this.landLine);
@@ -146,7 +146,7 @@ class Canvas extends Component {
       const geometry = new THREE.Geometry();
       const point = { x: 0, y: 1, z: 0 };
       geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
-      flightCommands.forEach(command => {
+      flightCoords.forEach(command => {
         const [z, x, y] = command;
         point.x += x;
         point.y += y;
