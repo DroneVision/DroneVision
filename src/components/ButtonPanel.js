@@ -80,7 +80,7 @@ const renderCenterButton = (
           onClick={() =>
             addDirection(
               getInstruction('straight-up', distance, speed, type),
-              'Up'
+              `Up --> ${distance / 100} m`
             )
           }
         >
@@ -96,7 +96,7 @@ const renderCenterButton = (
           onClick={() =>
             addDirection(
               getInstruction('straight-down', distance, speed, type),
-              'Down'
+              `Down --> ${distance / 100} m`
             )
           }
         >
@@ -110,7 +110,7 @@ const renderCenterButton = (
   }
 };
 
-const Plane = props => {
+const ButtonPanel = props => {
   const {
     type,
     distance,
@@ -137,7 +137,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('forward-left', distance, speed, type),
-                  `${prefix}Forward + Left`
+                  `${prefix}Forward + Left --> ${distance / 100} m`
                 )
               }
             >
@@ -152,7 +152,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('forward', distance, speed, type),
-                  `${prefix}Forward`
+                  `${prefix}Forward --> ${distance / 100} m`
                 )
               }
             >
@@ -167,7 +167,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('forward-right', distance, speed, type),
-                  `${prefix}Forward + Right`
+                  `${prefix}Forward + Right --> ${distance / 100} m`
                 )
               }
             >
@@ -184,7 +184,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('left', distance, speed, type),
-                  `${prefix}Left`
+                  `${prefix}Left --> ${distance / 100} m`
                 )
               }
             >
@@ -208,7 +208,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('right', distance, speed, type),
-                  `${prefix}Right`
+                  `${prefix}Right --> ${distance / 100} m`
                 )
               }
             >
@@ -225,7 +225,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('reverse-left', distance, speed, type),
-                  `${prefix}Reverse + Left`
+                  `${prefix}Reverse + Left --> ${distance / 100} m`
                 )
               }
             >
@@ -240,7 +240,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('reverse', distance, speed, type),
-                  `${prefix}Reverse`
+                  `${prefix}Reverse --> ${distance / 100} m`
                 )
               }
             >
@@ -255,7 +255,7 @@ const Plane = props => {
               onClick={() =>
                 addDirection(
                   getInstruction('reverse-right', distance, speed, type),
-                  `${prefix}Reverse + Right`
+                  `${prefix}Reverse + Right --> ${distance / 100} m`
                 )
               }
             >
@@ -270,4 +270,4 @@ const Plane = props => {
   );
 };
 
-export default Plane;
+export default ButtonPanel;

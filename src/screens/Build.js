@@ -1,24 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import socket from '../socket';
 import { Button, Icon, List } from 'semantic-ui-react';
-// import UpPlane from '../components/UpPlane';
-import Plane from '../components/Plane';
-// import DownPlane from '../components/DownPlane';
+import ButtonPanel from '../components/ButtonPanel';
 import Canvas from '../components/Canvas';
-import FlyControls from '../components/FlyControls';
 
 import PubSub from 'pubsub-js';
 
 const { ipcRenderer } = window.require('electron');
-
-// import {
-//   increaseDistance,
-//   decreaseDistance,
-//   increaseSpeed,
-//   decreaseSpeed,
-// } from '../store/reducer';
-// import StatusContainer from '../components/StatusContainer';
 
 class Build extends Component {
   constructor(props) {
@@ -29,7 +17,6 @@ class Build extends Component {
         { command: 'takeoff', message: 'Takeoff' },
         { command: 'land', message: 'Land' },
       ],
-      // flightMessages: ['Takeoff', 'Land'],
       limits: {
         maxX: scale / 2,
         maxY: scale,
@@ -50,11 +37,58 @@ class Build extends Component {
   addDirection = (flightCommand, flightMessage) => {
     const { flightCommands } = this.state;
 
-    let updatedFlightCommands = flightCommands.slice();
+    const latestCommandObj = flightCommands[flightCommands.length - 2];
 
+    const latestCommandName = latestCommandObj.message
+      .split(' ')
+      .slice(0, -3)
+      .join(' ');
+    const newCommandName = flightMessage
+      .split(' ')
+      .slice(0, -3)
+      .join(' ');
     const flightCommandObj = { command: flightCommand, message: flightMessage };
 
-    updatedFlightCommands.splice(-1, 0, flightCommandObj);
+    let updatedFlightCommands = flightCommands.slice();
+    if (newCommandName === latestCommandName) {
+      // Redundant command, so just adjust the last one's values
+      if (flightCommand === 'hold') {
+        // TODO: add logic for hold
+      } else {
+        const {
+          command: latestCommand,
+          message: latestMessage,
+        } = latestCommandObj;
+        const latestCommandCoords = latestCommand.split(' ').slice(1, 4);
+        const newCommandCoords = flightCommand.split(' ').slice(1, 4);
+        const resultCoords = latestCommandCoords.map((coord, idx) => {
+          return Number(coord) + Number(newCommandCoords[idx]);
+        });
+        const [commandWord, , , , commandSpeed] = latestCommand.split(' ');
+
+        const newCommand = `${commandWord} ${resultCoords.join(
+          ' '
+        )} ${commandSpeed}`;
+
+        flightCommandObj.command = newCommand;
+
+        const latestDistance = Number(
+          latestMessage.split(' ').slice(-2, -1)[0]
+        );
+        const newDistance = Number(flightMessage.split(' ').slice(-2, -1)[0]);
+        const resultDistance = latestDistance + newDistance;
+
+        const newMessage = `${newCommandName} --> ${resultDistance} m`;
+
+        flightCommandObj.message = newMessage;
+      }
+      //Overwrite the existing flight command object
+      updatedFlightCommands.splice(-2, 1, flightCommandObj);
+    } else {
+      //New flight command (non-duplicate), so add it in
+      updatedFlightCommands.splice(-1, 0, flightCommandObj);
+    }
+    console.log(updatedFlightCommands);
     this.drawPath(updatedFlightCommands);
     this.setState({
       flightCommands: updatedFlightCommands,
@@ -183,7 +217,7 @@ class Build extends Component {
                   </tr>
                   <tr>
                     <td>
-                      <Plane
+                      <ButtonPanel
                         latestCommandMessage={latestCommandMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
@@ -197,7 +231,7 @@ class Build extends Component {
                       />
                     </td>
                     <td>
-                      <Plane
+                      <ButtonPanel
                         latestCommandMessage={latestCommandMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
@@ -211,7 +245,7 @@ class Build extends Component {
                       />
                     </td>
                     <td>
-                      <Plane
+                      <ButtonPanel
                         latestCommandMessage={latestCommandMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
