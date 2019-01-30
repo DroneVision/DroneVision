@@ -41,8 +41,7 @@ app.commandLine.appendSwitch('ignore-gpu-blacklist');
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-Menu.setApplicationMenu(appMenu(mainWindow));
-
+// Menu.setApplicationMenu(appMenu(mainWindow));
 
 
 // Quit when all windows are closed.

@@ -11,6 +11,7 @@ import {
 } from '../store/store';
 
 import { drawPath, getFlightCoords } from '../utils/drawPathUtils';
+import { saveFlightInstructions } from '../utils/savePathUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -123,9 +124,6 @@ class Build extends Component {
     this.props.clearInstructions();
   };
 
-  // addLine = (point1, point2) => {
-  //   PubSub.publish('new-line', { point1, point2 });
-  // };
 
   getCurrentPoint = flightCoords => {
     const currentPoint = flightCoords.reduce(
@@ -277,6 +275,9 @@ class Build extends Component {
                           View On Run Screen!
                         </Button>
                       </Link>
+                      <Button onClick={() => saveFlightInstructions(this.props.flightInstructions)}>
+                          Save Flight Path
+                        </Button>
                     </td>
                   </tr>
                 </tbody>
