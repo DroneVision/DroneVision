@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
 import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
+import _ from 'lodash';
 
 class Canvas extends Component {
   constructor(props) {
@@ -136,16 +137,18 @@ class Canvas extends Component {
       this.line.position.set(0, this.gridEdgeLength * -0.5, 0);
       this.scene.add(this.line);
 
-      const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
-      const landLineGeometry = new THREE.Geometry();
-      landLineGeometry.vertices.push(
-        new THREE.Vector3(point.x, point.y, point.z)
-      );
-      landLineGeometry.vertices.push(new THREE.Vector3(point.x, 0, point.z));
+      if (!_.isEqual(point, startingPoint)) {
+        const landLineGeometry = new THREE.Geometry();
+        landLineGeometry.vertices.push(new THREE.Vector3(point.x, 0, point.z));
+        const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
 
-      this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
-      this.landLine.position.set(0, this.gridEdgeLength * -0.5, 0);
-      this.scene.add(this.landLine);
+        landLineGeometry.vertices.push(
+          new THREE.Vector3(point.x, point.y, point.z)
+        );
+        this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
+        this.landLine.position.set(0, this.gridEdgeLength * -0.5, 0);
+        this.scene.add(this.landLine);
+      }
     });
 
     // PubSub.subscribe('new-line', (msg, points) => {
