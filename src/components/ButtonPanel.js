@@ -58,7 +58,7 @@ const renderCenterButton = (
   type,
   distance,
   speed,
-  addDirection,
+  addFlightInstruction,
   allDisabled
 ) => {
   switch (type) {
@@ -66,7 +66,7 @@ const renderCenterButton = (
       return (
         <Button
           disabled={allDisabled}
-          onClick={() => addDirection('hold', 'Hold')}
+          onClick={() => addFlightInstruction('hold', 'Hold')}
         >
           <Button.Content visible>
             <Icon className="hold" name="hourglass half" />
@@ -78,7 +78,7 @@ const renderCenterButton = (
         <Button
           disabled={allDisabled}
           onClick={() =>
-            addDirection(
+            addFlightInstruction(
               getInstruction('straight-up', distance, speed, type),
               `Up --> ${distance / 100} m`
             )
@@ -94,7 +94,7 @@ const renderCenterButton = (
         <Button
           disabled={allDisabled}
           onClick={() =>
-            addDirection(
+            addFlightInstruction(
               getInstruction('straight-down', distance, speed, type),
               `Down --> ${distance / 100} m`
             )
@@ -115,7 +115,7 @@ const ButtonPanel = props => {
     type,
     distance,
     speed,
-    addDirection,
+    addFlightInstruction,
     leftDisabled,
     rightDisabled,
     forwardDisabled,
@@ -135,7 +135,7 @@ const ButtonPanel = props => {
             <Button
               disabled={leftDisabled || forwardDisabled || allDisabled}
               onClick={() =>
-                addDirection(
+                addFlightInstruction(
                   getInstruction('forward-left', distance, speed, type),
                   `${prefix}Forward + Left --> ${distance / 100} m`
                 )
@@ -150,7 +150,7 @@ const ButtonPanel = props => {
             <Button
               disabled={forwardDisabled || allDisabled}
               onClick={() =>
-                addDirection(
+                addFlightInstruction(
                   getInstruction('forward', distance, speed, type),
                   `${prefix}Forward --> ${distance / 100} m`
                 )
@@ -165,7 +165,7 @@ const ButtonPanel = props => {
             <Button
               disabled={rightDisabled || forwardDisabled || allDisabled}
               onClick={() =>
-                addDirection(
+                addFlightInstruction(
                   getInstruction('forward-right', distance, speed, type),
                   `${prefix}Forward + Right --> ${distance / 100} m`
                 )
@@ -182,7 +182,7 @@ const ButtonPanel = props => {
             <Button
               disabled={leftDisabled || allDisabled}
               onClick={() =>
-                addDirection(
+                addFlightInstruction(
                   getInstruction('left', distance, speed, type),
                   `${prefix}Left --> ${distance / 100} m`
                 )
@@ -198,7 +198,7 @@ const ButtonPanel = props => {
               type,
               distance,
               speed,
-              addDirection,
+              addFlightInstruction,
               allDisabled
             )}
           </td>
@@ -206,7 +206,7 @@ const ButtonPanel = props => {
             <Button
               disabled={rightDisabled || allDisabled}
               onClick={() =>
-                addDirection(
+                addFlightInstruction(
                   getInstruction('right', distance, speed, type),
                   `${prefix}Right --> ${distance / 100} m`
                 )
@@ -223,7 +223,7 @@ const ButtonPanel = props => {
             <Button
               disabled={leftDisabled || reverseDisabled || allDisabled}
               onClick={() =>
-                addDirection(
+                addFlightInstruction(
                   getInstruction('reverse-left', distance, speed, type),
                   `${prefix}Reverse + Left --> ${distance / 100} m`
                 )
@@ -238,7 +238,7 @@ const ButtonPanel = props => {
             <Button
               disabled={reverseDisabled || allDisabled}
               onClick={() =>
-                addDirection(
+                addFlightInstruction(
                   getInstruction('reverse', distance, speed, type),
                   `${prefix}Reverse --> ${distance / 100} m`
                 )
@@ -253,7 +253,7 @@ const ButtonPanel = props => {
             <Button
               disabled={rightDisabled || reverseDisabled || allDisabled}
               onClick={() =>
-                addDirection(
+                addFlightInstruction(
                   getInstruction('reverse-right', distance, speed, type),
                   `${prefix}Reverse + Right --> ${distance / 100} m`
                 )
