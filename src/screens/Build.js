@@ -141,7 +141,6 @@ class Build extends Component {
 
   handleLoadFlightInstructions = async () => {
     const flightInstructions = await loadFlightInstructions();
-    console.log('flight instruction in build.js', flightInstructions);
     this.props.updateInstructions(flightInstructions)
     drawPath(this.props.flightInstructions,this.props.distance)
   }
