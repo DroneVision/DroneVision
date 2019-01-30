@@ -1,72 +1,7 @@
-// import { app } from 'electron';
-// const { openFile } = require('../../utils/fileSystem');
-
-// // Drone init import
-// const droneInit = require('../drone/droneInit');
-// const { runSingleInstruction } = droneInit();
-
-
-// export default function(BrowserWindow) {
-    
-// }
-
-// const template = [
-// 	{
-// 		label: 'App',
-// 		submenu: [
-// 			{
-// 				label: 'Exit',
-// 				click() {
-// 					app.exit();
-// 				}
-// 			}
-// 		]
-// 	},
-// 	{
-// 		label: 'File',
-// 		submenu: [
-// 			{
-// 				label: 'Open...',
-// 				accelerator: 'CmdOrCtrl+O',
-// 				click() { openFile() }
-// 			},
-// 			{
-// 				label: 'Save...',
-// 				accelerator: 'CmdOrCtrl+S',
-// 				click() {
-// 					// We can't call saveFile(content) directly because we need to get
-// 					// the content from the renderer process. So, send a message to the
-// 					// renderer, telling it we want to save the file.
-// 					currentWindow.webContents.send('save-file')
-// 				}
-// 			},
-// 			{
-// 				label: 'Exit',
-// 				click() {
-// 					app.exit();
-// 				},
-// 			}
-// 		]
-// 	},
-// 	{
-// 		label: 'Drone',
-// 		submenu: [
-// 			{
-// 				label: 'Connect to Drone',
-// 				click() {
-// 					runSingleInstruction('command');
-// 				},
-// 			},
-// 		],
-// 	},
-// ];
-
-// module.exports = template;
-
-
 const { app, Menu, dialog } = require('electron');
 const darwinMenu  = require('./darwin');
 const fileMenu  = require('./fileMenu');
+// const droneMenu  = require('./droneMenu');
 
 module.exports = BrowserWindow => {
 	const currentYear = new Date().getFullYear();
@@ -83,7 +18,8 @@ module.exports = BrowserWindow => {
   
 	const template = [
 	  ...(process.platform === 'darwin' ? [darwinMenu(showDroneVisionAbout)] : []),
-	  fileMenu(BrowserWindow)
+	  fileMenu(BrowserWindow),
+	//   droneMenu
 	];
   
 	return Menu.buildFromTemplate(template);
