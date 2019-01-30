@@ -10,16 +10,45 @@ const { runSingleInstruction, runInstructionList, getDroneState } = droneInit();
 //Video streaming
 const ffmpeg = require('fluent-ffmpeg');
 // const fs = require('fs');
-const command = new ffmpeg('udp://0.0.0.0:11111').size('640x?').aspect('4:3').output('./outputfile.mp4');
 
-ipcMain.on('record-stream', () => {
-	runSingleInstruction('command');
-	runSingleInstruction('streamon');
-	// setTimeout(() => {
-		command.run();
-	// }, 5000)
-  });
+//BEGIN RECORD VIDEO
 
+//LEave this for now, we may need it to stop video encoding manually
+// const stopRecording = movie => {
+//   return movie.ffmpegProc.stdin.write('q');
+// };
+
+let currentVid;
+
+ipcMain.on('start-recording', (event, duration) => {
+  let formattedDateString = new Date()
+    .toString()
+    .split(' ')
+    .splice(1, 4)
+    .join('-');
+
+  let command = new ffmpeg('udp://0.0.0.0:11111')
+    .size('640x?')
+    .aspect('4:3')
+    .output(`./DroneVision-${formattedDateString}.mp4`)
+    .duration(duration)
+    .on('end', () => {
+      console.log('duration is over');
+    });
+  runSingleInstruction('command');
+  runSingleInstruction('streamon');
+  currentVid = command;
+  currentVid.run();
+  console.log('video is recording now');
+});
+
+ipcMain.on('stop-recording', () => {
+  currentVid.kill();
+  runSingleInstruction('streamoff');
+  console.log('video should stop recording now');
+});
+
+// END RECORD VIDEO
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -53,7 +82,7 @@ app.commandLine.appendSwitch('ignore-gpu-blacklist');
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-Menu.setApplicationMenu(appMenu(mainWindow));
+// Menu.setApplicationMenu(appMenu(mainWindow));
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
@@ -106,13 +135,12 @@ ipcMain.on('autopilot', (evt, instructions) => {
 ipcMain.on('enable-video-stream', (event, instruction) => {
   console.log('Enable Stream Request Sent from Browser:');
   console.log(instruction);
-  runSingleInstruction(instruction);
+  runSingleInstruction('instruction');
 });
 
-ipcMain.on('disable-video-stream', (event, instruction) => {
+ipcMain.on('disable-video-stream', () => {
   console.log('Disable Stream Request Sent from Browser:');
-  console.log(instruction);
-  runSingleInstruction(instruction);
+  runSingleInstruction('streamoff');
 });
 
 ipcMain.on('getDroneState', async (event, droneState) => {

@@ -6,17 +6,33 @@ import Stream from '../components/Stream';
 import { Button } from 'semantic-ui-react';
 const { ipcRenderer } = window.require('electron');
 class Run extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      duration: 10,
+    };
+  }
+
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');
   };
 
-  streamVideo = () => {
-    ipcRenderer.send('record-stream')
-    // ipcRenderer.send('enable-video-stream', 'streamon');
+  startRecordingVideo = () => {
+    let durationToSend = this.state.duration;
+    if (durationToSend < 10) {
+      durationToSend = 10;
+    }
+
+    ipcRenderer.send('start-recording', parseInt(durationToSend));
   };
 
-  stopStreamingVideo = () => {
-    ipcRenderer.send('disable-video-stream', 'streamoff');
+  stopRecordingVideo = () => {
+    ipcRenderer.send('stop-recording');
+  };
+
+  handleDurationChange = event => {
+    this.setState({ duration: event.target.value });
   };
 
   render() {
@@ -42,10 +58,20 @@ class Run extends Component {
           </tr>
           <tr>
             <td>
-              <Button onClick={() => this.streamVideo()}>Record Video</Button>
-              <Button onClick={() => this.stopStreamingVideo()}>
-                Stop Stream
+              <Button onClick={() => this.startRecordingVideo()}>
+                Start Recording
               </Button>
+              <Button onClick={() => this.stopRecordingVideo()}>
+                Reset Video Recorder
+              </Button>
+            </td>
+            <td>
+              Video Duration:{' '}
+              <input
+                type="number"
+                value={this.state.duration}
+                onChange={this.handleDurationChange}
+              />
             </td>
           </tr>
         </table>
