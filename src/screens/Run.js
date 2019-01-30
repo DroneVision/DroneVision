@@ -25,6 +25,16 @@ class Run extends Component {
     drawPath(this.props.flightInstructions, this.props.distance);
   }
 
+  runFlightInstructions = () => {
+    const { flightInstructions } = this.props;
+    const droneInstructions = flightInstructions.map(
+      flightInstructionObj => flightInstructionObj.instruction
+    );
+    console.log('sending auto pilot to drone', droneInstructions);
+
+    ipcRenderer.send('autopilot', ['command', ...droneInstructions]);
+  };
+
   render() {
     return (
       <div id="run">
@@ -52,6 +62,8 @@ class Run extends Component {
               <Button onClick={() => this.stopStreamingVideo()}>
                 Stop Stream
               </Button>
+              <Button onClick={this.runFlightInstructions}>Test Run</Button>
+              <Button>Record Run</Button>
             </td>
           </tr>
         </table>

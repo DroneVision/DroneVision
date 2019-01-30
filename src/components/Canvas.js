@@ -118,7 +118,8 @@ class Canvas extends Component {
         color: 0xff0000,
       });
       const geometry = new THREE.Geometry();
-      const point = { x: 0, y: 1, z: 0 };
+      const startingPoint = { x: 0, y: 1, z: 0 };
+      const point = { ...startingPoint };
       geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
       flightCoords.forEach(command => {
         const [z, x, y] = command;
@@ -131,6 +132,7 @@ class Canvas extends Component {
         geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
       });
       this.line = new THREE.Line(geometry, material);
+      //shift position of line down because the plane had to be shifted down in 3d space
       this.line.position.set(0, this.gridEdgeLength * -0.5, 0);
       this.scene.add(this.line);
 

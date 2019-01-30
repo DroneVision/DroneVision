@@ -141,11 +141,6 @@ class Build extends Component {
     return currentPoint;
   };
 
-  runAutoPilot = () => {
-    console.log('sending auto pilot to drone', this.state.flightCommands);
-    ipcRenderer.send('autopilot', ['command', ...this.state.flightCommands]);
-  };
-
   render() {
     const { limits } = this.state;
     const { flightInstructions, distance } = this.props;
