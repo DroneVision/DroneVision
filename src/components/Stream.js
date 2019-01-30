@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-const Stream = props => {
-  return (
-    <div>
-      <video id="stream" />
-    </div>
-  );
-};
+
+class Stream extends Component {
+
+  componentDidMount() {
+    
+  }
+
+  render() {
+    return (
+      <div>
+        <video id="stream" />
+      </div>
+    );
+  }
+}
 
 export default Stream;
