@@ -303,7 +303,7 @@ const mapDispatch = dispatch => {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
       dispatch(updateInstructions(flightInstructions)),
-    clearInstructions: () => dispatch(clearInstructions),
+    clearInstructions: () => dispatch(clearInstructions()),
   };
 };
 // const mapDispatch = dispatch => {
