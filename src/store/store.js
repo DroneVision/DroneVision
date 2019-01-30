@@ -8,6 +8,7 @@ const INITIAL_STATE = {
   pitch: 0,
   yaw: 0,
   debugMode: true,
+  navTab: 'build',
 };
 
 //ACTION CONSTANTS
@@ -23,6 +24,8 @@ const CHANGE_ROLL = 'CHANGE_ROLL';
 const CHANGE_PITCH = 'CHANGE_PITCH';
 const CHANGE_YAW = 'CHANGE_YAW';
 
+const CHANGE_TAB = 'CHANGE_TAB';
+
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
 export const decreaseDistance = () => ({ type: DECREASE_DISTANCE });
@@ -35,6 +38,8 @@ export const toggleDebugMode = () => ({ type: TOGGLE_DEBUGMODE });
 export const changeRoll = newRoll => ({ type: CHANGE_ROLL, newRoll });
 export const changePitch = newPitch => ({ type: CHANGE_PITCH, newPitch });
 export const changeYaw = newYaw => ({ type: CHANGE_YAW, newYaw });
+
+export const changeTab = newTab => ({ type: CHANGE_TAB, newTab });
 
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -54,6 +59,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, pitch: action.newPitch };
     case CHANGE_YAW:
       return { ...state, yaw: action.newYaw };
+    case CHANGE_TAB:
+      return { ...state, navTab: action.newTab };
     default:
       return state;
   }
