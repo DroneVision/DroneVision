@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
 import { Button } from 'semantic-ui-react';
+import { drawPath } from '../utils/drawPathUtils';
+
 const { ipcRenderer } = window.require('electron');
 class Run extends Component {
   connectToDroneHandler = () => {
@@ -17,6 +20,10 @@ class Run extends Component {
   stopStreamingVideo = () => {
     ipcRenderer.send('disable-video-stream', 'streamoff');
   };
+
+  componentDidMount() {
+    drawPath(this.props.flightInstructions, this.props.distance);
+  }
 
   render() {
     return (
@@ -53,4 +60,14 @@ class Run extends Component {
   }
 }
 
-export default Run;
+const mapState = state => {
+  return {
+    distance: state.distance,
+    flightInstructions: state.flightInstructions,
+  };
+};
+
+export default connect(
+  mapState,
+  null
+)(Run);

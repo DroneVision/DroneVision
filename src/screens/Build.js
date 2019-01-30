@@ -10,7 +10,7 @@ import {
   clearInstructions,
 } from '../store/store';
 
-import PubSub from 'pubsub-js';
+import { drawPath, getFlightCoords } from '../utils/drawPathUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -19,10 +19,6 @@ class Build extends Component {
     super(props);
     const { scale } = this.props;
     this.state = {
-      // flightCommands: [
-      //   { command: 'takeoff', message: 'Takeoff' },
-      //   { command: 'land', message: 'Land' },
-      // ],
       limits: {
         maxX: scale / 2,
         maxY: scale,
@@ -36,13 +32,8 @@ class Build extends Component {
   }
 
   componentDidMount() {
-    this.drawPath(this.props.flightInstructions);
+    drawPath(this.props.flightInstructions, this.props.distance);
   }
-
-  drawPath = flightInstructions => {
-    const flightCoords = this.getFlightCoords(flightInstructions);
-    PubSub.publish('draw-path', flightCoords);
-  };
 
   addFlightInstruction = (flightInstruction, flightMessage) => {
     const { flightInstructions } = this.props;
@@ -112,40 +103,29 @@ class Build extends Component {
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
-    console.log(updatedFlightInstructions);
-    this.drawPath(updatedFlightInstructions);
-    // this.setState({
-    //   flightInstructions: updatedFlightInstructions,
-    // });
+
+    drawPath(updatedFlightInstructions, this.props.distance);
+
     this.props.updateInstructions(updatedFlightInstructions);
   };
 
   deleteLastInstruction = () => {
-    const { flightInstructions } = this.props;
+    const { flightInstructions, distance } = this.props;
     let updatedFlightInstructions = flightInstructions.slice();
     updatedFlightInstructions.splice(-2, 1);
 
-    this.drawPath(updatedFlightInstructions);
-    // this.setState({
-    //   flightInstructions: updatedFlightInstructions,
-    // });
+    drawPath(updatedFlightInstructions, distance);
     this.props.updateInstructions(updatedFlightInstructions);
   };
 
   clearFlightInstructions = () => {
-    this.drawPath([]);
+    drawPath([], this.props.distance);
     this.props.clearInstructions();
-    // this.setState({
-    //   flightCommands: [
-    //     { command: 'takeoff', message: 'Takeoff' },
-    //     { command: 'land', message: 'Land' },
-    //   ],
-    // });
   };
 
-  addLine = (point1, point2) => {
-    PubSub.publish('new-line', { point1, point2 });
-  };
+  // addLine = (point1, point2) => {
+  //   PubSub.publish('new-line', { point1, point2 });
+  // };
 
   getCurrentPoint = flightCoords => {
     const currentPoint = flightCoords.reduce(
@@ -161,17 +141,6 @@ class Build extends Component {
     return currentPoint;
   };
 
-  getFlightCoords = flightInstructions => {
-    const { distance } = this.props;
-
-    return flightInstructions.slice(1, -1).map(instructionObj =>
-      instructionObj.instruction
-        .split(' ')
-        .slice(1, 4)
-        .map(numStr => Number(numStr) / distance)
-    );
-  };
-
   runAutoPilot = () => {
     console.log('sending auto pilot to drone', this.state.flightCommands);
     ipcRenderer.send('autopilot', ['command', ...this.state.flightCommands]);
@@ -179,8 +148,8 @@ class Build extends Component {
 
   render() {
     const { limits } = this.state;
-    const { flightInstructions } = this.props;
-    const flightCoords = this.getFlightCoords(flightInstructions);
+    const { flightInstructions, distance } = this.props;
+    const flightCoords = getFlightCoords(flightInstructions, distance);
     const currentPoint = this.getCurrentPoint(flightCoords);
 
     const latestInstructionMessage =
