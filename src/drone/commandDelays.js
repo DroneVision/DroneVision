@@ -1,25 +1,3 @@
-// const commandDelays = {
-//   command: 500,
-//   takeoff: 4000,
-//   land: 5000,
-//   up: 3000,
-//   down: 3000,
-//   left: 3000,
-//   go: 7000,
-//   right: 3000,
-//   forward: 3000,
-//   back: 3000,
-//   cw: 3000,
-//   ccw: 3000,
-//   curve: 3000,
-//   flip: 3000,
-//   speed: 3000,
-//   emergency: 0,
-//   'battery?': 500,
-//   'speed?': 500,
-//   'time?': 500,
-// };
-
 const commandDelays = {
   command: 500,
   takeoff: 5000,

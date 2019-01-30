@@ -6,7 +6,6 @@ import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 
 const store = createStore(reducer);
-
 class App extends Component {
   render() {
     return (

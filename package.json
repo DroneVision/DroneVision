@@ -1,5 +1,5 @@
 {
-  "name": "electron-app",
+  "name": "DroneVision",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

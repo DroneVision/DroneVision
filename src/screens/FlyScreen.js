@@ -7,10 +7,6 @@ import StatusContainer from '../components/StatusContainer';
 const { ipcRenderer } = window.require('electron');
 
 class FlyScreen extends Component {
-  constructor() {
-    super();
-  }
-
   realTimeFly = instruction => {
     console.log('sending single instruction to drone', instruction);
     ipcRenderer.sendSync('single-instruction', instruction);
