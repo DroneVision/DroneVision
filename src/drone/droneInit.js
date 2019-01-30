@@ -8,53 +8,6 @@ const COMMANDPORT = 8889;
 const STATEPORT = 8890;
 const STREAMPORT = 11111;
 
-
-const { ipcMain } = require('electron');
-
-const autoPilot = [
-  'command',
-  'battery?',
-  'streamon',
-  // 'takeoff',
-  // 'curve 100 -100 0 200 0 40 50',
-  // 'ccw -180',
-  // 'curve 100 -100 0 200 0 -40 50',
-  // 'land',
-  // [FORWARD, 50],
-  // [BACK, 50],
-  // [LEFT, 50],
-  // [RIGHT, 50],
-  // [RIGHT, 50],
-  // [CW, 90],
-  // [CCW, 90],
-  // [CURVE, 50, 50, 0, 100, 0, 0, 10],
-  // [GO, -200, 0, 0, 10],
-];
-
-// testing purposes -> comment out when using frontend
-// runInstructionList(autoPilot);
-
-// io.on('connection', socket => {
-//   socket.on('takeoff', () => {
-//     console.log('Take-off Sent from Browser:');
-//     runSingleInstruction('command');
-//     runSingleInstruction('takeoff');
-//   });
-//   socket.on('single-instruction', instruction => {
-//     console.log('Single instruction Sent from Browser:');
-//     console.log(instruction);
-//     runSingleInstruction(instruction);
-//   });
-//   socket.on('autopilot', instructions => {
-//     console.log('Multiple instructions Sent from Browser:');
-//     console.log(instructions);
-//     runInstructionList(instructions);
-//   });
-
-//   socket.emit('status', 'CONNECTED');
-// });
-
-
 module.exports = function() {
   //DRONE COMMANDS
   const droneCommand = dgram.createSocket('udp4');
@@ -62,16 +15,12 @@ module.exports = function() {
 
   droneCommand.on('message', message => {
     console.log(`🤖 : ${message}`);
-    // io.sockets.emit('status', message.toString());
   });
 
   //DRONE STATE
   const droneState = dgram.createSocket('udp4');
   droneState.bind(STATEPORT);
   let formattedState
-
-  
-
   
   const parseState = state => {
     return state
@@ -90,8 +39,6 @@ module.exports = function() {
     }, 100)
   );
 
-
-  
   // Get the drone state
   const getDroneState = () => formattedState ;
 
@@ -112,7 +59,6 @@ module.exports = function() {
   };
 
   const sendCommand = flightInstructionString => {
-    // const flightInstructionString = flightInstruction.join(' ');
     console.log('Flight Instruction String:', flightInstructionString);
     droneCommand.send(
       flightInstructionString,
