@@ -7,29 +7,41 @@ const appMenu = require('./menus/menu');
 const droneInit = require('./drone/droneInit');
 const { runSingleInstruction, runInstructionList, getDroneState } = droneInit();
 
+//Video streaming
+const ffmpeg = require('fluent-ffmpeg');
+// const fs = require('fs');
+const command = new ffmpeg('udp://0.0.0.0:11111').size('640x?').aspect('4:3').output('./outputfile.mp4');
 
-require('electron-reload')(__dirname);
+ipcMain.on('record-stream', () => {
+	runSingleInstruction('command');
+	runSingleInstruction('streamon');
+	// setTimeout(() => {
+		command.run();
+	// }, 5000)
+  });
+
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 function createWindow() {
-	// Create the browser window.
-	mainWindow = new BrowserWindow({ width: 1400, height: 1400 });
+  // Create the browser window.
+  mainWindow = new BrowserWindow({ width: 1400, height: 1400 });
 
-	// and load the index.html of the app.
-	mainWindow.loadURL('http://localhost:3000');
+  // and load the index.html of the app.
+  mainWindow.loadURL('http://localhost:3000');
 
-	// Open the DevTools.
-	// mainWindow.webContents.openDevTools()
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
 
-	// Emitted when the window is closed.
-	mainWindow.on('closed', function () {
-		// Dereference the window object, usually you would store windows
-		// in an array if your app supports multi windows, this is the time
-		// when you should delete the corresponding element.
-		mainWindow = null;
-	});
+  // Emitted when the window is closed.
+  mainWindow.on('closed', function() {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null;
+  });
 }
 
 //THIS IS FOR JOSH'S COMPUTER TO WORK!
@@ -43,51 +55,29 @@ app.on('ready', createWindow);
 
 Menu.setApplicationMenu(appMenu(mainWindow));
 
-
-
 // Quit when all windows are closed.
-app.on('window-all-closed', function () {
-	// On macOS it is common for applications and their menu bar
-	// to stay active until the user quits explicitly with Cmd + Q
-	if (process.platform !== 'darwin') {
-		app.quit();
-	}
+app.on('window-all-closed', function() {
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
-app.on('activate', function () {
-	// On macOS it's common to re-create a window in the app when the
-	// dock icon is clicked and there are no other windows open.
-	if (mainWindow === null) {
-		createWindow();
-	}
+app.on('activate', function() {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow();
+  }
 });
-
-
-
-
-
 
 exports.getMainWindow = () => {
-	return mainWindow;
-}
+  return mainWindow;
+};
 exports.getApp = () => {
-	return app;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  return app;
+};
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
@@ -96,41 +86,38 @@ exports.getApp = () => {
 // ipcMain.on('connect-to-drone', (event, arg) => {
 
 ipcMain.on('takeoff', () => {
-	console.log('Take-off Sent from Browser:');
-	runSingleInstruction('command');
-	runSingleInstruction('takeoff');
+  console.log('Take-off Sent from Browser:');
+  runSingleInstruction('command');
+  runSingleInstruction('takeoff');
 });
 
 ipcMain.on('single-instruction', (evt, instruction) => {
-	console.log('Single instruction Sent from Browser:');
-	console.log(instruction);
-	runSingleInstruction(instruction);
+  console.log('Single instruction Sent from Browser:');
+  console.log(instruction);
+  runSingleInstruction(instruction);
 });
 
 ipcMain.on('autopilot', (evt, instructions) => {
-	console.log('Multiple instructions Sent from Browser:');
-	console.log(instructions);
-	runInstructionList(instructions);
+  console.log('Multiple instructions Sent from Browser:');
+  console.log(instructions);
+  runInstructionList(instructions);
 });
 
 ipcMain.on('enable-video-stream', (event, instruction) => {
-	console.log('Enable Stream Request Sent from Browser:');
-	console.log(instruction);
-	runSingleInstruction(instruction);
+  console.log('Enable Stream Request Sent from Browser:');
+  console.log(instruction);
+  runSingleInstruction(instruction);
 });
 
 ipcMain.on('disable-video-stream', (event, instruction) => {
-	console.log('Disable Stream Request Sent from Browser:');
-	console.log(instruction);
-	runSingleInstruction(instruction);
+  console.log('Disable Stream Request Sent from Browser:');
+  console.log(instruction);
+  runSingleInstruction(instruction);
 });
 
 ipcMain.on('getDroneState', async (event, droneState) => {
-
   let updatedState = await getDroneState();
   event.sender.send('updatedDroneState', updatedState);
 });
-
-
 
 // });

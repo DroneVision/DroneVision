@@ -11,7 +11,8 @@ class Run extends Component {
   };
 
   streamVideo = () => {
-    ipcRenderer.send('enable-video-stream', 'streamon');
+    ipcRenderer.send('record-stream')
+    // ipcRenderer.send('enable-video-stream', 'streamon');
   };
 
   stopStreamingVideo = () => {
@@ -41,7 +42,7 @@ class Run extends Component {
           </tr>
           <tr>
             <td>
-              <Button onClick={() => this.streamVideo()}>Stream Video</Button>
+              <Button onClick={() => this.streamVideo()}>Record Video</Button>
               <Button onClick={() => this.stopStreamingVideo()}>
                 Stop Stream
               </Button>

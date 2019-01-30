@@ -43,12 +43,12 @@ module.exports = function() {
   const getDroneState = () => formattedState ;
 
   //DRONE VIDEO STREAM
-  const droneStream = dgram.createSocket('udp4');
-  droneStream.bind(STREAMPORT);
+  // const droneStream = dgram.createSocket('udp4');
+ // droneStream.bind(STREAMPORT);
 
-  droneStream.on('message', message => {
-    console.log('message', message);
-  });
+  // droneStream.on('message', message => {
+  //   console.log('message', message);
+  // });
 
   //ERROR HANDLER
   const handleError = err => {
