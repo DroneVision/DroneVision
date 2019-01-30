@@ -36,8 +36,8 @@
 }
 
 #flight-messages {
-  padding: 100px;
   text-align: left;
+  width: 250px;
 }
 
 .flight-message-single {
@@ -121,7 +121,7 @@
 }
 
 #footer {
-  position: absolute;
+  position: relative;
   bottom: 0;
   background-color: black;
   color: white;

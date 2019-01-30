@@ -5,7 +5,6 @@ import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
 import { Button } from 'semantic-ui-react';
 const { ipcRenderer } = window.require('electron');
-
 class Run extends Component {
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');

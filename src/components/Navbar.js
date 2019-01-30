@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Menu, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { changeTab } from '../store/store';
 
 class Navbar extends Component {
-  state = { activeItem: 'build' };
-
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+  handleTabChange = (e, { name }) => this.props.changeTab(name);
 
   render() {
-    const { activeItem } = this.state;
+    const { activeTab } = this.props;
     return (
       <Segment inverted>
         <Menu inverted pointing secondary>
@@ -16,29 +16,29 @@ class Navbar extends Component {
             as={Link}
             to={'/build'}
             name="build"
-            active={activeItem === 'build'}
-            onClick={this.handleItemClick}
+            active={activeTab === 'build'}
+            onClick={this.handleTabChange}
           />
           <Menu.Item
             as={Link}
             to={'/run'}
             name="run"
-            active={activeItem === 'run'}
-            onClick={this.handleItemClick}
+            active={activeTab === 'run'}
+            onClick={this.handleTabChange}
           />
           <Menu.Item
             as={Link}
             to={'/fly'}
             name="fly"
-            active={activeItem === 'fly'}
-            onClick={this.handleItemClick}
+            active={activeTab === 'fly'}
+            onClick={this.handleTabChange}
           />
           <Menu.Item
             as={Link}
             to={'/about'}
             name="about"
-            active={activeItem === 'about'}
-            onClick={this.handleItemClick}
+            active={activeTab === 'about'}
+            onClick={this.handleTabChange}
           />
         </Menu>
       </Segment>
@@ -46,4 +46,17 @@ class Navbar extends Component {
   }
 }
 
-export default Navbar;
+const mapState = state => {
+  return { activeTab: state.navTab };
+};
+
+const mapDispatch = dispatch => {
+  return {
+    changeTab: tabName => dispatch(changeTab(tabName)),
+  };
+};
+
+export default connect(
+  mapState,
+  mapDispatch
+)(Navbar);
