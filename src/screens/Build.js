@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Button, Icon, List } from 'semantic-ui-react';
 import ButtonPanel from '../components/ButtonPanel';
 import Canvas from '../components/Canvas';
+import { changeTab } from '../store/store';
 
 import PubSub from 'pubsub-js';
 
@@ -78,7 +80,9 @@ class Build extends Component {
         const newDistance = Number(flightMessage.split(' ').slice(-2, -1)[0]);
         const resultDistance = latestDistance + newDistance;
 
-        const newMessage = `${newCommandName} --> ${resultDistance} m`;
+        const newMessage = `${newCommandName} --> ${resultDistance.toFixed(
+          1
+        )} m`;
 
         flightCommandObj.message = newMessage;
       }
@@ -272,18 +276,20 @@ class Build extends Component {
                         disabled={flightCommands.length <= 2}
                         onClick={() => this.deleteLast()}
                       >
-                        Delete
+                        Delete Last Instruction
                       </Button>
                       <Button
                         disabled={flightCommands.length <= 2}
                         onClick={() => this.clear()}
                       >
-                        Clear
+                        Clear All Instructions
                       </Button>
                       <br /> <br />
-                      <Button onClick={() => this.runAutoPilot()}>
-                        Send AutoPilot to Drone
-                      </Button>
+                      <Link to={'/run'}>
+                        <Button onClick={()=>this.props.changeTab('run')}>
+                          View On Run Screen!
+                        </Button>
+                      </Link>
                     </td>
                   </tr>
                 </tbody>
@@ -304,6 +310,11 @@ const mapState = state => {
   };
 };
 
+const mapDispatch = dispatch => {
+  return {
+    changeTab: tabName => dispatch(changeTab(tabName)),
+  };
+};
 // const mapDispatch = dispatch => {
 //   return {
 //     increaseDistance: () => {
@@ -323,5 +334,5 @@ const mapState = state => {
 
 export default connect(
   mapState,
-  null
+  mapDispatch
 )(Build);
