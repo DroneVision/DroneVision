@@ -1,4 +1,4 @@
-const { openFile } = require('../../utils/fileSystem');
+const { openFile } = require('../../electronUtils/fileSystem');
 
 module.exports = BrowserWindow => {
     const fileMenu = {
