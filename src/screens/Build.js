@@ -4,7 +4,11 @@ import { Link } from 'react-router-dom';
 import { Button, Icon, List } from 'semantic-ui-react';
 import ButtonPanel from '../components/ButtonPanel';
 import Canvas from '../components/Canvas';
-import { changeTab } from '../store/store';
+import {
+  changeTab,
+  updateInstructions,
+  clearInstructions,
+} from '../store/store';
 
 import PubSub from 'pubsub-js';
 
@@ -15,10 +19,10 @@ class Build extends Component {
     super(props);
     const { scale } = this.props;
     this.state = {
-      flightCommands: [
-        { command: 'takeoff', message: 'Takeoff' },
-        { command: 'land', message: 'Land' },
-      ],
+      // flightCommands: [
+      //   { command: 'takeoff', message: 'Takeoff' },
+      //   { command: 'land', message: 'Land' },
+      // ],
       limits: {
         maxX: scale / 2,
         maxY: scale,
@@ -31,48 +35,64 @@ class Build extends Component {
     };
   }
 
-  drawPath = flightCommands => {
-    const flightCoords = this.getFlightCoords(flightCommands);
+  componentDidMount() {
+    this.drawPath(this.props.flightInstructions);
+  }
+
+  drawPath = flightInstructions => {
+    const flightCoords = this.getFlightCoords(flightInstructions);
     PubSub.publish('draw-path', flightCoords);
   };
 
-  addDirection = (flightCommand, flightMessage) => {
-    const { flightCommands } = this.state;
+  addFlightInstruction = (flightInstruction, flightMessage) => {
+    const { flightInstructions } = this.props;
 
-    const latestCommandObj = flightCommands[flightCommands.length - 2];
+    const latestInstructionObj =
+      flightInstructions[flightInstructions.length - 2];
 
-    const latestCommandName = latestCommandObj.message
+    const latestInstructionName = latestInstructionObj.message
       .split(' ')
       .slice(0, -3)
       .join(' ');
-    const newCommandName = flightMessage
+    const newInstructionName = flightMessage
       .split(' ')
       .slice(0, -3)
       .join(' ');
-    const flightCommandObj = { command: flightCommand, message: flightMessage };
+    const flightInstructionObj = {
+      instruction: flightInstruction,
+      message: flightMessage,
+    };
 
-    let updatedFlightCommands = flightCommands.slice();
-    if (newCommandName === latestCommandName) {
-      // Redundant command, so just adjust the last one's values
-      if (flightCommand === 'hold') {
+    let updatedFlightInstructions = flightInstructions.slice();
+    if (newInstructionName === latestInstructionName) {
+      // Redundant instruction, so just adjust the last one's values
+      if (flightInstruction === 'hold') {
         // TODO: add logic for hold
       } else {
         const {
-          command: latestCommand,
+          instruction: latestInstruction,
           message: latestMessage,
-        } = latestCommandObj;
-        const latestCommandCoords = latestCommand.split(' ').slice(1, 4);
-        const newCommandCoords = flightCommand.split(' ').slice(1, 4);
-        const resultCoords = latestCommandCoords.map((coord, idx) => {
-          return Number(coord) + Number(newCommandCoords[idx]);
+        } = latestInstructionObj;
+        const latestinstructionCoords = latestInstruction
+          .split(' ')
+          .slice(1, 4);
+        const newinstructionCoords = flightInstruction.split(' ').slice(1, 4);
+        const resultCoords = latestinstructionCoords.map((coord, idx) => {
+          return Number(coord) + Number(newinstructionCoords[idx]);
         });
-        const [commandWord, , , , commandSpeed] = latestCommand.split(' ');
+        const [
+          instructionWord,
+          ,
+          ,
+          ,
+          instructionSpeed,
+        ] = latestInstruction.split(' ');
 
-        const newCommand = `${commandWord} ${resultCoords.join(
+        const newinstruction = `${instructionWord} ${resultCoords.join(
           ' '
-        )} ${commandSpeed}`;
+        )} ${instructionSpeed}`;
 
-        flightCommandObj.command = newCommand;
+        flightInstructionObj.instruction = newinstruction;
 
         const latestDistance = Number(
           latestMessage.split(' ').slice(-2, -1)[0]
@@ -80,45 +100,47 @@ class Build extends Component {
         const newDistance = Number(flightMessage.split(' ').slice(-2, -1)[0]);
         const resultDistance = latestDistance + newDistance;
 
-        const newMessage = `${newCommandName} --> ${resultDistance.toFixed(
+        const newMessage = `${newInstructionName} --> ${resultDistance.toFixed(
           1
         )} m`;
 
-        flightCommandObj.message = newMessage;
+        flightInstructionObj.message = newMessage;
       }
-      //Overwrite the existing flight command object
-      updatedFlightCommands.splice(-2, 1, flightCommandObj);
+      //Overwrite the existing flight instruction object
+      updatedFlightInstructions.splice(-2, 1, flightInstructionObj);
     } else {
-      //New flight command (non-duplicate), so add it in
-      updatedFlightCommands.splice(-1, 0, flightCommandObj);
+      //New flight instruction (non-duplicate), so add it in
+      updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
-    console.log(updatedFlightCommands);
-    this.drawPath(updatedFlightCommands);
-    this.setState({
-      flightCommands: updatedFlightCommands,
-    });
+    console.log(updatedFlightInstructions);
+    this.drawPath(updatedFlightInstructions);
+    // this.setState({
+    //   flightInstructions: updatedFlightInstructions,
+    // });
+    this.props.updateInstructions(updatedFlightInstructions);
   };
 
-  deleteLast = () => {
-    // console.log(this.state.flightCommands);
-    const { flightCommands } = this.state;
-    let updatedFlightCommands = flightCommands.slice();
-    updatedFlightCommands.splice(-2, 1);
+  deleteLastInstruction = () => {
+    const { flightInstructions } = this.props;
+    let updatedFlightInstructions = flightInstructions.slice();
+    updatedFlightInstructions.splice(-2, 1);
 
-    this.drawPath(updatedFlightCommands);
-    this.setState({
-      flightCommands: updatedFlightCommands,
-    });
+    this.drawPath(updatedFlightInstructions);
+    // this.setState({
+    //   flightInstructions: updatedFlightInstructions,
+    // });
+    this.props.updateInstructions(updatedFlightInstructions);
   };
 
-  clear = () => {
+  clearFlightInstructions = () => {
     this.drawPath([]);
-    this.setState({
-      flightCommands: [
-        { command: 'takeoff', message: 'Takeoff' },
-        { command: 'land', message: 'Land' },
-      ],
-    });
+    this.props.clearInstructions();
+    // this.setState({
+    //   flightCommands: [
+    //     { command: 'takeoff', message: 'Takeoff' },
+    //     { command: 'land', message: 'Land' },
+    //   ],
+    // });
   };
 
   addLine = (point1, point2) => {
@@ -139,11 +161,11 @@ class Build extends Component {
     return currentPoint;
   };
 
-  getFlightCoords = flightCommands => {
+  getFlightCoords = flightInstructions => {
     const { distance } = this.props;
 
-    return flightCommands.slice(1, -1).map(commandObj =>
-      commandObj.command
+    return flightInstructions.slice(1, -1).map(instructionObj =>
+      instructionObj.instruction
         .split(' ')
         .slice(1, 4)
         .map(numStr => Number(numStr) / distance)
@@ -156,12 +178,13 @@ class Build extends Component {
   };
 
   render() {
-    const { limits, flightCommands } = this.state;
-    const flightCoords = this.getFlightCoords(flightCommands);
+    const { limits } = this.state;
+    const { flightInstructions } = this.props;
+    const flightCoords = this.getFlightCoords(flightInstructions);
     const currentPoint = this.getCurrentPoint(flightCoords);
 
-    const latestCommandMessage =
-      flightCommands[flightCommands.length - 2].message;
+    const latestInstructionMessage =
+      flightInstructions[flightInstructions.length - 2].message;
     const leftDisabled = currentPoint.x === limits.maxX;
     const rightDisabled = currentPoint.x === limits.minX;
     const forwardDisabled = currentPoint.z === limits.maxZ;
@@ -174,8 +197,8 @@ class Build extends Component {
         <div id="build-content">
           <div id="flight-messages">
             <List divided>
-              {flightCommands
-                .map(commandObj => commandObj.message)
+              {flightInstructions
+                .map(instructionObj => instructionObj.message)
                 .map((message, ind) => {
                   let icon;
                   if (message === 'Takeoff') {
@@ -222,13 +245,13 @@ class Build extends Component {
                   <tr>
                     <td>
                       <ButtonPanel
-                        latestCommandMessage={latestCommandMessage}
+                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={upDisabled}
-                        addDirection={this.addDirection}
+                        addFlightInstruction={this.addFlightInstruction}
                         distance={this.props.distance}
                         speed={this.props.speed}
                         type="Up"
@@ -236,13 +259,13 @@ class Build extends Component {
                     </td>
                     <td>
                       <ButtonPanel
-                        latestCommandMessage={latestCommandMessage}
+                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={false}
-                        addDirection={this.addDirection}
+                        addFlightInstruction={this.addFlightInstruction}
                         distance={this.props.distance}
                         speed={this.props.speed}
                         type="Current"
@@ -250,13 +273,13 @@ class Build extends Component {
                     </td>
                     <td>
                       <ButtonPanel
-                        latestCommandMessage={latestCommandMessage}
+                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={downDisabled}
-                        addDirection={this.addDirection}
+                        addFlightInstruction={this.addFlightInstruction}
                         distance={this.props.distance}
                         speed={this.props.speed}
                         type="Down"
@@ -273,20 +296,20 @@ class Build extends Component {
                   <tr>
                     <td>
                       <Button
-                        disabled={flightCommands.length <= 2}
-                        onClick={() => this.deleteLast()}
+                        disabled={flightInstructions.length <= 2}
+                        onClick={() => this.deleteLastInstruction()}
                       >
                         Delete Last Instruction
                       </Button>
                       <Button
-                        disabled={flightCommands.length <= 2}
-                        onClick={() => this.clear()}
+                        disabled={flightInstructions.length <= 2}
+                        onClick={() => this.clearFlightInstructions()}
                       >
                         Clear All Instructions
                       </Button>
                       <br /> <br />
                       <Link to={'/run'}>
-                        <Button onClick={()=>this.props.changeTab('run')}>
+                        <Button onClick={() => this.props.changeTab('run')}>
                           View On Run Screen!
                         </Button>
                       </Link>
@@ -307,12 +330,16 @@ const mapState = state => {
     distance: state.distance,
     speed: state.speed,
     scale: state.scale,
+    flightInstructions: state.flightInstructions,
   };
 };
 
 const mapDispatch = dispatch => {
   return {
     changeTab: tabName => dispatch(changeTab(tabName)),
+    updateInstructions: flightInstructions =>
+      dispatch(updateInstructions(flightInstructions)),
+    clearInstructions: () => dispatch(clearInstructions),
   };
 };
 // const mapDispatch = dispatch => {
