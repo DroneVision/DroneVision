@@ -7,7 +7,7 @@ function openFile() {
 	const files = dialog.showOpenDialog({
 		properties: ['openFile'],
 		filters: [
-			{ name: 'Markdown Files', extensions: ['md', 'markdown', 'txt', 'json', 'cdv'] }
+			{ name: 'Markdown Files', extensions: ['md', 'markdown', 'txt', 'json', 'dvz'] }
 		]
 	})
 

@@ -1,7 +1,7 @@
 const { app, Menu, dialog } = require('electron');
 const darwinMenu  = require('./darwin');
 const fileMenu  = require('./fileMenu');
-const droneMenu  = require('./droneMenu');
+// const droneMenu  = require('./droneMenu');
 
 module.exports = BrowserWindow => {
 	const currentYear = new Date().getFullYear();
@@ -19,7 +19,7 @@ module.exports = BrowserWindow => {
 	const template = [
 	  ...(process.platform === 'darwin' ? [darwinMenu(showDroneVisionAbout)] : []),
 	  fileMenu(BrowserWindow),
-	  droneMenu
+	//   droneMenu
 	];
   
 	return Menu.buildFromTemplate(template);
