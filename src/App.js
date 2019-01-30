@@ -11,7 +11,6 @@ const middlewares = applyMiddleware(loggingMiddleware);
 
 const store = createStore(reducer, middlewares);
 
-
 class App extends Component {
   render() {
     return (
