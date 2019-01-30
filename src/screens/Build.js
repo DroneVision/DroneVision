@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button, Icon, List } from 'semantic-ui-react';
 import ButtonPanel from '../components/ButtonPanel';
 import Canvas from '../components/Canvas';
+import { changeTab } from '../store/store';
 
 import PubSub from 'pubsub-js';
 
@@ -285,7 +286,9 @@ class Build extends Component {
                       </Button>
                       <br /> <br />
                       <Link to={'/run'}>
-                        <Button>View On Run Screen!</Button>
+                        <Button onClick={()=>this.props.changeTab('run')}>
+                          View On Run Screen!
+                        </Button>
                       </Link>
                     </td>
                   </tr>
@@ -307,6 +310,11 @@ const mapState = state => {
   };
 };
 
+const mapDispatch = dispatch => {
+  return {
+    changeTab: tabName => dispatch(changeTab(tabName)),
+  };
+};
 // const mapDispatch = dispatch => {
 //   return {
 //     increaseDistance: () => {
@@ -326,5 +334,5 @@ const mapState = state => {
 
 export default connect(
   mapState,
-  null
+  mapDispatch
 )(Build);
