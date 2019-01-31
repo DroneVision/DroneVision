@@ -36,22 +36,39 @@
 }
 
 #flight-messages {
+  margin-top: 6.9rem;
+  flex-grow: 1;
+  margin-right: 4rem;
   text-align: left;
-  width: 250px;
+  width: 7vw;
 }
 
 .flight-message-single {
   margin: 2px 0px;
 }
 
+#body {
+  background-image: url('bg.jpg');
+  background-repeat: no-repeat;
+}
+
 #build-screen {
   text-align: center;
-  display: inline-block;
+}
+
+#builder {
+  display: flex;
+  margin-top: 2vh;
+  flex-grow: 2;
+  align-items: center;
+  flex-direction: column;
 }
 
 #build-content {
   display: flex;
   flex-direction: row;
+  align-items: space-around;
+  flex-grow: 3;
 }
 
 #run {
@@ -87,10 +104,8 @@
 }
 
 #canvas {
-  margin-top: 1em;
-  margin-right: 0;
-  margin-bottom: 2em;
-  margin-left: 0.5em;
+  display: flex;
+  justify-content: center;
 }
 
 #status-container {
@@ -121,11 +136,33 @@
 }
 
 #footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  background-color: black;
+  background-color: #1b1c1d;
   color: white;
   width: 100%;
   text-align: center;
+  margin-top: 500px;
   padding: 5px;
+}
+
+#left-column {
+  position: fixed;
+  left: 0;
+  background-color: #1b1c1d;
+  min-height: 100%;
+  padding: 7px;
+}
+
+#right-column {
+  position: fixed;
+  right: 0;
+  background-color: #1b1c1d;
+  min-height: 100%;
+  padding: 7px;
+}
+
+h1#ap-header {
+  display: flex;
+  justify-content: center;
 }

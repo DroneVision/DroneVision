@@ -10,38 +10,40 @@ class Navbar extends Component {
   render() {
     const { activeTab } = this.props;
     return (
-      <Segment inverted>
-        <Menu inverted pointing secondary>
-          <Menu.Item
-            as={Link}
-            to={'/build'}
-            name="build"
-            active={activeTab === 'build'}
-            onClick={this.handleTabChange}
-          />
-          <Menu.Item
-            as={Link}
-            to={'/run'}
-            name="run"
-            active={activeTab === 'run'}
-            onClick={this.handleTabChange}
-          />
-          <Menu.Item
-            as={Link}
-            to={'/fly'}
-            name="fly"
-            active={activeTab === 'fly'}
-            onClick={this.handleTabChange}
-          />
-          <Menu.Item
-            as={Link}
-            to={'/about'}
-            name="about"
-            active={activeTab === 'about'}
-            onClick={this.handleTabChange}
-          />
-        </Menu>
-      </Segment>
+      <div id="navbar">
+        <Segment inverted>
+          <Menu inverted pointing secondary>
+            <Menu.Item
+              as={Link}
+              to={'/build'}
+              name="build"
+              active={activeTab === 'build'}
+              onClick={this.handleTabChange}
+            />
+            <Menu.Item
+              as={Link}
+              to={'/run'}
+              name="run"
+              active={activeTab === 'run'}
+              onClick={this.handleTabChange}
+            />
+            <Menu.Item
+              as={Link}
+              to={'/fly'}
+              name="fly"
+              active={activeTab === 'fly'}
+              onClick={this.handleTabChange}
+            />
+            <Menu.Item
+              as={Link}
+              to={'/about'}
+              name="about"
+              active={activeTab === 'about'}
+              onClick={this.handleTabChange}
+            />
+          </Menu>
+        </Segment>
+      </div>
     );
   }
 }
