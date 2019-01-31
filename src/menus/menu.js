@@ -21,9 +21,7 @@ module.exports = BrowserWindow => {
 	// Render the menu bar and menu items
   
 	const template = [
-
 		// Check if we are using an OSX
-		
 	  ...(process.platform === 'darwin' ? [darwinMenu(showDroneVisionAbout)] : []),
 		fileMenu(BrowserWindow),
 		viewMenu(BrowserWindow),
