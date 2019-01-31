@@ -16,7 +16,6 @@ module.exports = BrowserWindow => {
                 label: 'Save Flight Path',
                 accelerator: 'CmdOrCtrl+S',
                 click() {
-                    // BrowserWindow.webContents.send('save-file')
                     saveFile(BrowserWindow)
                 }
             }
