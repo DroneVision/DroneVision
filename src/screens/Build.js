@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Icon, List } from 'semantic-ui-react';
+import { Button, List } from 'semantic-ui-react';
 import ButtonPanel from '../components/ButtonPanel';
 import Canvas from '../components/Canvas';
 import {
@@ -34,6 +34,16 @@ class Build extends Component {
 
   componentDidMount() {
     drawPath(this.props.flightInstructions, this.props.distance);
+    // Listen for flight import from main process
+    ipcRenderer.on('file-opened', (event, flightInstructions) => {
+      drawPath(flightInstructions, this.props.distance);
+    })
+    // Listen for request for flight instructions from main process
+    ipcRenderer.on('request-flightInstructions', event => {
+
+      // Reply back with instructions
+      ipcRenderer.send('send-flightInstructions', this.props.flightInstructions);
+    })
   }
 
   addFlightInstruction = (flightInstruction, flightMessage) => {

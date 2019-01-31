@@ -6,10 +6,13 @@ const {promisify} = require('util');
 
 const readFileAsync = promisify(fs.readFile);
 
+// Opening a File from electron browser
+
 export const saveFlightInstructions = flightInstructions => {
 
     const options = {
         defaultPath: path.join(app.getPath('desktop'), 'flightInstructions.json'),
+        // Add a file extension
         filters: [
             { name: 'object', extensions: ['json', 'dvz'] }
         ]
@@ -32,6 +35,9 @@ export const saveFlightInstructions = flightInstructions => {
     })
 
 }
+
+// The dialog blocks the main thread until the user select the file
+
 const promisifiedDialog = () => {
     const options = {
         defaultPath: app.getPath('desktop'),
@@ -50,6 +56,8 @@ const promisifiedDialog = () => {
         })
     });
 }
+
+// Saving a File from electron browser
 
 export const loadFlightInstructions = async () => {
     const fileName = await promisifiedDialog()
