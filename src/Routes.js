@@ -8,7 +8,9 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
 const Routes = props => (
-  <div>
+  <div id="body">
+    <div id="left-column"/>
+    <div id="right-column"/>
     <Navbar />
     <Switch>
       <Route exact path="/" component={Build} />
