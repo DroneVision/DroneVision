@@ -15,20 +15,6 @@ module.exports = BrowserWindow => {
                 click() {
                     BrowserWindow.webContents.send('save-file')
                 }
-            },
-            {
-                label: 'Dev tools',
-                accelerator: 'CommandOrControl+Shift+I',
-                click() {
-                    BrowserWindow.webContents.openDevTools()
-                }
-            },
-            {
-                label: 'Refresh',
-                accelerator: 'CmdOrCtrl+R',
-                click() {
-                    BrowserWindow.reload()
-                }
             }
         ]
     };
