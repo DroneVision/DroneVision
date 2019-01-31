@@ -1,19 +1,23 @@
 // const loadFlightInstructions = require('../utils/fileSystemUtils');
-const { openFile} = require('../../electronUtils/fileSystem');
+const { openFile, saveFile } = require('../../electronUtils/fileSystem');
 module.exports = BrowserWindow => {
+
+    // Create a file menu on the menu bar called "File"
+
     const fileMenu = {
         label: 'File',
         submenu: [
             {
-                label: 'Open',
+                label: 'Import Flight Path',
                 accelerator: 'CmdOrCtrl+O',
-                click() { openFile() }
+                click() { openFile(BrowserWindow) }
             },
             {
-                label: 'Save',
+                label: 'Save Flight Path',
                 accelerator: 'CmdOrCtrl+S',
                 click() {
-                    BrowserWindow.webContents.send('save-file')
+                    // BrowserWindow.webContents.send('save-file')
+                    saveFile(BrowserWindow)
                 }
             }
         ]

@@ -1,4 +1,7 @@
 module.exports = BrowserWindow => {
+
+    // Create a view menu on the menu bar called "View"
+    
     const viewMenu = {
         label: 'View',
         submenu: [
@@ -19,13 +22,15 @@ module.exports = BrowserWindow => {
             {
                 label: 'Zoom In',
                 accelerator: 'CmdOrCtrl+Plus',
-                role: 'zoomIn'
+                role: 'zoomin'
             },
             {
                 label: 'Zoom Out',
                 accelerator: 'CmdOrCtrl+-',
-                role: 'zoomOut'
-            }
+                role: 'zoomout'
+            },
+            
+            { role: 'togglefullscreen' }
         ]
     };
 
