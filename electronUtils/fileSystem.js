@@ -1,22 +1,37 @@
-const { dialog } = require('electron');
+const { dialog, app } = require('electron');
 const fs = require('fs');
+const {promisify} = require('util');
+
+const readFileAsync = promisify(fs.readFile);
+
+const promisifiedDialog = () => {
+    const options = {
+		properties: ['openFile'],
+        defaultPath: app.getPath('desktop'),
+        filters: [
+            { name: 'object', extensions: ['json', 'dvz'] }
+        ]
+    }
+    return new Promise((resolve, reject) => {
+        dialog.showOpenDialog(null, options, (fileName, err) => {
+            if(!err && fileName !== undefined){
+                resolve(fileName[0]); 
+            } else {
+                reject(err); 
+            }
+   
+        })
+    });
+}
 
 // Opening a File
 
-function openFile() {
-	const files = dialog.showOpenDialog({
-		properties: ['openFile'],
-		filters: [
-			{ name: 'Markdown Files', extensions: ['md', 'markdown', 'txt', 'json', 'dvz'] }
-		]
-	})
-
-	if (!files) return
-
-	const file = files[0]
-	const content = fs.readFileSync(file).toString()
-
-	console.log(content)
+async function openFile () {
+    const fileName = await promisifiedDialog()
+    const data = await readFileAsync(fileName)
+	const flightInstructions = JSON.parse(data).flightInstructions
+	console.log(flightInstructions);
+    return flightInstructions
 }
 
 
