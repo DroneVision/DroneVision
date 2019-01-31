@@ -11,7 +11,7 @@ import {
 } from '../store/store';
 
 import { drawPath, getFlightCoords } from '../utils/drawPathUtils';
-import { saveFlightInstructions } from '../utils/savePathUtils';
+import { saveFlightInstructions, loadFlightInstructions } from '../utils/fileSystemUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -138,6 +138,12 @@ class Build extends Component {
     );
     return currentPoint;
   };
+
+  handleLoadFlightInstructions = async () => {
+    const flightInstructions = await loadFlightInstructions();
+    this.props.updateInstructions(flightInstructions)
+    drawPath(this.props.flightInstructions,this.props.distance)
+  }
 
   render() {
     const { limits } = this.state;
@@ -276,16 +282,19 @@ class Build extends Component {
                         </Button>
                       </Link>
                       <Button onClick={() => saveFlightInstructions(this.props.flightInstructions)}>
-                          Save Flight Path
+                        Save Flight Path
                         </Button>
+                      <Button onClick={this.handleLoadFlightInstructions}>
+                        Load Flight Path
+                      </Button>
                     </td>
                   </tr>
                 </tbody>
               </table>
-            </div>
           </div>
         </div>
       </div>
+      </div >
     );
   }
 }
