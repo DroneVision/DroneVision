@@ -5,7 +5,7 @@ import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
 import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
 
-class Canvas extends Component {
+class Sandbox extends Component {
   constructor(props) {
     super(props);
 
@@ -35,14 +35,13 @@ class Canvas extends Component {
     this.controls.maxPolarAngle = Math.PI / 2;
 
     // //SKYBOX
-    this.scene.add(canvasSkybox);
+    // this.scene.add(canvasSkybox);
 
     //SPHERE
     const sphereGeo = new THREE.SphereGeometry(1, 32, 32);
     const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
     this.sphere = new THREE.Mesh(sphereGeo, sphereMat);
     this.sphere.position.set(0, 0, 0);
-
     this.scene.add(this.sphere);
 
     //GRID
@@ -81,31 +80,31 @@ class Canvas extends Component {
     this.scene.add(gridCubeLines);
 
     //NORTH STAR
-    const northStarGeometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
-    const northStarMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
-      flatShading: true,
-    });
+    // const northStarGeometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
+    // const northStarMaterial = new THREE.MeshPhongMaterial({
+    //   color: 0xffffff,
+    //   flatShading: true,
+    // });
 
-    const northStar = new THREE.Mesh(northStarGeometry, northStarMaterial);
+    // const northStar = new THREE.Mesh(northStarGeometry, northStarMaterial);
 
-    northStar.position.set(0, 0, 200);
-    northStar.updateMatrix();
-    northStar.matrixAutoUpdate = false;
-    northStar.position.set(0, this.gridEdgeLength * -0.5, 0);
-    this.scene.add(northStar);
+    // northStar.position.set(0, 0, 200);
+    // northStar.updateMatrix();
+    // northStar.matrixAutoUpdate = false;
+    // northStar.position.set(0, this.gridEdgeLength * -0.5, 0);
+    // this.scene.add(northStar);
 
     //TAKEOFF LINE
-    const takeoffLineMaterial = new THREE.LineBasicMaterial({
-      color: 'yellow',
-    });
-    const takeoffLineGeometry = new THREE.Geometry();
-    takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
+    // const takeoffLineMaterial = new THREE.LineBasicMaterial({
+    //   color: 'yellow',
+    // });
+    // const takeoffLineGeometry = new THREE.Geometry();
+    // takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    // takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
 
-    this.takeoffLine = new THREE.Line(takeoffLineGeometry, takeoffLineMaterial);
-    this.takeoffLine.position.set(0, this.gridEdgeLength * -0.5, 0);
-    this.scene.add(this.takeoffLine);
+    // this.takeoffLine = new THREE.Line(takeoffLineGeometry, takeoffLineMaterial);
+    // this.takeoffLine.position.set(0, this.gridEdgeLength * -0.5, 0);
+    // this.scene.add(this.takeoffLine);
 
     //AMBIENT LIGHT
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -113,7 +112,7 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
-    document.getElementById('canvas').appendChild(this.renderer.domElement);
+    document.getElementById('sandbox').appendChild(this.renderer.domElement);
     this.animate();
     PubSub.subscribe('draw-path', (msg, flightCoords) => {
       if (this.line) {
@@ -185,93 +184,34 @@ class Canvas extends Component {
     //   this.scene.add(landLine);
     //   this.setState({ landLine: landLine });
     // });
-    this.run = false;
-
-    PubSub.subscribe('move-sphere', (msg, data) => {
-      this.run = true;
-    });
   }
 
-  // moveSphere = (startingPosition, endPosition, speed) => {
-  //   let currentPosition = this.sphere.position;
-
-  //   let incrementX = Math.abs((startingPosition.x - endPosition.x) / speed);
-  //   let incrementY = Math.abs((startingPosition.y - endPosition.y) / speed);
-  //   let incrementZ = Math.abs((startingPosition.z - endPosition.z) / speed);
-
-  //   //END X is Greater
-  //   if (currentPosition.x < endPosition.x) {
-  //     currentPosition.x += incrementX;
-  //     if (currentPosition.x + incrementX > endPosition.x) {
-  //       currentPosition.x = endPosition.x;
-  //     }
-  //   }
-
-  //   //END X is Lesser
-  //   if (currentPosition.x > endPosition.x) {
-  //     currentPosition.x -= incrementX;
-  //     if (currentPosition.x - incrementX < endPosition.x) {
-  //       currentPosition.x = endPosition.x;
-  //     }
-  //   }
-
-  //   //END Y is Greater
-  //   if (currentPosition.y < endPosition.y) {
-  //     currentPosition.y += incrementY;
-  //     if (currentPosition.y + incrementY > endPosition.y) {
-  //       currentPosition.y = endPosition.y;
-  //     }
-  //   }
-
-  //   //END Y is Lesser
-  //   if (currentPosition.y > endPosition.y) {
-  //     currentPosition.y -= incrementY;
-  //     if (currentPosition.y - incrementY < endPosition.y) {
-  //       currentPosition.y = endPosition.y;
-  //     }
-  //   }
-
-  //   //END Z is Greater
-  //   if (currentPosition.z < endPosition.z) {
-  //     currentPosition.z += incrementZ;
-  //     if (currentPosition.z + incrementZ > endPosition.z) {
-  //       currentPosition.z = endPosition.z;
-  //     }
-  //   }
-
-  //   //END Z is Lesser
-  //   if (currentPosition.z > endPosition.z) {
-  //     currentPosition.z -= incrementZ;
-  //     if (currentPosition.z - incrementZ < endPosition.z) {
-  //       currentPosition.z = endPosition.z;
-  //     }
-  //   }
-  // };
-
-  moveSphere = (distances, speed) => {
-    const { x, y, z } = distances;
-    let direction = new THREE.Vector3(x, y, z);
-    let vector = direction.clone().multiplyScalar(speed, speed, speed);
-
-    this.sphere.position.x += vector.x;
-    this.sphere.position.y += vector.y;
-    this.sphere.position.z += vector.z;
+  moveSphere = (endPosition, speed) => {
+    if (this.sphere.position.x <= endPosition.x) {
+      this.sphere.position.x += endPosition.x / speed;
+    }
+    if (this.sphere.position.y <= endPosition.y) {
+      this.sphere.position.y += endPosition.y / speed;
+    }
+    if (this.sphere.position.z <= endPosition.z) {
+      this.sphere.position.z += endPosition.z / speed;
+    }
   };
 
-  animate = async () => {
+  animate = () => {
+    PubSub.subscribe('move-sphere', (msg, data) => {
+      this.moveSphere({ x: 5, y: 5, z: 5 }, 1000);
+    });
+
     requestAnimationFrame(this.animate);
     // console.dir(this.camera);
-    // if (this.run) {
-    // this.moveSphere({ x: 0, y: 0, z: 0 }, { x: 5, y: 5, z: 5 }, 120);
-    // this.moveSphere(this.sphere.position, { x: 5, y: 5, z: 5 }, 120);
-    // }
-    if (this.sphere.position.x < this.props.droneCurrentX)
-      this.controls.update();
+
+    this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
 
   render() {
-    return <div id="canvas" />;
+    return <div id="sandbox" />;
   }
 }
 
@@ -299,4 +239,4 @@ const mapState = state => {
 export default connect(
   mapState,
   null
-)(Canvas);
+)(Sandbox);

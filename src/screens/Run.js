@@ -3,6 +3,7 @@ import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
+import PubSub from 'pubsub-js';
 import { Button } from 'semantic-ui-react';
 const { ipcRenderer } = window.require('electron');
 class Run extends Component {
@@ -29,6 +30,10 @@ class Run extends Component {
 
   stopRecordingVideo = () => {
     ipcRenderer.send('stop-recording');
+  };
+
+  moveSphere = () => {
+    PubSub.publish('move-sphere');
   };
 
   handleDurationChange = event => {
@@ -64,6 +69,7 @@ class Run extends Component {
               <Button onClick={() => this.stopRecordingVideo()}>
                 Reset Video Recorder
               </Button>
+              <Button onClick={() => this.moveSphere()}>Move Sphere</Button>
             </td>
             <td>
               Video Duration:{' '}

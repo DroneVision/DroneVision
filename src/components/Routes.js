@@ -5,6 +5,7 @@ import Run from '../screens/Run';
 import FlyScreen from '../screens/FlyScreen';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import Sandbox from './Sandbox';
 
 const Routes = props => (
   <div>
@@ -14,6 +15,7 @@ const Routes = props => (
       <Route path="/build" component={Build} />
       <Route path="/run" component={Run} />
       <Route path="/fly" component={FlyScreen} />
+      <Route path="/sandbox" component={Sandbox} />
     </Switch>
     <Footer />
   </div>

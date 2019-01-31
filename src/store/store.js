@@ -9,6 +9,8 @@ const INITIAL_STATE = {
   yaw: 0,
   debugMode: true,
   navTab: 'build',
+  startingPosition: { x: 0, y: 1, z: 0 },
+  currentDronePosition: { x: 0, y: 1, z: 0 },
 };
 
 //ACTION CONSTANTS
@@ -26,6 +28,8 @@ const CHANGE_YAW = 'CHANGE_YAW';
 
 const CHANGE_TAB = 'CHANGE_TAB';
 
+const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
+
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
 export const decreaseDistance = () => ({ type: DECREASE_DISTANCE });
@@ -40,6 +44,11 @@ export const changePitch = newPitch => ({ type: CHANGE_PITCH, newPitch });
 export const changeYaw = newYaw => ({ type: CHANGE_YAW, newYaw });
 
 export const changeTab = newTab => ({ type: CHANGE_TAB, newTab });
+
+export const updateCDP = newPosition => ({
+  type: UPDATE_CURRENT_DRONE_POSITION,
+  newPosition,
+});
 
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -61,6 +70,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, yaw: action.newYaw };
     case CHANGE_TAB:
       return { ...state, navTab: action.newTab };
+    case UPDATE_CURRENT_DRONE_POSITION:
+      return { ...state, currentDronePosition: action.newPosition };
     default:
       return state;
   }

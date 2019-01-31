@@ -40,6 +40,13 @@ class Navbar extends Component {
             active={activeTab === 'about'}
             onClick={this.handleTabChange}
           />
+          <Menu.Item
+            as={Link}
+            to={'/sandbox'}
+            name="sandbox"
+            active={activeTab === 'sandbox'}
+            onClick={this.handleTabChange}
+          />
         </Menu>
       </Segment>
     );
