@@ -11,6 +11,10 @@ const INITIAL_STATE = {
   navTab: 'build',
   startingPosition: { x: 0, y: 1, z: 0 },
   currentDronePosition: { x: 0, y: 1, z: 0 },
+  flightInstructions: [
+    { instruction: 'takeoff', message: 'Takeoff' },
+    { instruction: 'land', message: 'Land' },
+  ],
 };
 
 //ACTION CONSTANTS
@@ -28,6 +32,9 @@ const CHANGE_YAW = 'CHANGE_YAW';
 
 const CHANGE_TAB = 'CHANGE_TAB';
 
+const UPDATE_INSTRUCTIONS = 'UPDATE_INSTRUCTIONS';
+const CLEAR_INSTRUCTIONS = 'CLEAR_INSTRUCTIONS';
+
 const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
 
 //ACTION CREATORS
@@ -44,6 +51,16 @@ export const changePitch = newPitch => ({ type: CHANGE_PITCH, newPitch });
 export const changeYaw = newYaw => ({ type: CHANGE_YAW, newYaw });
 
 export const changeTab = newTab => ({ type: CHANGE_TAB, newTab });
+
+export const updateInstructions = flightInstructions => ({
+  type: UPDATE_INSTRUCTIONS,
+  flightInstructions,
+});
+
+export const clearInstructions = () => ({
+  type: CLEAR_INSTRUCTIONS,
+  flightInstructions: INITIAL_STATE.flightInstructions,
+});
 
 export const updateCDP = newPosition => ({
   type: UPDATE_CURRENT_DRONE_POSITION,
@@ -70,6 +87,10 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, yaw: action.newYaw };
     case CHANGE_TAB:
       return { ...state, navTab: action.newTab };
+    case UPDATE_INSTRUCTIONS:
+      return { ...state, flightInstructions: action.flightInstructions };
+    case CLEAR_INSTRUCTIONS:
+      return { ...state, flightInstructions: action.flightInstructions };
     case UPDATE_CURRENT_DRONE_POSITION:
       return { ...state, currentDronePosition: action.newPosition };
     default:
@@ -78,7 +99,3 @@ const reducer = (state = INITIAL_STATE, action) => {
 };
 
 export default reducer;
-
-// export default combineReducers({
-//   friends: friendReducer,
-// });

@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
 import PubSub from 'pubsub-js';
 import { Button } from 'semantic-ui-react';
+import { drawPath } from '../utils/drawPathUtils';
+
 const { ipcRenderer } = window.require('electron');
 class Run extends Component {
   constructor() {
@@ -40,6 +43,20 @@ class Run extends Component {
     this.setState({ duration: event.target.value });
   };
 
+  componentDidMount() {
+    drawPath(this.props.flightInstructions, this.props.distance);
+  }
+
+  runFlightInstructions = () => {
+    const { flightInstructions } = this.props;
+    const droneInstructions = flightInstructions.map(
+      flightInstructionObj => flightInstructionObj.instruction
+    );
+    console.log('sending auto pilot to drone', droneInstructions);
+
+    ipcRenderer.send('autopilot', ['command', ...droneInstructions]);
+  };
+
   render() {
     return (
       <div id="run">
@@ -70,6 +87,8 @@ class Run extends Component {
                 Reset Video Recorder
               </Button>
               <Button onClick={() => this.moveSphere()}>Move Sphere</Button>
+              <Button onClick={this.runFlightInstructions}>Test Run</Button>
+              <Button>Record Run</Button>
             </td>
             <td>
               Video Duration:{' '}
@@ -86,4 +105,14 @@ class Run extends Component {
   }
 }
 
-export default Run;
+const mapState = state => {
+  return {
+    distance: state.distance,
+    flightInstructions: state.flightInstructions,
+  };
+};
+
+export default connect(
+  mapState,
+  null
+)(Run);

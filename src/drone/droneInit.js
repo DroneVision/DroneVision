@@ -4,8 +4,6 @@ const throttle = require('lodash/throttle');
 const commandDelays = require('./commandDelays');
 const PubSub = require('pubsub-js');
 const { ipcMain } = require('electron');
-const 
-
 
 const HOST = '192.168.10.1';
 const COMMANDPORT = 8889;

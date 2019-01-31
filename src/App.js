@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware  } from 'redux';
 import reducer from './store/store';
 import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 
-const store = createStore(reducer);
+import loggingMiddleware from 'redux-logger';
+
+const middlewares = applyMiddleware(loggingMiddleware);
+
+const store = createStore(reducer, middlewares);
+
 class App extends Component {
   render() {
     return (
