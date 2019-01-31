@@ -121,7 +121,7 @@
 }
 
 #footer {
-  position: relative;
+  position: absolute;
   bottom: 0;
   background-color: black;
   color: white;

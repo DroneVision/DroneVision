@@ -9,6 +9,7 @@ const { runSingleInstruction, runInstructionList, getDroneState } = droneInit();
 
 //Video streaming
 const ffmpeg = require('fluent-ffmpeg');
+const fs = require('fs');
 // const fs = require('fs');
 
 //BEGIN RECORD VIDEO
@@ -27,14 +28,18 @@ ipcMain.on('start-recording', (event, duration) => {
     .splice(1, 4)
     .join('-');
 
+  const stream = fs.createWriteStream('udp://0.0.0.0:11111');
+
   let command = new ffmpeg('udp://0.0.0.0:11111')
     .size('640x?')
     .aspect('4:3')
     .output(`./DroneVision-${formattedDateString}.mp4`)
+    .output(stream)
     .duration(duration)
     .on('end', () => {
       console.log('duration is over');
     });
+
   runSingleInstruction('command');
   runSingleInstruction('streamon');
   currentVid = command;
@@ -81,12 +86,10 @@ app.commandLine.appendSwitch('ignore-gpu-blacklist');
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-	createWindow()
-	Menu.setApplicationMenu(appMenu(mainWindow));
-	//Menu.setApplicationMenu(null);
+  createWindow();
+  Menu.setApplicationMenu(appMenu(mainWindow));
+  //Menu.setApplicationMenu(null);
 });
-
-
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
