@@ -14,35 +14,6 @@
   transform: rotate(-45deg);
 }
 
-.forward {
-}
-
-.back {
-}
-
-.left {
-}
-
-.right {
-}
-
-.hold {
-}
-
-.straight-up {
-}
-
-.straight-down {
-}
-
-#flight-messages {
-  margin-top: 6.9rem;
-  flex-grow: 1;
-  margin-right: 4rem;
-  text-align: left;
-  width: 7vw;
-}
-
 .flight-message-single {
   margin: 2px 0px;
 }
@@ -54,21 +25,6 @@
 
 #build-screen {
   text-align: center;
-}
-
-#builder {
-  display: flex;
-  margin-top: 2vh;
-  flex-grow: 2;
-  align-items: center;
-  flex-direction: column;
-}
-
-#build-content {
-  display: flex;
-  flex-direction: row;
-  align-items: space-around;
-  flex-grow: 3;
 }
 
 #run {
@@ -84,21 +40,6 @@
 }
 
 #fly-controls {
-  display: flex;
-  justify-content: center;
-}
-
-#controls-3d {
-  display: flex;
-  justify-content: center;
-}
-
-#delete-clear-send {
-  display: flex;
-  justify-content: center;
-}
-
-#controls-real-time {
   display: flex;
   justify-content: center;
 }
