@@ -27,18 +27,6 @@
   text-align: center;
 }
 
-#run {
-  text-align: center;
-}
-
-#about {
-  text-align: center;
-}
-
-#fly {
-  text-align: center;
-}
-
 #fly-controls {
   display: flex;
   justify-content: center;
@@ -98,7 +86,14 @@
   padding: 7px;
 }
 
-h1#ap-header {
+#centered-padded-top {
   display: flex;
   justify-content: center;
+  padding-top: 2rem;
+}
+
+#centered {
+  display: flex;
+  justify-content: center;
+  padding-top: 2rem;
 }
