@@ -4,7 +4,15 @@ import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import Canvas from '../components/Canvas';
 import Stream from '../components/Stream';
-import { Button, Grid, Header, Icon, Input, Modal } from 'semantic-ui-react';
+import {
+  Button,
+  Grid,
+  Header,
+  Icon,
+  Input,
+  Modal,
+  Transition,
+} from 'semantic-ui-react';
 import PubSub from 'pubsub-js';
 import wait from 'waait';
 import { drawPath } from '../utils/drawPathUtils';
@@ -174,9 +182,9 @@ class Run extends Component {
               <Header as="h1" dividing id="ap-header">
                 <Icon name="rocket" />
                 <Header.Content>
-                  Test
+                  Run Flight
                   <Header.Subheader>
-                    <i>Test your flight path</i>
+                    <i>Fly your drone</i>
                   </Header.Subheader>
                 </Header.Content>
               </Header>
@@ -188,7 +196,12 @@ class Run extends Component {
                 <Header.Content>
                   Record Video
                   <Header.Subheader>
-                    Recording status: <Icon name="circle" color="red" />
+                    {this.state.isRecording ? 'Recording: ' : null}
+                    {this.state.isRecording ? (
+                      <Icon name="circle" color="red" />
+                    ) : (
+                      'Record a video of your flight path'
+                    )}
                   </Header.Subheader>
                 </Header.Content>
               </Header>
@@ -202,7 +215,7 @@ class Run extends Component {
                 color="facebook"
                 labelPosition="left"
                 icon="military"
-                content="Run Flight Path"
+                content="Run Flight"
                 onClick={this.runFlightInstructions}
               />
             </Grid.Column>
@@ -213,7 +226,7 @@ class Run extends Component {
                 color="facebook"
                 labelPosition="left"
                 icon="play"
-                content="Run Flight Path and Record"
+                content="Record Flight"
                 onClick={this.runFlightInstructionsAndRecord}
               />
             </Grid.Column>
