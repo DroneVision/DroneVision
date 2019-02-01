@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import voxelSizeValue from '../store/store';
+import { voxelSizeValue } from '../store/store';
 //CARDINAL DIRECTIONS GROUP
 const cardinalDirections = new THREE.Group();
 
@@ -7,7 +7,7 @@ const cardinalDirections = new THREE.Group();
 const northStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
 const northStarMaterial = new THREE.MeshPhongMaterial({
   color: 0x007f00,
-  flatShading: true,
+  flatShading: false,
 });
 
 const northStar = new THREE.Mesh(northStarGeometry, northStarMaterial);
