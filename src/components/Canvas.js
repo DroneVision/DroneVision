@@ -5,6 +5,7 @@ import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
 import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
 import drone3DModel from '../ThreeJSModules/DroneForCanvas';
+import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import _ from 'lodash';
 import { updateCDP } from '../store/store';
 
@@ -28,12 +29,12 @@ class Canvas extends Component {
       1,
       1000
     );
-    // this.camera.position.set(-2.8, 5.4, -14.8);
-    this.camera.position.set(
-      this.props.startingPosition.x,
-      this.props.startingPosition.y,
-      this.props.startingPosition.z
-    );
+    this.camera.position.set(-2.8, 5.4, -14.8);
+    // this.camera.position.set(
+    //   this.props.startingPosition.x,
+    //   this.props.startingPosition.y,
+    //   this.props.startingPosition.z
+    // );
 
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -108,43 +109,10 @@ class Canvas extends Component {
     this.scene.add(gridCubeLines);
 
     //NORTH STAR
-    const northStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
-    const northStarMaterial = new THREE.MeshPhongMaterial({
-      color: 0xb29600,
-      flatShading: true,
-    });
-
-    const northStar = new THREE.Mesh(northStarGeometry, northStarMaterial);
-
-    northStar.position.set(0, 0, 200);
-    northStar.updateMatrix();
-    northStar.matrixAutoUpdate = false;
-    northStar.position.set(0, this.gridEdgeLength * -0.5, 0);
-    this.scene.add(northStar);
-
-    //NORTH STAR HEAVENLY LIGHT
-    const northStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
-      0,
-      1,
-      140,
-      4,
-      1
-    );
-    const northStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffff00,
-      flatShading: true,
-    });
-
-    const northStarHeavenlyLight = new THREE.Mesh(
-      northStarHeavenlyLightGeometry,
-      northStarHeavenlyLightMaterial
-    );
-
-    northStarHeavenlyLight.position.set(0, 75, 200);
-    northStarHeavenlyLight.updateMatrix();
-    northStarHeavenlyLight.matrixAutoUpdate = false;
-    northStarHeavenlyLight.position.set(0, this.gridEdgeLength * -0.5, 0);
-    this.scene.add(northStarHeavenlyLight);
+    //EAST STAR
+    //SOUTH STAR
+    //WEST STAR
+    this.scene.add(cardinalDirections);
 
     //TAKEOFF LINE
     const takeoffLineMaterial = new THREE.LineBasicMaterial({
@@ -264,6 +232,7 @@ class Canvas extends Component {
       if (differenceY < 0) {
         object.position.y = object.position.y - 0.01;
       }
+      console.log(object.position);
     }
     if (object.position.z !== this.props.currentDronePosition.z) {
       let differenceZ = this.props.currentDronePosition.z - object.position.z;
@@ -281,7 +250,7 @@ class Canvas extends Component {
 
     this.moveDrone(this.sphere);
     this.moveDrone(drone3DModel);
-    this.moveDrone(this.camera);
+    // this.moveDrone(this.camera);
 
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
