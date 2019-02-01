@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
 import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
+import drone3DModel from '../ThreeJSModules/DroneForCanvas';
 import _ from 'lodash';
 import { updateCDP } from '../store/store';
 
@@ -54,6 +55,18 @@ class Canvas extends Component {
     );
 
     this.scene.add(this.sphere);
+
+    //DRONE 3D MODEL
+    drone3DModel.position.set(
+      this.props.startingPosition.x,
+      this.props.startingPosition.y,
+      this.props.startingPosition.z
+    );
+
+    drone3DModel.rotation.y = Math.PI;
+    drone3DModel.scale.set(0.1, 0.1, 0.1);
+
+    this.scene.add(drone3DModel);
 
     //GRID
     this.gridEdgeLength = this.props.voxelSize;
@@ -228,103 +241,6 @@ class Canvas extends Component {
       }
     });
   }
-  // PubSub.subscribe('new-line', (msg, points) => {
-  //   const { point1, point2 } = points;
-  //   //create a LineBasicMaterial
-  //   const material = new THREE.LineBasicMaterial({
-  //     color: 'red',
-  //     linewidth: 5,
-  //   });
-
-  //   const geometry = new THREE.Geometry();
-  //   geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
-  //   geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
-
-  //   const line = new THREE.Line(geometry, material);
-  //   this.scene.add(line);
-
-  //   //BLUE LAND LINE
-  //   if (this.state.landLine) {
-  //     this.scene.remove(this.state.landLine);
-  //   }
-  //   const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
-  //   const landLineGeometry = new THREE.Geometry();
-  //   landLineGeometry.vertices.push(
-  //     new THREE.Vector3(point2.x, point2.y, point2.z)
-  //   );
-  //   landLineGeometry.vertices.push(new THREE.Vector3(point2.x, 0, point2.z));
-
-  //   const landLine = new THREE.Line(landLineGeometry, landLineMaterial);
-  //   landLine.name = 'landLine';
-  //   this.scene.add(landLine);
-  //   this.setState({ landLine: landLine });
-  // });
-
-  // moveSphere = (startingPosition, endPosition, speed) => {
-  //   let currentPosition = this.sphere.position;
-
-  //   let incrementX = Math.abs((startingPosition.x - endPosition.x) / speed);
-  //   let incrementY = Math.abs((startingPosition.y - endPosition.y) / speed);
-  //   let incrementZ = Math.abs((startingPosition.z - endPosition.z) / speed);
-
-  //   //END X is Greater
-  //   if (currentPosition.x < endPosition.x) {
-  //     currentPosition.x += incrementX;
-  //     if (currentPosition.x + incrementX > endPosition.x) {
-  //       currentPosition.x = endPosition.x;
-  //     }
-  //   }
-
-  //   //END X is Lesser
-  //   if (currentPosition.x > endPosition.x) {
-  //     currentPosition.x -= incrementX;
-  //     if (currentPosition.x - incrementX < endPosition.x) {
-  //       currentPosition.x = endPosition.x;
-  //     }
-  //   }
-
-  //   //END Y is Greater
-  //   if (currentPosition.y < endPosition.y) {
-  //     currentPosition.y += incrementY;
-  //     if (currentPosition.y + incrementY > endPosition.y) {
-  //       currentPosition.y = endPosition.y;
-  //     }
-  //   }
-
-  //   //END Y is Lesser
-  //   if (currentPosition.y > endPosition.y) {
-  //     currentPosition.y -= incrementY;
-  //     if (currentPosition.y - incrementY < endPosition.y) {
-  //       currentPosition.y = endPosition.y;
-  //     }
-  //   }
-
-  //   //END Z is Greater
-  //   if (currentPosition.z < endPosition.z) {
-  //     currentPosition.z += incrementZ;
-  //     if (currentPosition.z + incrementZ > endPosition.z) {
-  //       currentPosition.z = endPosition.z;
-  //     }
-  //   }
-
-  //   //END Z is Lesser
-  //   if (currentPosition.z > endPosition.z) {
-  //     currentPosition.z -= incrementZ;
-  //     if (currentPosition.z - incrementZ < endPosition.z) {
-  //       currentPosition.z = endPosition.z;
-  //     }
-  //   }
-  // };
-
-  // moveSphere = (distances, speed) => {
-  //   const { x, y, z } = distances;
-  //   let direction = new THREE.Vector3(x, y, z);
-  //   let vector = direction.clone().multiplyScalar(speed, speed, speed);
-
-  //   this.sphere.position.x += vector.x;
-  //   this.sphere.position.y += vector.y;
-  //   this.sphere.position.z += vector.z;
-  // };
 
   moveDrone = object => {
     if (object.position.x !== this.props.currentDronePosition.x) {
@@ -360,22 +276,8 @@ class Canvas extends Component {
     requestAnimationFrame(this.animate);
 
     this.moveDrone(this.sphere);
+    this.moveDrone(drone3DModel);
 
-    // if (this.sphere.position.x !== this.props.currentDronePosition.x) {
-    //   this.sphere.position.x = this.props.currentDronePosition.x;
-    // }
-    // if (this.sphere.position.y !== this.props.currentDronePosition.y) {
-    //   this.sphere.position.y = this.props.currentDronePosition.y;
-    // }
-    // if (this.sphere.position.z !== this.props.currentDronePosition.z) {
-    //   this.sphere.position.z = this.props.currentDronePosition.z;
-    // }
-    // console.dir(this.camera);
-    // if (this.run) {
-    // this.moveSphere({ x: 0, y: 0, z: 0 }, { x: 5, y: 5, z: 5 }, 120);
-    // this.moveSphere(this.sphere.position, { x: 5, y: 5, z: 5 }, 120);
-    // }
-    // if (this.sphere.position.x < this.props.droneCurrentX)
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
