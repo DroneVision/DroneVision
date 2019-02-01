@@ -18,7 +18,7 @@ const renderCenterButton = (type, addFlightInstruction, allDisabled) => {
       return (
         <Button
           disabled={allDisabled}
-          onClick={() => addFlightInstruction([0, 0, 1], `Up --> `)}
+          onClick={() => addFlightInstruction([0, 0, 1], `Up`)}
         >
           <Button.Content visible>
             <Icon className="straight-up" name="arrow circle up" />
@@ -29,7 +29,7 @@ const renderCenterButton = (type, addFlightInstruction, allDisabled) => {
       return (
         <Button
           disabled={allDisabled}
-          onClick={() => addFlightInstruction([0, 0, -1], `Down --> `)}
+          onClick={() => addFlightInstruction([0, 0, -1], `Down`)}
         >
           <Button.Content visible>
             <Icon className="straight-down" name="arrow circle down" />
@@ -77,7 +77,7 @@ const ButtonPanel = props => {
               onClick={() =>
                 addFlightInstruction(
                   [1, 1, zCommand],
-                  `${prefix}Forward + Left --> `
+                  `${prefix}Forward + Left`
                 )
               }
             >
@@ -90,7 +90,7 @@ const ButtonPanel = props => {
             <Button
               disabled={forwardDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction([1, 0, zCommand], `${prefix}Forward --> `)
+                addFlightInstruction([1, 0, zCommand], `${prefix}Forward`)
               }
             >
               <Button.Content visible>
@@ -104,7 +104,7 @@ const ButtonPanel = props => {
               onClick={() =>
                 addFlightInstruction(
                   [1, -1, zCommand],
-                  `${prefix}Forward + Right --> `
+                  `${prefix}Forward + Right`
                 )
               }
             >
@@ -119,7 +119,7 @@ const ButtonPanel = props => {
             <Button
               disabled={leftDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction([0, 1, zCommand], `${prefix}Left --> `)
+                addFlightInstruction([0, 1, zCommand], `${prefix}Left`)
               }
             >
               <Button.Content visible>
@@ -132,7 +132,7 @@ const ButtonPanel = props => {
             <Button
               disabled={rightDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction([0, -1, zCommand], `${prefix}Right --> `)
+                addFlightInstruction([0, -1, zCommand], `${prefix}Right`)
               }
             >
               <Button.Content visible>
@@ -148,7 +148,7 @@ const ButtonPanel = props => {
               onClick={() =>
                 addFlightInstruction(
                   [-1, 1, zCommand],
-                  `${prefix}Reverse + Left --> `
+                  `${prefix}Reverse + Left`
                 )
               }
             >
@@ -161,7 +161,7 @@ const ButtonPanel = props => {
             <Button
               disabled={reverseDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction([-1, 0, zCommand], `${prefix}Reverse --> `)
+                addFlightInstruction([-1, 0, zCommand], `${prefix}Reverse`)
               }
             >
               <Button.Content visible>
@@ -175,7 +175,7 @@ const ButtonPanel = props => {
               onClick={() =>
                 addFlightInstruction(
                   [-1, -1, zCommand],
-                  `${prefix}Reverse + Right --> `
+                  `${prefix}Reverse + Right`
                 )
               }
             >
