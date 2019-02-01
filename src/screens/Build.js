@@ -202,7 +202,7 @@ class Build extends Component {
             </Grid.Column>
 
             <Grid.Column width={9}>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="settings" />
                 <Header.Content>
                   AutoPilot Builder
