@@ -18,6 +18,7 @@ const INITIAL_STATE = {
     { instruction: 'takeoff', message: 'Takeoff' },
     { instruction: 'land', message: 'Land' },
   ],
+  obstacles: true,
 };
 
 //ACTION CONSTANTS

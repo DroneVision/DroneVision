@@ -6,6 +6,7 @@ import PubSub from 'pubsub-js';
 import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
 import drone3DModel from '../ThreeJSModules/DroneForCanvas';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
+import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
 import { updateCDP } from '../store/store';
 
@@ -113,6 +114,11 @@ class Canvas extends Component {
     //SOUTH STAR
     //WEST STAR
     this.scene.add(cardinalDirections);
+
+    //OBSTACLES (toggled by redux store)
+    if (this.props.obstacles) {
+      this.scene.add(Obstacles);
+    }
 
     //TAKEOFF LINE
     const takeoffLineMaterial = new THREE.LineBasicMaterial({
@@ -267,6 +273,7 @@ const mapState = state => {
     voxelSize: state.voxelSize,
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
+    obstacles: state.obstacles,
   };
 };
 
