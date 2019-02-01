@@ -1,16 +1,19 @@
+const voxelSizeValue = 10;
+const startingPositionCoords = { x: 0, y: 0 + voxelSizeValue * -0.5, z: 0 };
+
 const INITIAL_STATE = {
   distance: 50,
   speed: 50,
   battery: 100,
   scale: 10,
-  voxelSize: 10,
+  voxelSize: voxelSizeValue,
   roll: 0,
   pitch: 0,
   yaw: 0,
   debugMode: true,
   navTab: 'build',
-  startingPosition: { x: 0, y: 1, z: 0 },
-  currentDronePosition: { x: 0, y: 1, z: 0 },
+  startingPosition: startingPositionCoords,
+  currentDronePosition: startingPositionCoords,
   flightInstructions: [
     { instruction: 'takeoff', message: 'Takeoff' },
     { instruction: 'land', message: 'Land' },

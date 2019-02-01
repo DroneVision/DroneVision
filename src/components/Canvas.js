@@ -5,6 +5,9 @@ import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
 import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
 import _ from 'lodash';
+import { updateCDP } from '../store/store';
+
+const { ipcRenderer } = window.require('electron');
 
 class Canvas extends Component {
   constructor(props) {
@@ -39,16 +42,16 @@ class Canvas extends Component {
     this.scene.add(canvasSkybox);
 
     //SPHERE
-    const sphereGeo = new THREE.SphereGeometry(1, 32, 32);
+    const sphereGeo = new THREE.SphereGeometry(0.1, 32, 32);
     const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
     this.sphere = new THREE.Mesh(sphereGeo, sphereMat);
-    this.sphere.position.set(0, 0, 0);
-
+    // this.sphere.position.set(0, 0, 0);
+    this.sphere.position.set(0, this.gridEdgeLength * -0.5, 0);
     this.scene.add(this.sphere);
 
     //GRID
-    this.gridEdgeLength =
-      this.props.scale / (this.props.scale / this.props.voxelSize);
+    this.gridEdgeLength = this.props.voxelSize;
+    // this.props.scale / (this.props.scale / this.props.voxelSize);
 
     this.gridGeo = new THREE.PlaneBufferGeometry(
       this.props.voxelSize,
@@ -84,7 +87,7 @@ class Canvas extends Component {
     //NORTH STAR
     const northStarGeometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
     const northStarMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
+      color: 0xb29600,
       flatShading: true,
     });
 
@@ -95,6 +98,30 @@ class Canvas extends Component {
     northStar.matrixAutoUpdate = false;
     northStar.position.set(0, this.gridEdgeLength * -0.5, 0);
     this.scene.add(northStar);
+
+    //NORTH STAR HEAVENLY LIGHT
+    const northStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
+      0,
+      1,
+      140,
+      4,
+      1
+    );
+    const northStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
+      color: 0xffff00,
+      flatShading: true,
+    });
+
+    const northStarHeavenlyLight = new THREE.Mesh(
+      northStarHeavenlyLightGeometry,
+      northStarHeavenlyLightMaterial
+    );
+
+    northStarHeavenlyLight.position.set(0, 75, 200);
+    northStarHeavenlyLight.updateMatrix();
+    northStarHeavenlyLight.matrixAutoUpdate = false;
+    northStarHeavenlyLight.position.set(0, this.gridEdgeLength * -0.5, 0);
+    this.scene.add(northStarHeavenlyLight);
 
     //TAKEOFF LINE
     const takeoffLineMaterial = new THREE.LineBasicMaterial({
@@ -109,13 +136,49 @@ class Canvas extends Component {
     this.scene.add(this.takeoffLine);
 
     //AMBIENT LIGHT
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     this.scene.add(ambientLight);
   }
 
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
+    ipcRenderer.on('hi', event => {
+      console.log('hiiiii');
+    });
+    ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
+      console.log('subc');
+
+      ipcRenderer.send('get-drone-moves');
+
+      if (singleFlightCoord === 'command') {
+      } else if (singleFlightCoord === 'takeoff') {
+        updateCDP(this.props.startingPosition);
+      } else if (singleFlightCoord === 'land') {
+        updateCDP({
+          x: this.props.currentDronePosition.x,
+          y: this.props.currentDronePosition.y,
+          z: 0,
+        });
+      } else {
+        let newCoords = {};
+        let singleFlightCoordArray = singleFlightCoord
+          .split(' ')
+          .slice(1, 4)
+          .map(numStr => Number(numStr) / this.props.distance);
+
+        const [z, x, y] = singleFlightCoordArray;
+        // x -> z
+        // y -> x
+        // z -> y
+        newCoords.x = this.props.currentDronePosition.x + x;
+        newCoords.y = this.props.currentDronePosition.y + y;
+        newCoords.z = this.props.currentDronePosition.z + z;
+
+        updateCDP(newCoords);
+      }
+    });
+
     PubSub.subscribe('draw-path', (msg, flightCoords) => {
       if (this.line) {
         this.scene.remove(this.line);
@@ -158,44 +221,38 @@ class Canvas extends Component {
         this.scene.add(this.landLine);
       }
     });
-
-    // PubSub.subscribe('new-line', (msg, points) => {
-    //   const { point1, point2 } = points;
-    //   //create a LineBasicMaterial
-    //   const material = new THREE.LineBasicMaterial({
-    //     color: 'red',
-    //     linewidth: 5,
-    //   });
-
-    //   const geometry = new THREE.Geometry();
-    //   geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
-    //   geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
-
-    //   const line = new THREE.Line(geometry, material);
-    //   this.scene.add(line);
-
-    //   //BLUE LAND LINE
-    //   if (this.state.landLine) {
-    //     this.scene.remove(this.state.landLine);
-    //   }
-    //   const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
-    //   const landLineGeometry = new THREE.Geometry();
-    //   landLineGeometry.vertices.push(
-    //     new THREE.Vector3(point2.x, point2.y, point2.z)
-    //   );
-    //   landLineGeometry.vertices.push(new THREE.Vector3(point2.x, 0, point2.z));
-
-    //   const landLine = new THREE.Line(landLineGeometry, landLineMaterial);
-    //   landLine.name = 'landLine';
-    //   this.scene.add(landLine);
-    //   this.setState({ landLine: landLine });
-    // });
-    this.run = false;
-
-    PubSub.subscribe('move-sphere', (msg, data) => {
-      this.run = true;
-    });
   }
+  // PubSub.subscribe('new-line', (msg, points) => {
+  //   const { point1, point2 } = points;
+  //   //create a LineBasicMaterial
+  //   const material = new THREE.LineBasicMaterial({
+  //     color: 'red',
+  //     linewidth: 5,
+  //   });
+
+  //   const geometry = new THREE.Geometry();
+  //   geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
+  //   geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
+
+  //   const line = new THREE.Line(geometry, material);
+  //   this.scene.add(line);
+
+  //   //BLUE LAND LINE
+  //   if (this.state.landLine) {
+  //     this.scene.remove(this.state.landLine);
+  //   }
+  //   const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
+  //   const landLineGeometry = new THREE.Geometry();
+  //   landLineGeometry.vertices.push(
+  //     new THREE.Vector3(point2.x, point2.y, point2.z)
+  //   );
+  //   landLineGeometry.vertices.push(new THREE.Vector3(point2.x, 0, point2.z));
+
+  //   const landLine = new THREE.Line(landLineGeometry, landLineMaterial);
+  //   landLine.name = 'landLine';
+  //   this.scene.add(landLine);
+  //   this.setState({ landLine: landLine });
+  // });
 
   // moveSphere = (startingPosition, endPosition, speed) => {
   //   let currentPosition = this.sphere.position;
@@ -253,25 +310,35 @@ class Canvas extends Component {
   //   }
   // };
 
-  moveSphere = (distances, speed) => {
-    const { x, y, z } = distances;
-    let direction = new THREE.Vector3(x, y, z);
-    let vector = direction.clone().multiplyScalar(speed, speed, speed);
+  // moveSphere = (distances, speed) => {
+  //   const { x, y, z } = distances;
+  //   let direction = new THREE.Vector3(x, y, z);
+  //   let vector = direction.clone().multiplyScalar(speed, speed, speed);
 
-    this.sphere.position.x += vector.x;
-    this.sphere.position.y += vector.y;
-    this.sphere.position.z += vector.z;
-  };
+  //   this.sphere.position.x += vector.x;
+  //   this.sphere.position.y += vector.y;
+  //   this.sphere.position.z += vector.z;
+  // };
 
   animate = async () => {
     requestAnimationFrame(this.animate);
+
+    if (this.sphere.position.x !== this.props.currentDronePosition.x) {
+      this.sphere.position.x = this.props.currentDronePosition.x;
+    }
+    if (this.sphere.position.y !== this.props.currentDronePosition.y) {
+      this.sphere.position.y = this.props.currentDronePosition.y;
+    }
+    if (this.sphere.position.z !== this.props.currentDronePosition.z) {
+      this.sphere.position.z = this.props.currentDronePosition.z;
+    }
     // console.dir(this.camera);
     // if (this.run) {
     // this.moveSphere({ x: 0, y: 0, z: 0 }, { x: 5, y: 5, z: 5 }, 120);
     // this.moveSphere(this.sphere.position, { x: 5, y: 5, z: 5 }, 120);
     // }
-    if (this.sphere.position.x < this.props.droneCurrentX)
-      this.controls.update();
+    // if (this.sphere.position.x < this.props.droneCurrentX)
+    this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
 
@@ -284,6 +351,8 @@ const mapState = state => {
   return {
     scale: state.scale,
     voxelSize: state.voxelSize,
+    currentDronePosition: state.currentDronePosition,
+    startingPosition: state.startingPosition,
   };
 };
 

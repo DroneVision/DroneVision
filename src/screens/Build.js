@@ -11,7 +11,10 @@ import {
 } from '../store/store';
 
 import { drawPath, getFlightCoords } from '../utils/drawPathUtils';
-import { saveFlightInstructions, loadFlightInstructions } from '../utils/fileSystemUtils';
+import {
+  saveFlightInstructions,
+  loadFlightInstructions,
+} from '../utils/fileSystemUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -124,7 +127,6 @@ class Build extends Component {
     this.props.clearInstructions();
   };
 
-
   getCurrentPoint = flightCoords => {
     const currentPoint = flightCoords.reduce(
       (currentPoint, item) => {
@@ -141,9 +143,9 @@ class Build extends Component {
 
   handleLoadFlightInstructions = async () => {
     const flightInstructions = await loadFlightInstructions();
-    this.props.updateInstructions(flightInstructions)
-    drawPath(this.props.flightInstructions,this.props.distance)
-  }
+    this.props.updateInstructions(flightInstructions);
+    drawPath(this.props.flightInstructions, this.props.distance);
+  };
 
   render() {
     const { limits } = this.state;
@@ -281,9 +283,13 @@ class Build extends Component {
                           View On Run Screen!
                         </Button>
                       </Link>
-                      <Button onClick={() => saveFlightInstructions(this.props.flightInstructions)}>
+                      <Button
+                        onClick={() =>
+                          saveFlightInstructions(this.props.flightInstructions)
+                        }
+                      >
                         Save Flight Path
-                        </Button>
+                      </Button>
                       <Button onClick={this.handleLoadFlightInstructions}>
                         Load Flight Path
                       </Button>
@@ -291,10 +297,10 @@ class Build extends Component {
                   </tr>
                 </tbody>
               </table>
+            </div>
           </div>
         </div>
       </div>
-      </div >
     );
   }
 }
@@ -316,6 +322,7 @@ const mapDispatch = dispatch => {
     clearInstructions: () => dispatch(clearInstructions()),
   };
 };
+
 // const mapDispatch = dispatch => {
 //   return {
 //     increaseDistance: () => {

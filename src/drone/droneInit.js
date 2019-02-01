@@ -80,15 +80,12 @@ module.exports = function() {
     await wait(delay);
   };
 
-  let currentDronePosition = { x: 0, y: 1, z: 0 };
-
   const runInstructionList = async instructionList => {
     for (let i = 0; i < instructionList.length; i++) {
-      //Tell Drone to Animate Next Position
-
+      //Wait for Command Delay
       await runSingleInstruction(instructionList[i]);
     }
-    console.log('flown');
+    console.log('The eagle has landed.');
   };
   return {
     runSingleInstruction,
