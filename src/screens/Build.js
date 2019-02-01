@@ -185,9 +185,22 @@ class Build extends Component {
     const downDisabled = currentPoint.y === limits.minY;
     return (
       <div id="build-screen">
-        <Grid columns={2} divided padded centered>
-          <Grid.Row stretched>
-            <Grid.Column width={8}>
+        <Grid columns={3} divided padded>
+          <Grid.Row>
+            <Grid.Column width={3}>
+              <Button onClick={this.handleLoadFlightInstructions}>
+                Import Flight Path
+              </Button>
+              <Button
+                onClick={() =>
+                  saveFlightInstructions(this.props.flightInstructions)
+                }
+              >
+                Export Flight Path
+              </Button>
+            </Grid.Column>
+
+            <Grid.Column width={9}>
               <Header as="h1" dividing id="ap-header">
                 <Icon name="settings" />
                 <Header.Content>
@@ -198,66 +211,61 @@ class Build extends Component {
                 </Header.Content>
               </Header>
 
-              <Grid.Row centered>
-                <Grid.Column textAlign="center" centered>
+              <Grid.Row>
+                <Grid.Column>
                   <Canvas />
                 </Grid.Column>
               </Grid.Row>
 
               <Grid.Row>
-                <Grid columns={3} padded>
-                  <Grid.Row centered>
-                    <Grid.Row centered>
-                      <Grid.Column as="h1" textAlign="center">
-                        Up
-                        <ButtonPanel
-                          latestInstructionMessage={latestInstructionMessage}
-                          leftDisabled={leftDisabled}
-                          rightDisabled={rightDisabled}
-                          forwardDisabled={forwardDisabled}
-                          reverseDisabled={reverseDisabled}
-                          allDisabled={upDisabled}
-                          addFlightInstruction={this.addFlightInstruction}
-                          distance={this.props.distance}
-                          speed={this.props.speed}
-                          type="Up"
-                        />
-                      </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row centered>
-                      <Grid.Column as="h1" textAlign="center">
-                        Horizontal
-                        <ButtonPanel
-                          latestInstructionMessage={latestInstructionMessage}
-                          leftDisabled={leftDisabled}
-                          rightDisabled={rightDisabled}
-                          forwardDisabled={forwardDisabled}
-                          reverseDisabled={reverseDisabled}
-                          allDisabled={false}
-                          addFlightInstruction={this.addFlightInstruction}
-                          distance={this.props.distance}
-                          speed={this.props.speed}
-                          type="Current"
-                        />
-                      </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row centered>
-                      <Grid.Column as="h1" textAlign="center">
-                        Down
-                        <ButtonPanel
-                          latestInstructionMessage={latestInstructionMessage}
-                          leftDisabled={leftDisabled}
-                          rightDisabled={rightDisabled}
-                          forwardDisabled={forwardDisabled}
-                          reverseDisabled={reverseDisabled}
-                          allDisabled={downDisabled}
-                          addFlightInstruction={this.addFlightInstruction}
-                          distance={this.props.distance}
-                          speed={this.props.speed}
-                          type="Down"
-                        />
-                      </Grid.Column>
-                    </Grid.Row>
+                <Grid columns={3} padded centered>
+                  <Grid.Row>
+                    <Grid.Column as="h1" textAlign="center">
+                      Up
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={upDisabled}
+                        addFlightInstruction={this.addFlightInstruction}
+                        distance={this.props.distance}
+                        speed={this.props.speed}
+                        type="Up"
+                      />
+                    </Grid.Column>
+
+                    <Grid.Column as="h1" textAlign="center">
+                      Horizontal
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={false}
+                        addFlightInstruction={this.addFlightInstruction}
+                        distance={this.props.distance}
+                        speed={this.props.speed}
+                        type="Current"
+                      />
+                    </Grid.Column>
+                    <Grid.Column as="h1" textAlign="center">
+                      Down
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={downDisabled}
+                        addFlightInstruction={this.addFlightInstruction}
+                        distance={this.props.distance}
+                        speed={this.props.speed}
+                        type="Down"
+                      />
+                    </Grid.Column>
                   </Grid.Row>
                 </Grid>
               </Grid.Row>
@@ -284,62 +292,46 @@ class Build extends Component {
               </Grid.Row>
 
               <Grid.Row>
-                <Grid columns={3} padded centered>
-                  <Grid.Column textAlign="center">
-                    <Link to={'/run'}>
-                      <Button onClick={() => this.props.changeTab('run')}>
-                        View On Run Screen!
-                      </Button>
-                    </Link>
-                  </Grid.Column>
-                  <Grid.Column textAlign="center">
-                    <Button
-                      onClick={() =>
-                        saveFlightInstructions(this.props.flightInstructions)
-                      }
-                    >
-                      Save Flight Path
+                <Grid.Column textAlign="center">
+                  <Link to={'/run'}>
+                    <Button onClick={() => this.props.changeTab('run')}>
+                      View On Run Screen!
                     </Button>
-                  </Grid.Column>
-                  <Grid.Column textAlign="center">
-                    <Button onClick={this.handleLoadFlightInstructions}>
-                      Load Flight Path
-                    </Button>
-                  </Grid.Column>
-                </Grid>
+                  </Link>
+                </Grid.Column>
               </Grid.Row>
             </Grid.Column>
 
-            <Grid.Column width={4}>
-              <Segment inverted>
-                <List divided inverted animated>
-                  <List.Header>
-                    <i>Flight Instructions</i>
-                  </List.Header>
-                  {flightInstructions
-                    .map(instructionObj => instructionObj.message)
-                    .map((message, ind) => {
-                      let icon;
-                      if (message === 'Takeoff') {
-                        icon = 'hand point up';
-                      } else if (message === 'Land') {
-                        icon = 'hand point down';
-                      } else if (message === 'Hold') {
-                        icon = 'hourglass half';
-                      } else {
-                        icon = 'dot circle';
-                      }
-                      return (
-                        <List.Item
-                          className="flight-message-single"
-                          key={ind}
-                          content={message}
-                          icon={icon}
-                        />
-                      );
-                    })}
-                </List>
-              </Segment>
+            <Grid.Column width={3}>
+                <Segment inverted>
+                  <List divided inverted animated>
+                    <List.Header>
+                      <i>Flight Instructions</i>
+                    </List.Header>
+                    {flightInstructions
+                      .map(instructionObj => instructionObj.message)
+                      .map((message, ind) => {
+                        let icon;
+                        if (message === 'Takeoff') {
+                          icon = 'hand point up';
+                        } else if (message === 'Land') {
+                          icon = 'hand point down';
+                        } else if (message === 'Hold') {
+                          icon = 'hourglass half';
+                        } else {
+                          icon = 'dot circle';
+                        }
+                        return (
+                          <List.Item
+                            className="flight-message-single"
+                            key={ind}
+                            content={message}
+                            icon={icon}
+                          />
+                        );
+                      })}
+                  </List>
+                </Segment>
             </Grid.Column>
           </Grid.Row>
         </Grid>
