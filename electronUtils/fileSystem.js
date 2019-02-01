@@ -5,7 +5,7 @@ const path = require('path');
 
 const readFileAsync = promisify(fs.readFile);
 
-// The dialog blocks the main thread until the user select the file
+// The dialog blocks the main thread until user selects a valid file.
 
 const promisifiedDialog = () => {
 	const options = {

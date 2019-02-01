@@ -21,6 +21,7 @@ const stopRecording = movie => {
 
 let currentVid;
 
+
 ipcMain.on('start-recording', () => {
   let formattedDateString = new Date()
     .toString()
