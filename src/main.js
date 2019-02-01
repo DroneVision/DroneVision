@@ -15,22 +15,14 @@ const fs = require('fs');
 //BEGIN RECORD VIDEO
 
 //LEave this for now, we may need it to stop video encoding manually
-// const stopRecording = movie => {
-//   return movie.ffmpegProc.stdin.write('q');
-// };
+const stopRecording = movie => {
+  return movie.ffmpegProc.stdin.write('q');
+};
 
 let currentVid;
 
 
-//////////////////////////////////////////////////////////
-//														//
-// IPCMain and IPCRenderer in Electron send messages 	//
-// between main and renderer processes.					//
-//														//
-//////////////////////////////////////////////////////////
-
-
-ipcMain.on('start-recording', (event, duration) => {
+ipcMain.on('start-recording', () => {
   let formattedDateString = new Date()
     .toString()
     .split(' ')
@@ -41,7 +33,6 @@ ipcMain.on('start-recording', (event, duration) => {
     .size('640x?')
     .aspect('4:3')
     .output(`./DroneVision-${formattedDateString}.mp4`)
-    .duration(duration)
     .on('end', () => {
       console.log('duration is over');
     });
@@ -54,8 +45,11 @@ ipcMain.on('start-recording', (event, duration) => {
 });
 
 ipcMain.on('stop-recording', () => {
-  currentVid.kill();
-  runSingleInstruction('streamoff');
+  stopRecording(currentVid);
+  setTimeout(() => {
+    runSingleInstruction('streamoff');
+    currentVid.kill();
+  }, 5000);
   console.log('video should stop recording now');
 });
 
@@ -153,5 +147,3 @@ ipcMain.on('getDroneState', async (event, droneState) => {
   let updatedState = await getDroneState();
   event.sender.send('updatedDroneState', updatedState);
 });
-
-// });
