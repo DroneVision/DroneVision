@@ -46,7 +46,12 @@ class Canvas extends Component {
     const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
     this.sphere = new THREE.Mesh(sphereGeo, sphereMat);
     // this.sphere.position.set(0, 0, 0);
-    this.sphere.position.set(0, this.gridEdgeLength * -0.5, 0);
+    // this.sphere.position.set(0, this.gridEdgeLength * -0.5, 0);
+    this.sphere.position.set(
+      this.props.startingPosition.x,
+      this.props.startingPosition.y,
+      this.props.startingPosition.z
+    );
     this.scene.add(this.sphere);
 
     //GRID
@@ -320,18 +325,50 @@ class Canvas extends Component {
   //   this.sphere.position.z += vector.z;
   // };
 
+  moveDrone = object => {
+    if (object.position.x !== this.props.currentDronePosition.x) {
+      let differenceX = this.props.currentDronePosition.x - object.position.x;
+      if (differenceX > 0) {
+        object.position.x = object.position.x + 0.01;
+      }
+      if (differenceX < 0) {
+        object.position.x = object.position.x - 0.01;
+      }
+    }
+    if (object.position.y !== this.props.currentDronePosition.y) {
+      let differenceY = this.props.currentDronePosition.y - object.position.y;
+      if (differenceY > 0) {
+        object.position.y = object.position.y + 0.01;
+      }
+      if (differenceY < 0) {
+        object.position.y = object.position.y - 0.01;
+      }
+    }
+    if (object.position.z !== this.props.currentDronePosition.z) {
+      let differenceZ = this.props.currentDronePosition.z - object.position.z;
+      if (differenceZ > 0) {
+        object.position.z = object.position.z + 0.01;
+      }
+      if (differenceZ < 0) {
+        object.position.z = object.position.z - 0.01;
+      }
+    }
+  };
+
   animate = async () => {
     requestAnimationFrame(this.animate);
 
-    if (this.sphere.position.x !== this.props.currentDronePosition.x) {
-      this.sphere.position.x = this.props.currentDronePosition.x;
-    }
-    if (this.sphere.position.y !== this.props.currentDronePosition.y) {
-      this.sphere.position.y = this.props.currentDronePosition.y;
-    }
-    if (this.sphere.position.z !== this.props.currentDronePosition.z) {
-      this.sphere.position.z = this.props.currentDronePosition.z;
-    }
+    this.moveDrone(this.sphere);
+
+    // if (this.sphere.position.x !== this.props.currentDronePosition.x) {
+    //   this.sphere.position.x = this.props.currentDronePosition.x;
+    // }
+    // if (this.sphere.position.y !== this.props.currentDronePosition.y) {
+    //   this.sphere.position.y = this.props.currentDronePosition.y;
+    // }
+    // if (this.sphere.position.z !== this.props.currentDronePosition.z) {
+    //   this.sphere.position.z = this.props.currentDronePosition.z;
+    // }
     // console.dir(this.camera);
     // if (this.run) {
     // this.moveSphere({ x: 0, y: 0, z: 0 }, { x: 5, y: 5, z: 5 }, 120);
