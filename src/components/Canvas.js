@@ -4,7 +4,11 @@ import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
 import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
+import drone3DModel from '../ThreeJSModules/DroneForCanvas';
 import _ from 'lodash';
+import { updateCDP } from '../store/store';
+
+const { ipcRenderer } = window.require('electron');
 
 class Canvas extends Component {
   constructor(props) {
@@ -24,8 +28,12 @@ class Canvas extends Component {
       1,
       1000
     );
-    this.camera.position.set(-2.8, 5.4, -14.8);
-    // this.camera.position.set(15, -15, -30);
+    // this.camera.position.set(-2.8, 5.4, -14.8);
+    this.camera.position.set(
+      this.props.startingPosition.x,
+      this.props.startingPosition.y,
+      this.props.startingPosition.z
+    );
 
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -38,9 +46,35 @@ class Canvas extends Component {
     // //SKYBOX
     this.scene.add(canvasSkybox);
 
+    //SPHERE
+    const sphereGeo = new THREE.SphereGeometry(0.1, 32, 32);
+    const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+    this.sphere = new THREE.Mesh(sphereGeo, sphereMat);
+    // this.sphere.position.set(0, 0, 0);
+    // this.sphere.position.set(0, this.gridEdgeLength * -0.5, 0);
+    this.sphere.position.set(
+      this.props.startingPosition.x,
+      this.props.startingPosition.y,
+      this.props.startingPosition.z
+    );
+
+    this.scene.add(this.sphere);
+
+    //DRONE 3D MODEL
+    drone3DModel.position.set(
+      this.props.startingPosition.x,
+      this.props.startingPosition.y,
+      this.props.startingPosition.z
+    );
+
+    drone3DModel.rotation.y = Math.PI;
+    drone3DModel.scale.set(0.1, 0.1, 0.1);
+
+    this.scene.add(drone3DModel);
+
     //GRID
-    this.gridEdgeLength =
-      this.props.scale / (this.props.scale / this.props.voxelSize);
+    this.gridEdgeLength = this.props.voxelSize;
+    // this.props.scale / (this.props.scale / this.props.voxelSize);
 
     this.gridGeo = new THREE.PlaneBufferGeometry(
       this.props.voxelSize,
@@ -74,9 +108,9 @@ class Canvas extends Component {
     this.scene.add(gridCubeLines);
 
     //NORTH STAR
-    const northStarGeometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
+    const northStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
     const northStarMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
+      color: 0xb29600,
       flatShading: true,
     });
 
@@ -87,6 +121,30 @@ class Canvas extends Component {
     northStar.matrixAutoUpdate = false;
     northStar.position.set(0, this.gridEdgeLength * -0.5, 0);
     this.scene.add(northStar);
+
+    //NORTH STAR HEAVENLY LIGHT
+    const northStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
+      0,
+      1,
+      140,
+      4,
+      1
+    );
+    const northStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
+      color: 0xffff00,
+      flatShading: true,
+    });
+
+    const northStarHeavenlyLight = new THREE.Mesh(
+      northStarHeavenlyLightGeometry,
+      northStarHeavenlyLightMaterial
+    );
+
+    northStarHeavenlyLight.position.set(0, 75, 200);
+    northStarHeavenlyLight.updateMatrix();
+    northStarHeavenlyLight.matrixAutoUpdate = false;
+    northStarHeavenlyLight.position.set(0, this.gridEdgeLength * -0.5, 0);
+    this.scene.add(northStarHeavenlyLight);
 
     //TAKEOFF LINE
     const takeoffLineMaterial = new THREE.LineBasicMaterial({
@@ -101,13 +159,49 @@ class Canvas extends Component {
     this.scene.add(this.takeoffLine);
 
     //AMBIENT LIGHT
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     this.scene.add(ambientLight);
   }
 
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
+    ipcRenderer.on('hi', event => {
+      console.log('hiiiii');
+    });
+    ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
+      console.log('subc');
+
+      ipcRenderer.send('get-drone-moves');
+
+      if (singleFlightCoord === 'command') {
+      } else if (singleFlightCoord === 'takeoff') {
+        updateCDP(this.props.startingPosition);
+      } else if (singleFlightCoord === 'land') {
+        updateCDP({
+          x: this.props.currentDronePosition.x,
+          y: this.props.currentDronePosition.y,
+          z: 0,
+        });
+      } else {
+        let newCoords = {};
+        let singleFlightCoordArray = singleFlightCoord
+          .split(' ')
+          .slice(1, 4)
+          .map(numStr => Number(numStr) / this.props.distance);
+
+        const [z, x, y] = singleFlightCoordArray;
+        // x -> z
+        // y -> x
+        // z -> y
+        newCoords.x = this.props.currentDronePosition.x + x;
+        newCoords.y = this.props.currentDronePosition.y + y;
+        newCoords.z = this.props.currentDronePosition.z + z;
+
+        updateCDP(newCoords);
+      }
+    });
+
     PubSub.subscribe('draw-path', (msg, flightCoords) => {
       if (this.line) {
         this.scene.remove(this.line);
@@ -150,43 +244,45 @@ class Canvas extends Component {
         this.scene.add(this.landLine);
       }
     });
-
-    // PubSub.subscribe('new-line', (msg, points) => {
-    //   const { point1, point2 } = points;
-    //   //create a LineBasicMaterial
-    //   const material = new THREE.LineBasicMaterial({
-    //     color: 'red',
-    //     linewidth: 5,
-    //   });
-
-    //   const geometry = new THREE.Geometry();
-    //   geometry.vertices.push(new THREE.Vector3(point1.x, point1.y, point1.z));
-    //   geometry.vertices.push(new THREE.Vector3(point2.x, point2.y, point2.z));
-
-    //   const line = new THREE.Line(geometry, material);
-    //   this.scene.add(line);
-
-    //   //BLUE LAND LINE
-    //   if (this.state.landLine) {
-    //     this.scene.remove(this.state.landLine);
-    //   }
-    //   const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
-    //   const landLineGeometry = new THREE.Geometry();
-    //   landLineGeometry.vertices.push(
-    //     new THREE.Vector3(point2.x, point2.y, point2.z)
-    //   );
-    //   landLineGeometry.vertices.push(new THREE.Vector3(point2.x, 0, point2.z));
-
-    //   const landLine = new THREE.Line(landLineGeometry, landLineMaterial);
-    //   landLine.name = 'landLine';
-    //   this.scene.add(landLine);
-    //   this.setState({ landLine: landLine });
-    // });
   }
 
-  animate = () => {
+  moveDrone = object => {
+    if (object.position.x !== this.props.currentDronePosition.x) {
+      let differenceX = this.props.currentDronePosition.x - object.position.x;
+      if (differenceX > 0) {
+        object.position.x = object.position.x + 0.01;
+      }
+      if (differenceX < 0) {
+        object.position.x = object.position.x - 0.01;
+      }
+    }
+    if (object.position.y !== this.props.currentDronePosition.y) {
+      let differenceY = this.props.currentDronePosition.y - object.position.y;
+      if (differenceY > 0) {
+        object.position.y = object.position.y + 0.01;
+      }
+      if (differenceY < 0) {
+        object.position.y = object.position.y - 0.01;
+      }
+    }
+    if (object.position.z !== this.props.currentDronePosition.z) {
+      let differenceZ = this.props.currentDronePosition.z - object.position.z;
+      if (differenceZ > 0) {
+        object.position.z = object.position.z + 0.01;
+      }
+      if (differenceZ < 0) {
+        object.position.z = object.position.z - 0.01;
+      }
+    }
+  };
+
+  animate = async () => {
     requestAnimationFrame(this.animate);
-    // console.dir(this.camera);
+
+    this.moveDrone(this.sphere);
+    this.moveDrone(drone3DModel);
+    this.moveDrone(this.camera);
+
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
@@ -200,6 +296,8 @@ const mapState = state => {
   return {
     scale: state.scale,
     voxelSize: state.voxelSize,
+    currentDronePosition: state.currentDronePosition,
+    startingPosition: state.startingPosition,
   };
 };
 
