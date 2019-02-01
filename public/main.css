@@ -49,6 +49,16 @@
   justify-content: center;
 }
 
+#sandbox {
+  margin-top: 1em;
+  margin-right: 0;
+  margin-bottom: 2em;
+  margin-left: 0.5em;
+  border-style: solid;
+  border-width: 5px;
+  border-color: black;
+}
+
 #status-container {
   width: 10vw;
   height: 25vh;
@@ -65,15 +75,6 @@
   border-style: solid;
   border-width: 5px;
   border-color: black;
-}
-
-#drone-model {
-  margin-top: 1em;
-  margin-right: 0;
-  margin-bottom: 2em;
-  margin-left: 0.5em;
-  height: 360px;
-  width: 640px;
 }
 
 #footer {

@@ -1,18 +1,24 @@
+export const voxelSizeValue = 10;
+const startingPositionCoords = { x: 0, y: 0 + voxelSizeValue * -0.5, z: 0 };
+
 const INITIAL_STATE = {
   distance: 50,
   speed: 50,
   battery: 100,
   scale: 10,
-  voxelSize: 10,
+  voxelSize: voxelSizeValue,
   roll: 0,
   pitch: 0,
   yaw: 0,
   debugMode: true,
   navTab: 'build',
+  startingPosition: startingPositionCoords,
+  currentDronePosition: startingPositionCoords,
   flightInstructions: [
     { instruction: 'takeoff', message: 'Takeoff' },
     { instruction: 'land', message: 'Land' },
   ],
+  obstacles: true,
 };
 
 //ACTION CONSTANTS
@@ -32,6 +38,8 @@ const CHANGE_TAB = 'CHANGE_TAB';
 
 const UPDATE_INSTRUCTIONS = 'UPDATE_INSTRUCTIONS';
 const CLEAR_INSTRUCTIONS = 'CLEAR_INSTRUCTIONS';
+
+const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -58,6 +66,11 @@ export const clearInstructions = () => ({
   flightInstructions: INITIAL_STATE.flightInstructions,
 });
 
+export const updateCDP = newPosition => ({
+  type: UPDATE_CURRENT_DRONE_POSITION,
+  newPosition,
+});
+
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case INCREASE_DISTANCE:
@@ -82,6 +95,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, flightInstructions: action.flightInstructions };
     case CLEAR_INSTRUCTIONS:
       return { ...state, flightInstructions: action.flightInstructions };
+    case UPDATE_CURRENT_DRONE_POSITION:
+      return { ...state, currentDronePosition: action.newPosition };
     default:
       return state;
   }

@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
-import droneGroup from '../ThreeJSModules/Drone';
+import droneGroup from '../ThreeJSModules/DroneForTelemetry';
 import droneModelSkybox from '../ThreeJSModules/DroneModelSkybox';
-import droneModel3D from '../ThreeJSModules/Drone';
+import droneModel3D from '../ThreeJSModules/DroneForTelemetry';
 
 class DroneTelemetry extends Component {
   constructor(props) {

@@ -2,6 +2,8 @@ const dgram = require('dgram');
 const wait = require('waait');
 const throttle = require('lodash/throttle');
 const commandDelays = require('./commandDelays');
+const PubSub = require('pubsub-js');
+const { ipcMain } = require('electron');
 
 const HOST = '192.168.10.1';
 const COMMANDPORT = 8889;
@@ -20,18 +22,18 @@ module.exports = function() {
   //DRONE STATE
   const droneState = dgram.createSocket('udp4');
   droneState.bind(STATEPORT);
-  let formattedState
-  
+  let formattedState;
+
   const parseState = state => {
     return state
-    .split(';')
-    .map(x => x.split(':'))
-    .reduce((data, [key, value]) => {
-      data[key] = value;
-      return data;
-    }, {});
+      .split(';')
+      .map(x => x.split(':'))
+      .reduce((data, [key, value]) => {
+        data[key] = value;
+        return data;
+      }, {});
   };
-  
+
   droneState.on(
     'message',
     throttle(state => {
@@ -40,11 +42,11 @@ module.exports = function() {
   );
 
   // Get the drone state
-  const getDroneState = () => formattedState ;
+  const getDroneState = () => formattedState;
 
   //DRONE VIDEO STREAM
   // const droneStream = dgram.createSocket('udp4');
- // droneStream.bind(STREAMPORT);
+  // droneStream.bind(STREAMPORT);
 
   // droneStream.on('message', message => {
   //   console.log('message', message);
@@ -80,13 +82,14 @@ module.exports = function() {
 
   const runInstructionList = async instructionList => {
     for (let i = 0; i < instructionList.length; i++) {
+      //Wait for Command Delay
       await runSingleInstruction(instructionList[i]);
     }
-    console.log('flown');
+    console.log('The eagle has landed.');
   };
   return {
     runSingleInstruction,
     runInstructionList,
-    getDroneState
+    getDroneState,
   };
 };

@@ -50,13 +50,15 @@ class Build extends Component {
     // Listen for flight import from main process
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       drawPath(flightInstructions, this.props.distance);
-    })
+    });
     // Listen for request for flight instructions from main process
     ipcRenderer.on('request-flightInstructions', event => {
-
       // Reply back with instructions
-      ipcRenderer.send('send-flightInstructions', this.props.flightInstructions);
-    })
+      ipcRenderer.send(
+        'send-flightInstructions',
+        this.props.flightInstructions
+      );
+    });
   }
 
   addFlightInstruction = (flightInstruction, flightMessage) => {
@@ -363,6 +365,7 @@ const mapDispatch = dispatch => {
     clearInstructions: () => dispatch(clearInstructions()),
   };
 };
+
 // const mapDispatch = dispatch => {
 //   return {
 //     increaseDistance: () => {
