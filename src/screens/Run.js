@@ -256,7 +256,6 @@ class Run extends Component {
             <Button
               negative
               icon="checkmark"
-              labelPosition="center"
               content="Ok"
               onClick={this.closeInvalidVideoTime}
             />
