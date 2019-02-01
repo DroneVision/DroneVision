@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
-import droneGroup from '../ThreeJSModules/DroneForTelemetry';
+import droneModel from '../ThreeJSModules/Drone3DModel';
 import droneModelSkybox from '../ThreeJSModules/DroneModelSkybox';
-import droneModel3D from '../ThreeJSModules/DroneForTelemetry';
 
 class DroneTelemetry extends Component {
   constructor(props) {
@@ -38,7 +37,8 @@ class DroneTelemetry extends Component {
     this.scene.add(droneModelSkybox);
 
     //3D DRONE MODEL
-    this.scene.add(droneModel3D);
+    this.drone3DModel = droneModel.clone();
+    this.scene.add(this.drone3DModel);
 
     //AMBIENT LIGHT
     const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
@@ -55,7 +55,7 @@ class DroneTelemetry extends Component {
   animate = () => {
     requestAnimationFrame(this.animate);
 
-    droneGroup.rotation.set(
+    this.drone3DModel.rotation.set(
       this.props.pitch * 0.01,
       this.props.yaw * -0.019,
       this.props.roll * -0.01

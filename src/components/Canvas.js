@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
 import PubSub from 'pubsub-js';
 import canvasSkybox from '../ThreeJSModules/CanvasSkybox';
-import drone3DModel from '../ThreeJSModules/DroneForCanvas';
+import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
@@ -49,30 +49,31 @@ class Canvas extends Component {
     this.scene.add(canvasSkybox);
 
     //SPHERE
-    const sphereGeo = new THREE.SphereGeometry(0.1, 32, 32);
-    const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-    this.sphere = new THREE.Mesh(sphereGeo, sphereMat);
-    // this.sphere.position.set(0, 0, 0);
-    // this.sphere.position.set(0, this.gridEdgeLength * -0.5, 0);
-    this.sphere.position.set(
-      this.props.startingPosition.x,
-      this.props.startingPosition.y,
-      this.props.startingPosition.z
-    );
+    // const sphereGeo = new THREE.SphereGeometry(0.1, 32, 32);
+    // const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+    // this.sphere = new THREE.Mesh(sphereGeo, sphereMat);
+    // // this.sphere.position.set(0, 0, 0);
+    // // this.sphere.position.set(0, this.gridEdgeLength * -0.5, 0);
+    // this.sphere.position.set(
+    //   this.props.startingPosition.x,
+    //   this.props.startingPosition.y,
+    //   this.props.startingPosition.z
+    // );
 
-    this.scene.add(this.sphere);
+    // this.scene.add(this.sphere);
 
     //DRONE 3D MODEL
-    drone3DModel.position.set(
+    this.drone3DModel = droneModel.clone();
+    this.drone3DModel.position.set(
       this.props.startingPosition.x,
       this.props.startingPosition.y,
       this.props.startingPosition.z
     );
 
-    drone3DModel.rotation.y = Math.PI;
-    drone3DModel.scale.set(0.1, 0.1, 0.1);
+    this.drone3DModel.rotation.y = Math.PI;
+    this.drone3DModel.scale.set(0.1, 0.1, 0.1);
 
-    this.scene.add(drone3DModel);
+    this.scene.add(this.drone3DModel);
 
     //GRID
     this.gridEdgeLength = this.props.voxelSize;
@@ -140,12 +141,8 @@ class Canvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
-    ipcRenderer.on('hi', event => {
-      console.log('hiiiii');
-    });
-    ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
-      console.log('subc');
 
+    ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
       ipcRenderer.send('get-drone-moves');
 
       if (singleFlightCoord === 'command') {
@@ -229,6 +226,9 @@ class Canvas extends Component {
       if (differenceX < 0) {
         object.position.x = object.position.x - 0.01;
       }
+      if (Math.abs(differenceX) < 0.02) {
+        object.position.x = this.props.currentDronePosition.x;
+      }
     }
     if (object.position.y !== this.props.currentDronePosition.y) {
       let differenceY = this.props.currentDronePosition.y - object.position.y;
@@ -238,7 +238,9 @@ class Canvas extends Component {
       if (differenceY < 0) {
         object.position.y = object.position.y - 0.01;
       }
-      console.log(object.position);
+      if (Math.abs(differenceY) < 0.02) {
+        object.position.y = this.props.currentDronePosition.y;
+      }
     }
     if (object.position.z !== this.props.currentDronePosition.z) {
       let differenceZ = this.props.currentDronePosition.z - object.position.z;
@@ -248,14 +250,15 @@ class Canvas extends Component {
       if (differenceZ < 0) {
         object.position.z = object.position.z - 0.01;
       }
+      if (Math.abs(differenceZ) < 0.02) {
+        object.position.z = this.props.currentDronePosition.z;
+      }
     }
   };
 
   animate = async () => {
     requestAnimationFrame(this.animate);
-
-    this.moveDrone(this.sphere);
-    this.moveDrone(drone3DModel);
+    this.moveDrone(this.drone3DModel);
     // this.moveDrone(this.camera);
 
     this.controls.update();
