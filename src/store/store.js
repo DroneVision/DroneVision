@@ -1,4 +1,4 @@
-const voxelSizeValue = 10;
+export const voxelSizeValue = 10;
 const startingPositionCoords = { x: 0, y: 0 + voxelSizeValue * -0.5, z: 0 };
 
 const INITIAL_STATE = {
