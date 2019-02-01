@@ -18,6 +18,7 @@ import wait from 'waait';
 import { drawPath } from '../utils/drawPathUtils';
 import { updateCDP } from '../store/store';
 import commandDelays from '../drone/commandDelays';
+// import flightCommandsIteratorReduxUpdater from '../utils/animateDroneUtils';
 
 const { ipcRenderer } = window.require('electron');
 
