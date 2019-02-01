@@ -6,7 +6,7 @@ const Battery = props => {
   const label = `Battery: ${percent}%`;
   return (
     <div id="battery">
-      <Progress percent={percent} label={label} warning={false} indicating />
+      <Progress style={{width:"200px"}}percent={percent} label={label} warning={false} indicating size="small"/>
     </div>
   );
 };

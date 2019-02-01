@@ -60,10 +60,10 @@ class StatusSegment extends Component {
   render() {
     return (
       <div id="status-segment">
-        <Segment compact tertiary padded floated="right">
-          <List divided relaxed>
+        <Segment>
+          <List divided relaxed="very" horizontal>
             <List.Item>
-              <List.Content>
+              <List.Content verticalAlign="bottom">
                 <Battery percent={this.state.battery} />
               </List.Content>
             </List.Item>
