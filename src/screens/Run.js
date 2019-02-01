@@ -150,7 +150,7 @@ class Run extends Component {
         <Grid padded>
           <Grid.Row columns={2}>
             <Grid.Column>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="paper plane" />
                 <Header.Content>
                   AutoPilot
@@ -162,7 +162,7 @@ class Run extends Component {
             </Grid.Column>
 
             <Grid.Column>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="cloudscale" />
                 <Header.Content>
                   Drone Telemetry
@@ -186,7 +186,7 @@ class Run extends Component {
 
           <Grid.Row columns={2}>
             <Grid.Column>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="rocket" />
                 <Header.Content>
                   Run Flight
@@ -198,7 +198,7 @@ class Run extends Component {
             </Grid.Column>
 
             <Grid.Column>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="video camera" />
                 <Header.Content>
                   Record Video
@@ -216,7 +216,7 @@ class Run extends Component {
           </Grid.Row>
 
           <Grid.Row columns={2}>
-            <Grid.Column>
+            <Grid.Column id="centered">
               <Button
                 disabled={this.state.runButtonsDisabled}
                 color="facebook"
@@ -227,7 +227,7 @@ class Run extends Component {
               />
             </Grid.Column>
 
-            <Grid.Column>
+            <Grid.Column id="centered">
               <Button
                 disabled={this.state.runButtonsDisabled}
                 color="facebook"
@@ -239,18 +239,8 @@ class Run extends Component {
             </Grid.Column>
           </Grid.Row>
 
-          {/* <Grid.Row columns={2}>
-            <Grid.Column />
-
-            <Grid.Column>
-              <Button onClick={() => this.stopRecordingVideo()}>
-                Stop Recording
-              </Button>
-            </Grid.Column>
-          </Grid.Row> */}
-
           <Grid.Row columns={1}>
-            <Grid.Column>
+            <Grid.Column id="centered">
               <StatusContainer />
             </Grid.Column>
           </Grid.Row>
