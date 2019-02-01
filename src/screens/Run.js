@@ -18,6 +18,7 @@ import wait from 'waait';
 import { drawPath } from '../utils/drawPathUtils';
 import { updateCDP } from '../store/store';
 import commandDelays from '../drone/commandDelays';
+// import flightCommandsIteratorReduxUpdater from '../utils/animateDroneUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -238,17 +239,6 @@ class Run extends Component {
               />
             </Grid.Column>
           </Grid.Row>
-
-          {/* <Grid.Row columns={2}>
-            <Grid.Column />
-
-            <Grid.Column>
-              <Button onClick={() => this.stopRecordingVideo()}>
-                Stop Recording
-              </Button>
-            </Grid.Column>
-          </Grid.Row> */}
-
           <Grid.Row columns={1}>
             <Grid.Column>
               <StatusContainer />
