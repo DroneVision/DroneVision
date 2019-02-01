@@ -70,6 +70,7 @@ class Canvas extends Component {
       this.props.startingPosition.z
     );
 
+    this.controls.target = this.drone3DModel.position;
     this.drone3DModel.rotation.y = Math.PI;
     this.drone3DModel.scale.set(0.1, 0.1, 0.1);
 
@@ -218,39 +219,53 @@ class Canvas extends Component {
   }
 
   moveDrone = object => {
+    let differenceX = this.props.currentDronePosition.x - object.position.x;
+    let differenceY = this.props.currentDronePosition.y - object.position.y;
+    let differenceZ = this.props.currentDronePosition.z - object.position.z;
+    let speed;
+
+    if (differenceX > 8 || differenceY > 8 || differenceZ > 8) {
+      speed = 0.05;
+    } else if (differenceX > 6 || differenceY > 6 || differenceZ > 6) {
+      speed = 0.04;
+    } else if (differenceX > 4 || differenceY > 4 || differenceZ > 4) {
+      speed = 0.03;
+    } else if (differenceX > 2 || differenceY > 2 || differenceZ > 2) {
+      speed = 0.02;
+    } else {
+      speed = 0.01;
+    }
+
     if (object.position.x !== this.props.currentDronePosition.x) {
-      let differenceX = this.props.currentDronePosition.x - object.position.x;
       if (differenceX > 0) {
-        object.position.x = object.position.x + 0.01;
+        object.position.x = object.position.x + speed;
       }
       if (differenceX < 0) {
-        object.position.x = object.position.x - 0.01;
+        object.position.x = object.position.x - speed;
       }
-      if (Math.abs(differenceX) < 0.02) {
+      if (Math.abs(differenceX) < speed + 0.01) {
         object.position.x = this.props.currentDronePosition.x;
       }
     }
     if (object.position.y !== this.props.currentDronePosition.y) {
-      let differenceY = this.props.currentDronePosition.y - object.position.y;
       if (differenceY > 0) {
-        object.position.y = object.position.y + 0.01;
+        object.position.y = object.position.y + speed;
       }
       if (differenceY < 0) {
-        object.position.y = object.position.y - 0.01;
+        object.position.y = object.position.y - speed;
       }
-      if (Math.abs(differenceY) < 0.02) {
+      if (Math.abs(differenceY) < speed + 0.01) {
         object.position.y = this.props.currentDronePosition.y;
       }
     }
     if (object.position.z !== this.props.currentDronePosition.z) {
-      let differenceZ = this.props.currentDronePosition.z - object.position.z;
       if (differenceZ > 0) {
-        object.position.z = object.position.z + 0.01;
+        object.position.z = object.position.z + speed;
       }
       if (differenceZ < 0) {
-        object.position.z = object.position.z - 0.01;
+        object.position.z = object.position.z - speed;
       }
-      if (Math.abs(differenceZ) < 0.02) {
+      if (Math.abs(differenceZ) < speed + 0.01) {
         object.position.z = this.props.currentDronePosition.z;
       }
     }
