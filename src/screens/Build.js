@@ -49,6 +49,7 @@ class Build extends Component {
     drawPath(this.props.flightInstructions, this.props.distance);
     // Listen for flight import from main process
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
+      this.props.updateInstructions(flightInstructions);
       drawPath(flightInstructions, this.props.distance);
     });
     // Listen for request for flight instructions from main process
@@ -361,7 +362,7 @@ const mapDispatch = dispatch => {
   return {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
-      dispatch(updateInstructions(flightInstructions)),
+    dispatch(updateInstructions(flightInstructions)),
     clearInstructions: () => dispatch(clearInstructions()),
   };
 };

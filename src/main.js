@@ -21,6 +21,15 @@ const fs = require('fs');
 
 let currentVid;
 
+
+//////////////////////////////////////////////////////////
+//														//
+// IPCMain and IPCRenderer in Electron send messages 	//
+// between main and renderer processes.					//
+//														//
+//////////////////////////////////////////////////////////
+
+
 ipcMain.on('start-recording', (event, duration) => {
   let formattedDateString = new Date()
     .toString()
