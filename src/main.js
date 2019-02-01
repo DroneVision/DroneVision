@@ -28,13 +28,10 @@ ipcMain.on('start-recording', (event, duration) => {
     .splice(1, 4)
     .join('-');
 
-  const stream = fs.createWriteStream('udp://0.0.0.0:11111');
-
   let command = new ffmpeg('udp://0.0.0.0:11111')
     .size('640x?')
     .aspect('4:3')
     .output(`./DroneVision-${formattedDateString}.mp4`)
-    .output(stream)
     .duration(duration)
     .on('end', () => {
       console.log('duration is over');

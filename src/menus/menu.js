@@ -3,6 +3,7 @@ const darwinMenu  = require('./darwin');
 const fileMenu = require('./fileMenu');
 // const droneMenu  = require('./droneMenu');
 const viewMenu = require('./viewMenu');
+const windowMenu = require('./windowMenu');
 
 module.exports = BrowserWindow => {
 	const currentYear = new Date().getFullYear();
@@ -16,11 +17,15 @@ module.exports = BrowserWindow => {
 		buttons: []
 	  });
 	};
+
+	// Render the menu bar and menu items
   
 	const template = [
+		// Check if we are using an OSX
 	  ...(process.platform === 'darwin' ? [darwinMenu(showDroneVisionAbout)] : []),
 		fileMenu(BrowserWindow),
-		viewMenu(BrowserWindow)
+		viewMenu(BrowserWindow),
+		windowMenu
 	//   droneMenu
 	];
   

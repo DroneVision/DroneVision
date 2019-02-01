@@ -14,44 +14,17 @@
   transform: rotate(-45deg);
 }
 
-.forward {
-}
-
-.back {
-}
-
-.left {
-}
-
-.right {
-}
-
-.hold {
-}
-
-.straight-up {
-}
-
-.straight-down {
-}
-
-#flight-messages {
-  text-align: left;
-  width: 250px;
-}
-
 .flight-message-single {
   margin: 2px 0px;
 }
 
-#build-screen {
-  text-align: center;
-  display: inline-block;
+#body {
+  background-image: url('bg.jpg');
+  background-repeat: no-repeat;
 }
 
-#build-content {
-  display: flex;
-  flex-direction: row;
+#build-screen {
+  text-align: center;
 }
 
 #run {
@@ -71,21 +44,12 @@
   justify-content: center;
 }
 
-#controls-3d {
+#canvas {
   display: flex;
   justify-content: center;
 }
 
-#delete-clear-send {
-  display: flex;
-  justify-content: center;
-}
-
-#controls-real-time {
-  display: flex;
-  justify-content: center;
-}
-
+<<<<<<< HEAD
 #canvas {
   margin-top: 1em;
   margin-right: 0;
@@ -103,6 +67,8 @@
   border-color: black;
 }
 
+=======
+>>>>>>> master
 #status-container {
   width: 10vw;
   height: 25vh;
@@ -131,11 +97,33 @@
 }
 
 #footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  background-color: black;
+  background-color: #1b1c1d;
   color: white;
   width: 100%;
   text-align: center;
+  margin-top: 500px;
   padding: 5px;
+}
+
+#left-column {
+  position: fixed;
+  left: 0;
+  background-color: #1b1c1d;
+  min-height: 100%;
+  padding: 7px;
+}
+
+#right-column {
+  position: fixed;
+  right: 0;
+  background-color: #1b1c1d;
+  min-height: 100%;
+  padding: 7px;
+}
+
+h1#ap-header {
+  display: flex;
+  justify-content: center;
 }

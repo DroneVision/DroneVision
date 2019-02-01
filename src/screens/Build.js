@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Icon, List } from 'semantic-ui-react';
+
+import {
+  Button,
+  Icon,
+  List,
+  Segment,
+  Header,
+  Grid,
+  Responsive,
+} from 'semantic-ui-react';
+
 import ButtonPanel from '../components/ButtonPanel';
 import Canvas from '../components/Canvas';
 import {
@@ -37,6 +47,18 @@ class Build extends Component {
 
   componentDidMount() {
     drawPath(this.props.flightInstructions, this.props.distance);
+    // Listen for flight import from main process
+    ipcRenderer.on('file-opened', (event, flightInstructions) => {
+      drawPath(flightInstructions, this.props.distance);
+    });
+    // Listen for request for flight instructions from main process
+    ipcRenderer.on('request-flightInstructions', event => {
+      // Reply back with instructions
+      ipcRenderer.send(
+        'send-flightInstructions',
+        this.props.flightInstructions
+      );
+    });
   }
 
   addFlightInstruction = (flightInstruction, flightMessage) => {
@@ -163,143 +185,164 @@ class Build extends Component {
     const downDisabled = currentPoint.y === limits.minY;
     return (
       <div id="build-screen">
-        <h1>AutoPilot Builder/Visualizer</h1>
-        <div id="build-content">
-          <div id="flight-messages">
-            <List divided>
-              {flightInstructions
-                .map(instructionObj => instructionObj.message)
-                .map((message, ind) => {
-                  let icon;
-                  if (message === 'Takeoff') {
-                    icon = 'hand point up';
-                  } else if (message === 'Land') {
-                    icon = 'hand point down';
-                  } else if (message === 'Hold') {
-                    icon = 'hourglass half';
-                  } else {
-                    icon = 'dot circle';
-                  }
-                  return (
-                    <List.Item
-                      className="flight-message-single"
-                      key={ind}
-                      content={message}
-                      icon={icon}
-                    />
-                  );
-                })}
-            </List>
-          </div>
-          <div id="builder">
-            <Canvas />
-            {/* <p>{`${flightMessages.join(' --> ')}`}</p> */}
+        <Grid columns={2} divided padded centered>
+          <Grid.Row stretched>
+            <Grid.Column width={8}>
+              <Header as="h1" dividing id="ap-header">
+                <Icon name="settings" />
+                <Header.Content>
+                  AutoPilot Builder
+                  <Header.Subheader>
+                    <i>Visualize your build path</i>
+                  </Header.Subheader>
+                </Header.Content>
+              </Header>
 
-            <br />
-            <p>CREATE AUTOPILOT</p>
+              <Grid.Row centered>
+                <Grid.Column textAlign="center" centered>
+                  <Canvas />
+                </Grid.Column>
+              </Grid.Row>
 
-            <div id="controls-3d">
-              <table>
-                <tbody>
-                  <tr>
-                    <td>
-                      <h1>Up</h1>
-                    </td>
-                    <td>
-                      <h1>Horizontal</h1>
-                    </td>
-                    <td>
-                      <h1>Down</h1>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={upDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
-                        distance={this.props.distance}
-                        speed={this.props.speed}
-                        type="Up"
-                      />
-                    </td>
-                    <td>
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={false}
-                        addFlightInstruction={this.addFlightInstruction}
-                        distance={this.props.distance}
-                        speed={this.props.speed}
-                        type="Current"
-                      />
-                    </td>
-                    <td>
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={downDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
-                        distance={this.props.distance}
-                        speed={this.props.speed}
-                        type="Down"
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+              <Grid.Row>
+                <Grid columns={3} padded>
+                  <Grid.Row centered>
+                    <Grid.Row centered>
+                      <Grid.Column as="h1" textAlign="center">
+                        Up
+                        <ButtonPanel
+                          latestInstructionMessage={latestInstructionMessage}
+                          leftDisabled={leftDisabled}
+                          rightDisabled={rightDisabled}
+                          forwardDisabled={forwardDisabled}
+                          reverseDisabled={reverseDisabled}
+                          allDisabled={upDisabled}
+                          addFlightInstruction={this.addFlightInstruction}
+                          distance={this.props.distance}
+                          speed={this.props.speed}
+                          type="Up"
+                        />
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row centered>
+                      <Grid.Column as="h1" textAlign="center">
+                        Horizontal
+                        <ButtonPanel
+                          latestInstructionMessage={latestInstructionMessage}
+                          leftDisabled={leftDisabled}
+                          rightDisabled={rightDisabled}
+                          forwardDisabled={forwardDisabled}
+                          reverseDisabled={reverseDisabled}
+                          allDisabled={false}
+                          addFlightInstruction={this.addFlightInstruction}
+                          distance={this.props.distance}
+                          speed={this.props.speed}
+                          type="Current"
+                        />
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row centered>
+                      <Grid.Column as="h1" textAlign="center">
+                        Down
+                        <ButtonPanel
+                          latestInstructionMessage={latestInstructionMessage}
+                          leftDisabled={leftDisabled}
+                          rightDisabled={rightDisabled}
+                          forwardDisabled={forwardDisabled}
+                          reverseDisabled={reverseDisabled}
+                          allDisabled={downDisabled}
+                          addFlightInstruction={this.addFlightInstruction}
+                          distance={this.props.distance}
+                          speed={this.props.speed}
+                          type="Down"
+                        />
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid.Row>
+                </Grid>
+              </Grid.Row>
 
-            <div id="delete-clear-send">
-              <table>
-                <tbody>
-                  <tr>
-                    <td>
-                      <Button
-                        disabled={flightInstructions.length <= 2}
-                        onClick={() => this.deleteLastInstruction()}
-                      >
-                        Delete Last Instruction
+              <Grid.Row>
+                <Grid columns={2} padded>
+                  <Grid.Column textAlign="center">
+                    <Button
+                      disabled={flightInstructions.length <= 2}
+                      onClick={() => this.deleteLastInstruction()}
+                    >
+                      Delete Last Instruction
+                    </Button>
+                  </Grid.Column>
+                  <Grid.Column textAlign="center">
+                    <Button
+                      disabled={flightInstructions.length <= 2}
+                      onClick={() => this.clearFlightInstructions()}
+                    >
+                      Clear All Instructions
+                    </Button>
+                  </Grid.Column>
+                </Grid>
+              </Grid.Row>
+
+              <Grid.Row>
+                <Grid columns={3} padded centered>
+                  <Grid.Column textAlign="center">
+                    <Link to={'/run'}>
+                      <Button onClick={() => this.props.changeTab('run')}>
+                        View On Run Screen!
                       </Button>
-                      <Button
-                        disabled={flightInstructions.length <= 2}
-                        onClick={() => this.clearFlightInstructions()}
-                      >
-                        Clear All Instructions
-                      </Button>
-                      <br /> <br />
-                      <Link to={'/run'}>
-                        <Button onClick={() => this.props.changeTab('run')}>
-                          View On Run Screen!
-                        </Button>
-                      </Link>
-                      <Button
-                        onClick={() =>
-                          saveFlightInstructions(this.props.flightInstructions)
-                        }
-                      >
-                        Save Flight Path
-                      </Button>
-                      <Button onClick={this.handleLoadFlightInstructions}>
-                        Load Flight Path
-                      </Button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+                    </Link>
+                  </Grid.Column>
+                  <Grid.Column textAlign="center">
+                    <Button
+                      onClick={() =>
+                        saveFlightInstructions(this.props.flightInstructions)
+                      }
+                    >
+                      Save Flight Path
+                    </Button>
+                  </Grid.Column>
+                  <Grid.Column textAlign="center">
+                    <Button onClick={this.handleLoadFlightInstructions}>
+                      Load Flight Path
+                    </Button>
+                  </Grid.Column>
+                </Grid>
+              </Grid.Row>
+            </Grid.Column>
+
+            <Grid.Column width={4}>
+              <Segment inverted>
+                <List divided inverted animated>
+                  <List.Header>
+                    <i>Flight Instructions</i>
+                  </List.Header>
+                  {flightInstructions
+                    .map(instructionObj => instructionObj.message)
+                    .map((message, ind) => {
+                      let icon;
+                      if (message === 'Takeoff') {
+                        icon = 'hand point up';
+                      } else if (message === 'Land') {
+                        icon = 'hand point down';
+                      } else if (message === 'Hold') {
+                        icon = 'hourglass half';
+                      } else {
+                        icon = 'dot circle';
+                      }
+                      return (
+                        <List.Item
+                          className="flight-message-single"
+                          key={ind}
+                          content={message}
+                          icon={icon}
+                        />
+                      );
+                    })}
+                </List>
+              </Segment>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </div>
     );
   }
