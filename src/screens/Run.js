@@ -82,15 +82,22 @@ class Run extends Component {
         });
 
         setTimeout(() => {
+          //After flight completes wait 10 seconds
+          //Send drone model back to starting position
           this.props.updateCDP({
             x: this.props.startingPosition.x,
             y: this.props.startingPosition.y,
             z: this.props.startingPosition.z,
           });
+          //If user was recording, stop video encoding and stop streaming
           if (this.state.isRecording) {
             this.stopRecordingVideo();
           }
-          this.setState({ runButtonsDisabled: false, isRecording: false });
+          //Give the 'Send drone model back to starting
+          //position 4.5 seconds to animate before re-enabling buttons
+          setTimeout(() => {
+            this.setState({ runButtonsDisabled: false, isRecording: false });
+          }, 4500);
         }, 10000);
       } else {
         this.props.updateCDP(newCoords);
