@@ -54,6 +54,7 @@ class Build extends Component {
     drawPath(this.props.flightInstructions, this.props.distance);
     // Listen for flight import from main process
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
+      this.props.updateInstructions(flightInstructions);
       drawPath(flightInstructions, this.props.distance);
     });
     // Listen for request for flight instructions from main process
@@ -276,7 +277,7 @@ class Build extends Component {
             </Grid.Column>
 
             <Grid.Column width={9}>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="settings" />
                 <Header.Content>
                   AutoPilot Builder
@@ -451,7 +452,7 @@ const mapDispatch = dispatch => {
   return {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
-      dispatch(updateInstructions(flightInstructions)),
+    dispatch(updateInstructions(flightInstructions)),
     clearInstructions: () => dispatch(clearInstructions()),
     updateCDP: newPosition => {
       dispatch(updateCDP(newPosition));
