@@ -52,6 +52,7 @@ class Canvas extends Component {
       this.props.startingPosition.y,
       this.props.startingPosition.z
     );
+
     this.scene.add(this.sphere);
 
     //GRID
@@ -90,7 +91,7 @@ class Canvas extends Component {
     this.scene.add(gridCubeLines);
 
     //NORTH STAR
-    const northStarGeometry = new THREE.CylinderBufferGeometry(0, 10, 30, 4, 1);
+    const northStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
     const northStarMaterial = new THREE.MeshPhongMaterial({
       color: 0xb29600,
       flatShading: true,
