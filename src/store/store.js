@@ -41,6 +41,8 @@ const CLEAR_INSTRUCTIONS = 'CLEAR_INSTRUCTIONS';
 
 const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
 
+const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
+
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
 export const decreaseDistance = () => ({ type: DECREASE_DISTANCE });
@@ -71,6 +73,10 @@ export const updateCDP = newPosition => ({
   newPosition,
 });
 
+export const toggleObstacles = () => ({
+  type: TOGGLE_OBSTACLES,
+});
+
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case INCREASE_DISTANCE:
@@ -97,6 +103,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, flightInstructions: action.flightInstructions };
     case UPDATE_CURRENT_DRONE_POSITION:
       return { ...state, currentDronePosition: action.newPosition };
+    case TOGGLE_OBSTACLES:
+      return { ...state, obstacles: !state.obstacles };
     default:
       return state;
   }

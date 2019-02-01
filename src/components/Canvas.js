@@ -43,24 +43,31 @@ class Canvas extends Component {
     this.controls.dampingFactor = 1;
     this.controls.minDistance = 2;
     this.controls.maxDistance = 50;
-    this.controls.maxPolarAngle = Math.PI / 2;
+    // this.controls.maxPolarAngle = Math.PI / 2;
 
     // //SKYBOX
     this.scene.add(canvasSkybox);
 
-    //SPHERE
-    // const sphereGeo = new THREE.SphereGeometry(0.1, 32, 32);
-    // const sphereMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-    // this.sphere = new THREE.Mesh(sphereGeo, sphereMat);
-    // // this.sphere.position.set(0, 0, 0);
-    // // this.sphere.position.set(0, this.gridEdgeLength * -0.5, 0);
-    // this.sphere.position.set(
-    //   this.props.startingPosition.x,
-    //   this.props.startingPosition.y,
-    //   this.props.startingPosition.z
-    // );
-
-    // this.scene.add(this.sphere);
+    //LOADING AN EXTERNAL OBJECT
+    // this.loader = new THREE.ObjectLoader();
+    // this.loader.load('../ThreeJSModules/robot.json', function(object) {
+    //   var material = new THREE.MeshToonMaterial({
+    //     color: 0x3f3f3f,
+    //     alphaTest: 0.5,
+    //   });
+    //   object.traverse(function(child) {
+    //     if (child instanceof THREE.Mesh) {
+    //       child.material = material;
+    //       child.drawMode = THREE.TrianglesDrawMode;
+    //     }
+    //   });
+    //   object.scale.set(0.1, 0.1, 0.1);
+    //   object.position.x = 1;
+    //   object.position.y = 1;
+    //   object.position.z = 1;
+    //   object.rotation.set(25, 25, 25);
+    //   this.scene.add(object);
+    // });
 
     //DRONE 3D MODEL
     this.drone3DModel = droneModel.clone();
@@ -117,11 +124,6 @@ class Canvas extends Component {
     //WEST STAR
     this.scene.add(cardinalDirections);
 
-    //OBSTACLES (toggled by redux store)
-    if (this.props.obstacles) {
-      this.scene.add(Obstacles);
-    }
-
     //TAKEOFF LINE
     const takeoffLineMaterial = new THREE.LineBasicMaterial({
       color: 'yellow',
@@ -142,6 +144,15 @@ class Canvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
+
+    //OBSTACLES (toggled by redux store)
+    if (this.props.obstacles) {
+      this.scene.add(Obstacles);
+    }
+    //OBSTACLES (toggled by redux store)
+    if (!this.props.obstacles) {
+      this.scene.remove(Obstacles);
+    }
 
     ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
       ipcRenderer.send('get-drone-moves');
@@ -218,6 +229,16 @@ class Canvas extends Component {
     });
   }
 
+  componentDidUpdate = () => {
+    //OBSTACLES (toggled by redux store)
+    if (this.props.obstacles) {
+      this.scene.add(Obstacles);
+    }
+    //OBSTACLES (toggled by redux store)
+    if (!this.props.obstacles) {
+      this.scene.remove(Obstacles);
+    }
+  };
   moveDrone = object => {
     let differenceX = this.props.currentDronePosition.x - object.position.x;
     let differenceY = this.props.currentDronePosition.y - object.position.y;
