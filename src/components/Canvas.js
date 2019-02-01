@@ -49,25 +49,25 @@ class Canvas extends Component {
     this.scene.add(canvasSkybox);
 
     //LOADING AN EXTERNAL OBJECT
-    this.loader = new THREE.ObjectLoader();
-    this.loader.load('../ThreeJSModules/robot.json', function(object) {
-      var material = new THREE.MeshToonMaterial({
-        color: 0x3f3f3f,
-        alphaTest: 0.5,
-      });
-      object.traverse(function(child) {
-        if (child instanceof THREE.Mesh) {
-          child.material = material;
-          child.drawMode = THREE.TrianglesDrawMode;
-        }
-      });
-      object.scale.set(0.1, 0.1, 0.1);
-      object.position.x = 1;
-      object.position.y = 1;
-      object.position.z = 1;
-      object.rotation.set(25, 25, 25);
-      this.scene.add(object);
-    });
+    // this.loader = new THREE.ObjectLoader();
+    // this.loader.load('../ThreeJSModules/robot.json', function(object) {
+    //   var material = new THREE.MeshToonMaterial({
+    //     color: 0x3f3f3f,
+    //     alphaTest: 0.5,
+    //   });
+    //   object.traverse(function(child) {
+    //     if (child instanceof THREE.Mesh) {
+    //       child.material = material;
+    //       child.drawMode = THREE.TrianglesDrawMode;
+    //     }
+    //   });
+    //   object.scale.set(0.1, 0.1, 0.1);
+    //   object.position.x = 1;
+    //   object.position.y = 1;
+    //   object.position.z = 1;
+    //   object.rotation.set(25, 25, 25);
+    //   this.scene.add(object);
+    // });
 
     //DRONE 3D MODEL
     this.drone3DModel = droneModel.clone();
