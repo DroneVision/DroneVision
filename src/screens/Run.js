@@ -83,6 +83,14 @@ class Run extends Component {
           y: 0 + this.props.voxelSize * -0.5,
           z: this.props.currentDronePosition.z,
         });
+
+        setTimeout(() => {
+          this.props.updateCDP({
+            x: this.props.startingPosition.x,
+            y: this.props.startingPosition.y,
+            z: this.props.startingPosition.z,
+          });
+        }, 10000);
       } else {
         this.props.updateCDP(newCoords);
       }
