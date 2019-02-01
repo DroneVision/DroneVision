@@ -229,6 +229,9 @@ class Canvas extends Component {
       if (differenceX < 0) {
         object.position.x = object.position.x - 0.01;
       }
+      if (Math.abs(differenceX) < 0.02) {
+        object.position.x = this.props.currentDronePosition.x;
+      }
     }
     if (object.position.y !== this.props.currentDronePosition.y) {
       let differenceY = this.props.currentDronePosition.y - object.position.y;
@@ -238,7 +241,9 @@ class Canvas extends Component {
       if (differenceY < 0) {
         object.position.y = object.position.y - 0.01;
       }
-      console.log(object.position);
+      if (Math.abs(differenceY) < 0.02) {
+        object.position.y = this.props.currentDronePosition.y;
+      }
     }
     if (object.position.z !== this.props.currentDronePosition.z) {
       let differenceZ = this.props.currentDronePosition.z - object.position.z;
@@ -247,6 +252,9 @@ class Canvas extends Component {
       }
       if (differenceZ < 0) {
         object.position.z = object.position.z - 0.01;
+      }
+      if (Math.abs(differenceZ) < 0.02) {
+        object.position.z = this.props.currentDronePosition.z;
       }
     }
   };
