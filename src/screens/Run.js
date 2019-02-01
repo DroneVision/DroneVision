@@ -197,15 +197,10 @@ class Run extends Component {
                 labelPosition="left"
                 icon="military"
                 content="Test your Flight Path"
+                disabled={this.state.testRunButton}
                 onClick={this.runFlightInstructions}
               />
               <Button onClick={() => this.moveSphere()}>Move Sphere</Button>
-              <Button
-                disabled={this.state.testRunButton}
-                onClick={this.runFlightInstructions}
-              >
-                Test Run
-              </Button>
             </Grid.Column>
 
             <Grid.Column>
