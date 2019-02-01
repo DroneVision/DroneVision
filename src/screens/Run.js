@@ -18,6 +18,7 @@ class Run extends Component {
 
     this.state = {
       duration: 10,
+      testRunButton: false,
     };
   }
 
@@ -51,6 +52,9 @@ class Run extends Component {
   };
 
   flightCommandsIteratorReduxUpdater = async flightInstructions => {
+    //disable Test Run Button
+    this.setState({ testRunButton: true });
+
     //Iterate over all flightInstructions
     for (let i = 0; i < flightInstructions.length; i++) {
       let flightInstruction = flightInstructions[i];
@@ -90,6 +94,8 @@ class Run extends Component {
             y: this.props.startingPosition.y,
             z: this.props.startingPosition.z,
           });
+
+          this.setState({ testRunButton: false });
         }, 10000);
       } else {
         this.props.updateCDP(newCoords);
@@ -141,7 +147,12 @@ class Run extends Component {
                 Reset Video Recorder
               </Button>
               <Button onClick={() => this.moveSphere()}>Move Sphere</Button>
-              <Button onClick={this.runFlightInstructions}>Test Run</Button>
+              <Button
+                disabled={this.state.testRunButton}
+                onClick={this.runFlightInstructions}
+              >
+                Test Run
+              </Button>
               <Button>Record Run</Button>
             </td>
             <td>
