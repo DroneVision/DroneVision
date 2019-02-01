@@ -3,34 +3,11 @@
 const droneInit = require('../drone/droneInit');
 const wifi = require('node-wifi');
 
-// const { runSingleInstruction } = droneInit();
-
-// Initialize wifi module
-// Absolutely necessary even to set interface to null
 wifi.init({
     iface : process.env.WIFI_IFACE // network interface, choose a random wifi interface if set to null
 });
 
 async function connectToDroneWifi() {
-
-    // Check if our network interface connects to other wifi networks
-    // try {
-    //     const currentInterfaceConnection = await wifi.getCurrentConnections();
-    //     if (currentInterfaceConnection) {
-    //         // Check the wifi ssid we're currently connecting to
-    //         console.log('CurrentInterfaceConnection: ', currentInterfaceConnection)
-    //         // const { success, ssid } = currentInterfaceConnection;
-    //         // if (success) {
-    //         //     console.log(`This network interface is connecting to ${ssid} right now.`)
-    //         // }
-    //     }
-    // } catch (error) {
-    //     console.error(error);
-    // }
-
-
-
-
     // Disconnect from current network
     try {
         const disconnectionResult = await wifi.disconnect();
