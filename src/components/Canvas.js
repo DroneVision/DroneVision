@@ -28,8 +28,12 @@ class Canvas extends Component {
       1,
       1000
     );
-    this.camera.position.set(-2.8, 5.4, -14.8);
-    // this.camera.position.set(15, -15, -30);
+    // this.camera.position.set(-2.8, 5.4, -14.8);
+    this.camera.position.set(
+      this.props.startingPosition.x,
+      this.props.startingPosition.y,
+      this.props.startingPosition.z
+    );
 
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -277,6 +281,7 @@ class Canvas extends Component {
 
     this.moveDrone(this.sphere);
     this.moveDrone(drone3DModel);
+    this.moveDrone(this.camera);
 
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
