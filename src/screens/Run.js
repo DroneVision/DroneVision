@@ -1,26 +1,34 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import StatusContainer from "../components/StatusContainer";
-import DroneTelemetry from "../components/DroneTelemetry";
-import Canvas from "../components/Canvas";
-import Stream from "../components/Stream";
-import { Button, Grid, Header, Icon, Input, Modal } from "semantic-ui-react";
-import PubSub from "pubsub-js";
-import wait from "waait";
-import { drawPath } from "../utils/drawPathUtils";
-import { updateCDP } from "../store/store";
-import commandDelays from "../drone/commandDelays";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import StatusContainer from '../components/StatusContainer';
+import DroneTelemetry from '../components/DroneTelemetry';
+import Canvas from '../components/Canvas';
+import Stream from '../components/Stream';
+import {
+  Button,
+  Grid,
+  Header,
+  Icon,
+  Input,
+  Modal,
+  Transition,
+} from 'semantic-ui-react';
+import PubSub from 'pubsub-js';
+import wait from 'waait';
+import { drawPath } from '../utils/drawPathUtils';
+import { updateCDP } from '../store/store';
+import commandDelays from '../drone/commandDelays';
+// import flightCommandsIteratorReduxUpdater from '../utils/animateDroneUtils';
 
-const { ipcRenderer } = window.require("electron");
+const { ipcRenderer } = window.require('electron');
 
 class Run extends Component {
   constructor() {
     super();
 
     this.state = {
-      duration: 10,
-      invalidVideoTime: false,
-      testRunButton: false
+      runButtonsDisabled: false,
+      isRecording: false,
     };
   }
 
@@ -29,42 +37,26 @@ class Run extends Component {
   }
 
   connectToDroneHandler = () => {
-    ipcRenderer.send("connect-to-drone");
+    ipcRenderer.send('connect-to-drone');
   };
 
   startRecordingVideo = () => {
-    let durationToSend = this.state.duration;
-    if (durationToSend < 10) {
-      this.setState({ invalidVideoTime: true });
-    } else {
-      ipcRenderer.send("start-recording", parseInt(durationToSend));
-    }
+    ipcRenderer.send('start-recording');
   };
 
   stopRecordingVideo = () => {
-    ipcRenderer.send("stop-recording");
-  };
-
-  moveSphere = () => {
-    PubSub.publish("move-sphere");
-  };
-
-  handleDurationChange = event => {
-    this.setState({ duration: event.target.value });
+    ipcRenderer.send('stop-recording');
   };
 
   flightCommandsIteratorReduxUpdater = async flightInstructions => {
-    //disable Test Run Button
-    this.setState({ testRunButton: true });
-
     //Iterate over all flightInstructions
     for (let i = 0; i < flightInstructions.length; i++) {
       let flightInstruction = flightInstructions[i];
-      let instructionName = flightInstruction.instruction.split(" ")[0];
+      let instructionName = flightInstruction.instruction.split(' ')[0];
       //create new object for new coordinates
       let newCoords = {};
       let flightInstructionArray = flightInstruction.instruction
-        .split(" ")
+        .split(' ')
         .slice(1, 4)
         .map(numStr => Number(numStr) / this.props.distance);
 
@@ -76,28 +68,37 @@ class Run extends Component {
       newCoords.y = this.props.currentDronePosition.y + y;
       newCoords.z = this.props.currentDronePosition.z + z;
 
-      if (instructionName === "command") {
-      } else if (instructionName === "takeoff") {
+      if (instructionName === 'command') {
+      } else if (instructionName === 'takeoff') {
         this.props.updateCDP({
           x: this.props.startingPosition.x,
           y: this.props.startingPosition.y + 1,
-          z: this.props.startingPosition.z
+          z: this.props.startingPosition.z,
         });
-      } else if (instructionName === "land") {
+      } else if (instructionName === 'land') {
         this.props.updateCDP({
           x: this.props.currentDronePosition.x,
           y: 0 + this.props.voxelSize * -0.5,
-          z: this.props.currentDronePosition.z
+          z: this.props.currentDronePosition.z,
         });
 
         setTimeout(() => {
+          //After flight completes wait 10 seconds
+          //Send drone model back to starting position
           this.props.updateCDP({
             x: this.props.startingPosition.x,
             y: this.props.startingPosition.y,
-            z: this.props.startingPosition.z
+            z: this.props.startingPosition.z,
           });
-
-          this.setState({ testRunButton: false });
+          //If user was recording, stop video encoding and stop streaming
+          if (this.state.isRecording) {
+            this.stopRecordingVideo();
+          }
+          //Give the 'Send drone model back to starting
+          //position 4.5 seconds to animate before re-enabling buttons
+          setTimeout(() => {
+            this.setState({ runButtonsDisabled: false, isRecording: false });
+          }, 4500);
         }, 10000);
       } else {
         this.props.updateCDP(newCoords);
@@ -108,15 +109,36 @@ class Run extends Component {
   };
 
   runFlightInstructions = () => {
+    //Diable Buttons
+    this.setState({ runButtonsDisabled: true });
+    //Prepare variables for flight
     const { flightInstructions } = this.props;
     const droneInstructions = flightInstructions.map(
       flightInstructionObj => flightInstructionObj.instruction
     );
-    console.log("sending auto pilot to drone", droneInstructions);
-
-    ipcRenderer.send("autopilot", ["command", ...droneInstructions]);
-    console.log("this.props.flightInstructions", this.props.flightInstructions);
+    //Fly drone
+    ipcRenderer.send('autopilot', ['command', ...droneInstructions]);
+    //Animate 3D drone model on Canvas
     this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
+  };
+
+  runFlightInstructionsAndRecord = () => {
+    //Disable Buttons
+    this.setState({ runButtonsDisabled: true, isRecording: true });
+    //Start Recording
+    this.startRecordingVideo();
+    //Prepare variables for flight
+    const { flightInstructions } = this.props;
+    const droneInstructions = flightInstructions.map(
+      flightInstructionObj => flightInstructionObj.instruction
+    );
+    //Wait 5 Seconds, then fly the drone (gives camera time to initialize)
+    setTimeout(() => {
+      //Fly drone
+      ipcRenderer.send('autopilot', ['command', ...droneInstructions]);
+      //Animate 3D drone model on Cavnas
+      this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
+    }, 5000);
   };
 
   closeInvalidVideoTime = () => {
@@ -129,7 +151,7 @@ class Run extends Component {
         <Grid padded>
           <Grid.Row columns={2}>
             <Grid.Column>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="paper plane" />
                 <Header.Content>
                   AutoPilot
@@ -141,7 +163,7 @@ class Run extends Component {
             </Grid.Column>
 
             <Grid.Column>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="cloudscale" />
                 <Header.Content>
                   Drone Telemetry
@@ -165,24 +187,29 @@ class Run extends Component {
 
           <Grid.Row columns={2}>
             <Grid.Column>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="rocket" />
                 <Header.Content>
-                  Test
+                  Run Flight
                   <Header.Subheader>
-                    <i>Test your flight path</i>
+                    <i>Fly your drone</i>
                   </Header.Subheader>
                 </Header.Content>
               </Header>
             </Grid.Column>
 
             <Grid.Column>
-              <Header as="h1" dividing id="ap-header">
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="video camera" />
                 <Header.Content>
                   Record Video
                   <Header.Subheader>
-                    Recording status: <Icon name="circle" color="red" />
+                    {this.state.isRecording ? 'Recording: ' : null}
+                    {this.state.isRecording ? (
+                      <Icon name="circle" color="red" />
+                    ) : (
+                      'Record a video of your flight path'
+                    )}
                   </Header.Subheader>
                 </Header.Content>
               </Header>
@@ -190,78 +217,35 @@ class Run extends Component {
           </Grid.Row>
 
           <Grid.Row columns={2}>
-            <Grid.Column>
+            <Grid.Column id="centered">
               <Button
+                disabled={this.state.runButtonsDisabled}
                 color="facebook"
                 labelPosition="left"
                 icon="military"
-                content="Test your Flight Path"
-                disabled={this.state.testRunButton}
+                content="Run Flight"
                 onClick={this.runFlightInstructions}
               />
-              <Button onClick={() => this.moveSphere()}>Move Sphere</Button>
             </Grid.Column>
 
-            <Grid.Column>
-              <Input
-                action={
-                  <Button
-                    color="facebook"
-                    labelPosition="left"
-                    icon="play"
-                    content="Start Recording"
-                    onClick={() => this.startRecordingVideo()}
-                  />
-                }
-                actionPosition="left"
-                placeholder="10 seconds"
-                defaultValue="10"
-                label="seconds"
-                labelPosition="right"
-                type="number"
-                onChange={this.handleDurationChange}
+            <Grid.Column id="centered">
+              <Button
+                disabled={this.state.runButtonsDisabled}
+                color="facebook"
+                labelPosition="left"
+                icon="play"
+                content="Record Flight"
+                onClick={this.runFlightInstructionsAndRecord}
               />
-            </Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row columns={2}>
-            <Grid.Column />
-
-            <Grid.Column>
-              <Button onClick={() => this.stopRecordingVideo()}>
-                Reset Video Recorder
-              </Button>
             </Grid.Column>
           </Grid.Row>
 
           <Grid.Row columns={1}>
-          <Grid.Column>
-            <StatusContainer />
-          </Grid.Column>
-        </Grid.Row>
+            <Grid.Column id="centered">
+              <StatusContainer />
+            </Grid.Column>
+          </Grid.Row>
         </Grid>
-
-        
-
-        <Modal
-          size="mini"
-          open={this.state.invalidVideoTime}
-          onClose={this.closeInvalidVideoTime}
-        >
-          <Modal.Header>Error</Modal.Header>
-          <Modal.Content>
-            <p>Video must be at least 10 seconds long.</p>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button
-              negative
-              icon="checkmark"
-              labelPosition="center"
-              content="Ok"
-              onClick={this.closeInvalidVideoTime}
-            />
-          </Modal.Actions>
-        </Modal>
       </div>
     );
   }
@@ -273,7 +257,7 @@ const mapState = state => {
     flightInstructions: state.flightInstructions,
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
-    voxelSize: state.voxelSize
+    voxelSize: state.voxelSize,
   };
 };
 
@@ -281,7 +265,7 @@ const mapDispatch = dispatch => {
   return {
     updateCDP: newPosition => {
       dispatch(updateCDP(newPosition));
-    }
+    },
   };
 };
 

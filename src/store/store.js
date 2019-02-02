@@ -18,8 +18,8 @@ const INITIAL_STATE = {
     { instruction: 'takeoff', message: 'Takeoff' },
     { instruction: 'land', message: 'Land' },
   ],
-  obstacles: true,
   droneOrientation: 0,
+  obstacles: false,
 };
 
 //ACTION CONSTANTS
@@ -43,6 +43,8 @@ const CLEAR_INSTRUCTIONS = 'CLEAR_INSTRUCTIONS';
 const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
 
 const ROTATE_DRONE = 'ROTATE_DRONE';
+
+const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -79,6 +81,10 @@ export const rotateDrone = newOrientation => ({
   newOrientation,
 });
 
+export const toggleObstacles = () => ({
+  type: TOGGLE_OBSTACLES,
+});
+
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case INCREASE_DISTANCE:
@@ -107,6 +113,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, currentDronePosition: action.newPosition };
     case ROTATE_DRONE:
       return { ...state, droneOrientation: action.newOrientation };
+    case TOGGLE_OBSTACLES:
+      return { ...state, obstacles: !state.obstacles };
     default:
       return state;
   }

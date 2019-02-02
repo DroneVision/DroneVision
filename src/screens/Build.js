@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import wait from 'waait';
+import commandDelays from '../drone/commandDelays';
 
 import {
   Button,
@@ -18,6 +20,8 @@ import {
   changeTab,
   updateInstructions,
   clearInstructions,
+  updateCDP,
+  toggleObstacles,
 } from '../store/store';
 
 import { drawPath, getFlightCoords } from '../utils/drawPathUtils';
@@ -31,9 +35,9 @@ const { ipcRenderer } = window.require('electron');
 class Build extends Component {
   constructor(props) {
     super(props);
-    const { gridWidth, gridLength, gridHeight, distance } = this.props;
     this.state = {
       startingPoint: { x: 0, y: 1, z: 0 },
+      runButtonsDisabled: false,
     };
   }
 
@@ -41,6 +45,7 @@ class Build extends Component {
     drawPath(this.props.flightInstructions, this.props.distance);
     // Listen for flight import from main process
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
+      this.props.updateInstructions(flightInstructions);
       drawPath(flightInstructions, this.props.distance);
     });
     // Listen for request for flight instructions from main process
@@ -154,6 +159,76 @@ class Build extends Component {
     drawPath(this.props.flightInstructions, this.props.distance);
   };
 
+  flightCommandsIteratorReduxUpdater = async flightInstructions => {
+    //Iterate over all flightInstructions
+    for (let i = 0; i < flightInstructions.length; i++) {
+      let flightInstruction = flightInstructions[i];
+      let instructionName = flightInstruction.instruction.split(' ')[0];
+      //create new object for new coordinates
+      let newCoords = {};
+      let flightInstructionArray = flightInstruction.instruction
+        .split(' ')
+        .slice(1, 4)
+        .map(numStr => Number(numStr) / this.props.distance);
+
+      const [z, x, y] = flightInstructionArray;
+      // x -> z
+      // y -> x
+      // z -> y
+      newCoords.x = this.props.currentDronePosition.x + x;
+      newCoords.y = this.props.currentDronePosition.y + y;
+      newCoords.z = this.props.currentDronePosition.z + z;
+      console.log('instruction: ', instructionName);
+      if (instructionName === 'command') {
+      } else if (instructionName === 'takeoff') {
+        this.props.updateCDP({
+          x: this.props.startingPosition.x,
+          y: this.props.startingPosition.y + 1,
+          z: this.props.startingPosition.z,
+        });
+      } else if (instructionName === 'land') {
+        this.props.updateCDP({
+          x: this.props.currentDronePosition.x,
+          y: 0 + this.props.voxelSize * -0.5,
+          z: this.props.currentDronePosition.z,
+        });
+
+        setTimeout(() => {
+          //After flight completes wait 10 seconds
+          //Send drone model back to starting position
+          this.props.updateCDP({
+            x: this.props.startingPosition.x,
+            y: this.props.startingPosition.y,
+            z: this.props.startingPosition.z,
+          });
+          //Give the 'Send drone model back to starting
+          //position 4.5 seconds to animate before re-enabling buttons
+          setTimeout(() => {
+            this.setState({ runButtonsDisabled: false });
+          }, 4500);
+        }, 10000);
+      } else {
+        this.props.updateCDP(newCoords);
+      }
+      //Wait for Command Delay
+      await wait(commandDelays[instructionName]);
+    }
+  };
+
+  preVisualizePath = () => {
+    //Diable Buttons
+    this.setState({ runButtonsDisabled: true });
+    //Prepare variables for flight
+    const { flightInstructions } = this.props;
+    const droneInstructions = flightInstructions.map(
+      flightInstructionObj => flightInstructionObj.instruction
+    );
+    // //Fly drone
+    // ipcRenderer.send('autopilot', ['command', ...droneInstructions]);
+    //Animate 3D drone model on Canvas
+    this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
+  };
+
   render() {
     const {
       gridWidth,
@@ -176,10 +251,23 @@ class Build extends Component {
     const downDisabled = currentPoint.y === 1 * (distance / 100);
     return (
       <div id="build-screen">
-        <Grid columns={2} divided padded centered>
-          <Grid.Row stretched>
-            <Grid.Column width={8}>
-              <Header as="h1" dividing id="ap-header">
+        <Grid columns={3} divided padded>
+          <Grid.Row>
+            <Grid.Column width={3}>
+              <Button onClick={this.handleLoadFlightInstructions}>
+                Import Flight Path
+              </Button>
+              <Button
+                onClick={() =>
+                  saveFlightInstructions(this.props.flightInstructions)
+                }
+              >
+                Export Flight Path
+              </Button>
+            </Grid.Column>
+
+            <Grid.Column width={9}>
+              <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="settings" />
                 <Header.Content>
                   AutoPilot Builder
@@ -189,63 +277,59 @@ class Build extends Component {
                 </Header.Content>
               </Header>
 
-              <Grid.Row centered>
-                <Grid.Column textAlign="center" centered>
+              <Grid.Row>
+                <Grid.Column>
                   <Canvas />
                 </Grid.Column>
               </Grid.Row>
 
               <Grid.Row>
-                <Grid columns={3} padded>
-                  <Grid.Row centered>
-                    <Grid.Row centered>
-                      <Grid.Column as="h1" textAlign="center">
-                        Up Plane
-                        <ButtonPanel
-                          latestInstructionMessage={latestInstructionMessage}
-                          leftDisabled={leftDisabled}
-                          rightDisabled={rightDisabled}
-                          forwardDisabled={forwardDisabled}
-                          reverseDisabled={reverseDisabled}
-                          allDisabled={upDisabled}
-                          addFlightInstruction={this.addFlightInstruction}
-                          type="U"
-                          droneOrientation={droneOrientation}
-                        />
-                      </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row centered>
-                      <Grid.Column as="h1" textAlign="center">
-                        Current Plane
-                        <ButtonPanel
-                          latestInstructionMessage={latestInstructionMessage}
-                          leftDisabled={leftDisabled}
-                          rightDisabled={rightDisabled}
-                          forwardDisabled={forwardDisabled}
-                          reverseDisabled={reverseDisabled}
-                          allDisabled={false}
-                          addFlightInstruction={this.addFlightInstruction}
-                          type="C"
-                          droneOrientation={droneOrientation}
-                        />
-                      </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row centered>
-                      <Grid.Column as="h1" textAlign="center">
-                        Down Plane
-                        <ButtonPanel
-                          latestInstructionMessage={latestInstructionMessage}
-                          leftDisabled={leftDisabled}
-                          rightDisabled={rightDisabled}
-                          forwardDisabled={forwardDisabled}
-                          reverseDisabled={reverseDisabled}
-                          allDisabled={downDisabled}
-                          addFlightInstruction={this.addFlightInstruction}
-                          type="D"
-                          droneOrientation={droneOrientation}
-                        />
-                      </Grid.Column>
-                    </Grid.Row>
+                <Grid columns={3} padded centered>
+                  <Grid.Row>
+                    <Grid.Column as="h1" textAlign="center">
+                      Up Plane
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={upDisabled}
+                        addFlightInstruction={this.addFlightInstruction}
+                        type="U"
+                        droneOrientation={droneOrientation}
+                      />
+                    </Grid.Column>
+
+                    <Grid.Column as="h1" textAlign="center">
+                      Current Plane
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={false}
+                        addFlightInstruction={this.addFlightInstruction}
+                        type="C"
+                        droneOrientation={droneOrientation}
+                      />
+                    </Grid.Column>
+
+                    <Grid.Column as="h1" textAlign="center">
+                      Down Plane
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={downDisabled}
+                        addFlightInstruction={this.addFlightInstruction}
+                        type="D"
+                        droneOrientation={droneOrientation}
+                      />
+                    </Grid.Column>
                   </Grid.Row>
                 </Grid>
               </Grid.Row>
@@ -272,33 +356,36 @@ class Build extends Component {
               </Grid.Row>
 
               <Grid.Row>
-                <Grid columns={3} padded centered>
-                  <Grid.Column textAlign="center">
-                    <Link to={'/run'}>
-                      <Button onClick={() => this.props.changeTab('run')}>
-                        View On Run Screen!
-                      </Button>
-                    </Link>
-                  </Grid.Column>
-                  <Grid.Column textAlign="center">
-                    <Button
-                      onClick={() =>
-                        saveFlightInstructions(this.props.flightInstructions)
-                      }
-                    >
-                      Save Flight Path
+                <Grid.Column textAlign="center">
+                  <Link to={'/run'}>
+                    <Button onClick={() => this.props.changeTab('run')}>
+                      View On Run Screen!
                     </Button>
-                  </Grid.Column>
-                  <Grid.Column textAlign="center">
-                    <Button onClick={this.handleLoadFlightInstructions}>
-                      Load Flight Path
+                  </Link>
+                </Grid.Column>
+                <Grid.Column>
+                  <Button
+                    disabled={this.state.runButtonsDisabled}
+                    onClick={this.preVisualizePath}
+                  >
+                    Pre-Visualize Path
+                  </Button>
+                </Grid.Column>
+                <Grid.Column>
+                  {this.props.obstacles ? (
+                    <Button onClick={this.props.toggleObstacles}>
+                      Remove Obstacles
                     </Button>
-                  </Grid.Column>
-                </Grid>
+                  ) : (
+                    <Button onClick={this.props.toggleObstacles}>
+                      Insert Obstacles
+                    </Button>
+                  )}
+                </Grid.Column>
               </Grid.Row>
             </Grid.Column>
 
-            <Grid.Column width={4}>
+            <Grid.Column width={3}>
               <Segment inverted>
                 <List divided inverted animated>
                   <List.Header>
@@ -342,10 +429,11 @@ const mapState = state => {
     speed: state.speed,
     scale: state.scale,
     flightInstructions: state.flightInstructions,
-    gridWidth: state.gridWidth,
-    gridLength: state.gridLength,
-    gridHeight: state.gridHeight,
     droneOrientation: state.droneOrientation,
+    currentDronePosition: state.currentDronePosition,
+    startingPosition: state.startingPosition,
+    voxelSize: state.voxelSize,
+    obstacles: state.obstacles,
   };
 };
 
@@ -355,25 +443,14 @@ const mapDispatch = dispatch => {
     updateInstructions: flightInstructions =>
       dispatch(updateInstructions(flightInstructions)),
     clearInstructions: () => dispatch(clearInstructions()),
+    updateCDP: newPosition => {
+      dispatch(updateCDP(newPosition));
+    },
+    toggleObstacles: () => {
+      dispatch(toggleObstacles());
+    },
   };
 };
-
-// const mapDispatch = dispatch => {
-//   return {
-//     increaseDistance: () => {
-//       dispatch(increaseDistance());
-//     },
-//     decreaseDistance: () => {
-//       dispatch(decreaseDistance());
-//     },
-//     increaseSpeed: () => {
-//       dispatch(increaseSpeed());
-//     },
-//     decreaseSpeed: () => {
-//       dispatch(decreaseSpeed());
-//     },
-//   };
-// };
 
 export default connect(
   mapState,

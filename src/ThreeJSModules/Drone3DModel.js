@@ -25,7 +25,7 @@ droneGroup.add(mainCircle);
 droneGroup.add(mainCircleLines);
 
 //Drone Front Indication
-const forwardIndicatorGeometry = new THREE.ConeGeometry(1, 8, 32);
+const forwardIndicatorGeometry = new THREE.ConeGeometry(1, 6, 32);
 const forwardIndicatorMaterial = new THREE.MeshBasicMaterial({
   color: 0x000000,
   side: THREE.DoubleSide,
@@ -35,9 +35,29 @@ const forwardIndicator = new THREE.Mesh(
   forwardIndicatorGeometry,
   forwardIndicatorMaterial
 );
-forwardIndicator.position.set(0, 0, -1);
+forwardIndicator.position.set(0, 0, -1.5);
 forwardIndicator.rotation.x = -Math.PI / 2;
 droneGroup.add(forwardIndicator);
+
+//Drone Front Indication Arrow End
+const forwardIndicatorArrowEndGeometry = new THREE.CylinderGeometry(
+  1,
+  1,
+  0.5,
+  32
+);
+const forwardIndicatorArrowEndMaterial = new THREE.MeshBasicMaterial({
+  color: 0x000000,
+  side: THREE.DoubleSide,
+});
+
+const forwardIndicatorArrowEnd = new THREE.Mesh(
+  forwardIndicatorArrowEndGeometry,
+  forwardIndicatorArrowEndMaterial
+);
+forwardIndicatorArrowEnd.position.set(0, 0, 2);
+forwardIndicatorArrowEnd.rotation.z = Math.PI / 2;
+droneGroup.add(forwardIndicatorArrowEnd);
 
 //Front Left Propellor
 const frontLeftCircleGeometry = new THREE.CylinderGeometry(2, 2, 0.75, 32);
