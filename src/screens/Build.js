@@ -183,6 +183,8 @@ class Build extends Component {
     let updatedFlightInstructions = flightInstructions.slice();
     updatedFlightInstructions.splice(-2, 1);
 
+    //TODO: update droneRotation if the last instruction was a rotation
+
     drawPath(updatedFlightInstructions, distance);
     this.props.updateInstructions(updatedFlightInstructions);
   };
@@ -190,6 +192,7 @@ class Build extends Component {
   clearFlightInstructions = () => {
     drawPath([], this.props.distance);
     this.props.clearInstructions();
+    this.props.rotateDrone(0);
   };
 
   getCurrentPoint = flightCoords => {
