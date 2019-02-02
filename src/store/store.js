@@ -19,6 +19,7 @@ const INITIAL_STATE = {
     { instruction: 'land', message: 'Land' },
   ],
   obstacles: true,
+  droneOrientation: 0,
 };
 
 //ACTION CONSTANTS
