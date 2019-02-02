@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-<<<<<<< Updated upstream
-=======
-import { Button, Grid, Header, Icon } from 'semantic-ui-react';
->>>>>>> Stashed changes
+import { Grid, Header, Icon } from 'semantic-ui-react';
 import FlyControls from '../components/FlyControls';
 import Stream from '../components/Stream';
-import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 const { ipcRenderer } = window.require('electron');
 

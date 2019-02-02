@@ -41,14 +41,6 @@ class Navbar extends Component {
               active={activeTab === 'about'}
               onClick={this.handleTabChange}
             />
-            <Menu.Menu position="right">
-              <Dropdown text="Drone" pointing className="link item">
-              <Dropdown.Menu>
-                <Dropdown.Item disabled={false}>Connect to Drone</Dropdown.Item>
-                <Dropdown.Item disabled={true}>Disconnect from Drone</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </Menu.Menu>
           </Menu>
         </Segment>
       </div>
