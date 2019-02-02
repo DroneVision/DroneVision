@@ -428,7 +428,7 @@ class Build extends Component {
                     <Button onClick={() => this.addRotationInstruction('cw')}>
                       <Button.Content visible>
                         <Icon name="redo" />
-                        90 deg
+                        90&deg;
                       </Button.Content>
                     </Button>
                   </Grid.Column>
@@ -436,7 +436,7 @@ class Build extends Component {
                     <Button onClick={() => this.addRotationInstruction('ccw')}>
                       <Button.Content visible>
                         <Icon name="undo" />
-                        90 deg
+                        90&deg;
                       </Button.Content>
                     </Button>
                   </Grid.Column>
@@ -542,7 +542,7 @@ const mapState = state => {
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
     obstacles: state.obstacles,
-    droneConnectionStatus: state.droneConnectionStatus
+    droneConnectionStatus: state.droneConnectionStatus,
   };
 };
 
@@ -558,7 +558,8 @@ const mapDispatch = dispatch => {
     toggleObstacles: () => {
       dispatch(toggleObstacles());
     },
-    updateDroneConnectionStatus: droneStatus => dispatch(updateDroneConnectionStatus(droneStatus)),
+    updateDroneConnectionStatus: droneStatus =>
+      dispatch(updateDroneConnectionStatus(droneStatus)),
     rotateDrone: newOrientation => {
       dispatch(rotateDrone(newOrientation));
     },
