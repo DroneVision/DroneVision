@@ -31,16 +31,8 @@ const { ipcRenderer } = window.require('electron');
 class Build extends Component {
   constructor(props) {
     super(props);
-    const { scale } = this.props;
+    const { gridWidth, gridLength, gridHeight, distance } = this.props;
     this.state = {
-      limits: {
-        maxX: scale / 2,
-        maxY: scale,
-        maxZ: scale / 2,
-        minX: -scale / 2,
-        minY: 1,
-        minZ: -scale / 2,
-      },
       startingPoint: { x: 0, y: 1, z: 0 },
     };
   }
@@ -61,30 +53,29 @@ class Build extends Component {
     });
   }
 
-  addFlightInstruction = (flightInstruction, flightMessage) => {
-    const { flightInstructions } = this.props;
+  addFlightInstruction = ({ flightInstruction, flightMessage }) => {
+    const { flightInstructions, speed, distance } = this.props;
 
     const latestInstructionObj =
       flightInstructions[flightInstructions.length - 2];
 
-    const latestInstructionName = latestInstructionObj.message
+    const latestMessage = latestInstructionObj.message
       .split(' ')
       .slice(0, -3)
       .join(' ');
-    const newInstructionName = flightMessage
-      .split(' ')
-      .slice(0, -3)
-      .join(' ');
-    const flightInstructionObj = {
-      instruction: flightInstruction,
-      message: flightMessage,
-    };
+
+    const latestInstructionArr = latestInstructionObj.instruction.split(' ');
+    const latestSpeed = latestInstructionArr[latestInstructionArr.length - 1];
+
+    const flightInstructionObj = {};
 
     let updatedFlightInstructions = flightInstructions.slice();
-    if (newInstructionName === latestInstructionName) {
+    if (flightMessage === latestMessage && speed === latestSpeed) {
       // Redundant instruction, so just adjust the last one's values
       if (flightInstruction === 'hold') {
         // TODO: add logic for hold
+      } else if (flightInstruction === 'rotate') {
+        console.log('hi');
       } else {
         const {
           instruction: latestInstruction,
@@ -93,23 +84,14 @@ class Build extends Component {
         const latestinstructionCoords = latestInstruction
           .split(' ')
           .slice(1, 4);
-        const newinstructionCoords = flightInstruction.split(' ').slice(1, 4);
+
         const resultCoords = latestinstructionCoords.map((coord, idx) => {
-          return Number(coord) + Number(newinstructionCoords[idx]);
+          return Number(coord) + Number(flightInstruction[idx]);
         });
-        const [
-          instructionWord,
-          ,
-          ,
-          ,
-          instructionSpeed,
-        ] = latestInstruction.split(' ');
 
-        const newinstruction = `${instructionWord} ${resultCoords.join(
-          ' '
-        )} ${instructionSpeed}`;
+        const newInstruction = `go ${resultCoords.join(' ')} ${speed}`;
 
-        flightInstructionObj.instruction = newinstruction;
+        flightInstructionObj.instruction = newInstruction;
 
         const latestDistance = Number(
           latestMessage.split(' ').slice(-2, -1)[0]
@@ -117,7 +99,7 @@ class Build extends Component {
         const newDistance = Number(flightMessage.split(' ').slice(-2, -1)[0]);
         const resultDistance = latestDistance + newDistance;
 
-        const newMessage = `${newInstructionName} --> ${resultDistance.toFixed(
+        const newMessage = `${flightMessage} --> ${resultDistance.toFixed(
           1
         )} m`;
 
@@ -127,11 +109,14 @@ class Build extends Component {
       updatedFlightInstructions.splice(-2, 1, flightInstructionObj);
     } else {
       //New flight instruction (non-duplicate), so add it in
+      flightInstructionObj.instruction = `go ${flightInstruction.join(
+        ' '
+      )} ${speed}`;
+      flightInstructionObj.message = `${flightMessage} --> ${distance} m`;
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
 
     drawPath(updatedFlightInstructions, this.props.distance);
-
     this.props.updateInstructions(updatedFlightInstructions);
   };
 
@@ -158,7 +143,7 @@ class Build extends Component {
         currentPoint.z += currentPoint.z = z;
         return currentPoint;
       },
-      { ...this.state.startingPoint }
+      { ...this.props.startingPosition }
     );
     return currentPoint;
   };
@@ -170,19 +155,25 @@ class Build extends Component {
   };
 
   render() {
-    const { limits } = this.state;
-    const { flightInstructions, distance } = this.props;
+    const {
+      gridWidth,
+      gridLength,
+      gridHeight,
+      flightInstructions,
+      distance,
+      droneOrientation,
+    } = this.props;
     const flightCoords = getFlightCoords(flightInstructions, distance);
     const currentPoint = this.getCurrentPoint(flightCoords);
 
     const latestInstructionMessage =
       flightInstructions[flightInstructions.length - 2].message;
-    const leftDisabled = currentPoint.x === limits.maxX;
-    const rightDisabled = currentPoint.x === limits.minX;
-    const forwardDisabled = currentPoint.z === limits.maxZ;
-    const reverseDisabled = currentPoint.z === limits.minZ;
-    const upDisabled = currentPoint.y === limits.maxY;
-    const downDisabled = currentPoint.y === limits.minY;
+    const leftDisabled = currentPoint.x === gridWidth / 2;
+    const rightDisabled = currentPoint.x === -gridWidth / 2;
+    const forwardDisabled = currentPoint.z === gridLength / 2;
+    const reverseDisabled = currentPoint.z === -gridLength / 2;
+    const upDisabled = currentPoint.y === gridHeight;
+    const downDisabled = currentPoint.y === 1 * (distance / 100);
     return (
       <div id="build-screen">
         <Grid columns={2} divided padded centered>
@@ -209,7 +200,7 @@ class Build extends Component {
                   <Grid.Row centered>
                     <Grid.Row centered>
                       <Grid.Column as="h1" textAlign="center">
-                        Up
+                        Up Plane
                         <ButtonPanel
                           latestInstructionMessage={latestInstructionMessage}
                           leftDisabled={leftDisabled}
@@ -218,15 +209,14 @@ class Build extends Component {
                           reverseDisabled={reverseDisabled}
                           allDisabled={upDisabled}
                           addFlightInstruction={this.addFlightInstruction}
-                          distance={this.props.distance}
-                          speed={this.props.speed}
-                          type="Up"
+                          type="U"
+                          droneOrientation={droneOrientation}
                         />
                       </Grid.Column>
                     </Grid.Row>
                     <Grid.Row centered>
                       <Grid.Column as="h1" textAlign="center">
-                        Horizontal
+                        Current Plane
                         <ButtonPanel
                           latestInstructionMessage={latestInstructionMessage}
                           leftDisabled={leftDisabled}
@@ -235,15 +225,14 @@ class Build extends Component {
                           reverseDisabled={reverseDisabled}
                           allDisabled={false}
                           addFlightInstruction={this.addFlightInstruction}
-                          distance={this.props.distance}
-                          speed={this.props.speed}
-                          type="Current"
+                          type="C"
+                          droneOrientation={droneOrientation}
                         />
                       </Grid.Column>
                     </Grid.Row>
                     <Grid.Row centered>
                       <Grid.Column as="h1" textAlign="center">
-                        Down
+                        Down Plane
                         <ButtonPanel
                           latestInstructionMessage={latestInstructionMessage}
                           leftDisabled={leftDisabled}
@@ -252,9 +241,8 @@ class Build extends Component {
                           reverseDisabled={reverseDisabled}
                           allDisabled={downDisabled}
                           addFlightInstruction={this.addFlightInstruction}
-                          distance={this.props.distance}
-                          speed={this.props.speed}
-                          type="Down"
+                          type="D"
+                          droneOrientation={droneOrientation}
                         />
                       </Grid.Column>
                     </Grid.Row>
@@ -354,6 +342,10 @@ const mapState = state => {
     speed: state.speed,
     scale: state.scale,
     flightInstructions: state.flightInstructions,
+    gridWidth: state.gridWidth,
+    gridLength: state.gridLength,
+    gridHeight: state.gridHeight,
+    droneOrientation: state.droneOrientation,
   };
 };
 
