@@ -5,10 +5,10 @@ const flightCommandsIteratorReduxUpdater = async flightInstructions => {
   //Iterate over all flightInstructions
   for (let i = 0; i < flightInstructions.length; i++) {
     let flightInstruction = flightInstructions[i];
-    let instructionName = flightInstruction.instruction.split(' ')[0];
+    let instructionName = flightInstruction.droneInstruction.split(' ')[0];
     //create new object for new coordinates
     let newCoords = {};
-    let flightInstructionArray = flightInstruction.instruction
+    let flightInstructionArray = flightInstruction.droneInstruction
       .split(' ')
       .slice(1, 4)
       .map(numStr => Number(numStr) / this.props.distance);

@@ -39,6 +39,7 @@ class Canvas extends Component {
 
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableKeys = false;
     this.controls.enableDamping = true; //an animation loop is required when damping or auto-rotation are enabled
     this.controls.dampingFactor = 1;
     this.controls.minDistance = 2;
@@ -199,6 +200,7 @@ class Canvas extends Component {
       const startingPoint = { x: 0, y: 1, z: 0 };
       const point = { ...startingPoint };
       geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+      console.log('fc', flightCoords);
       flightCoords.forEach(command => {
         const [z, x, y] = command;
         point.x += x;
