@@ -109,6 +109,13 @@ module.exports = mainWindow => {
                         return;
                     }
                 }
+                else {
+                    const droneConnectionStatus = {
+                        droneName: 'Drone Not Found',
+                        isConnected: true
+                    }
+                    mainWindow.webContents.send('drone-connection', droneConnectionStatus)
+                }
                 // For Top
                 // console.log(`Couldn't find the drone WiFi network`);
             }
@@ -125,7 +132,7 @@ module.exports = mainWindow => {
                 droneMenu.submenu[1].enabled = true;
                 // console.log(`Resetting ${disconnectionResult} is successful `);
                 const droneConnectionStatus = {
-                    droneName: '',
+                    droneName: 'Drone Not Connected',
                     isConnected: false
                 }
                 mainWindow.webContents.send('drone-connection', droneConnectionStatus)
