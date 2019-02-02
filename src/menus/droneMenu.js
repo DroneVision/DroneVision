@@ -43,7 +43,6 @@ module.exports = mainWindow => {
             console.error(error);
         }
 
-
         // Scan wifi networks
         let wifiNetworks
         try {
@@ -52,57 +51,59 @@ module.exports = mainWindow => {
 
             // If we can get all wifi network
 
-        } catch (error) {
-            console.error(error);
-        }
-
-        if (wifiNetworks) {
+        if (wifiNetworks.length > 0) {
             // We look for a drone wifi network
             const droneWifiNetworks = wifiNetworks.filter(network => {
-                return network.ssid.startWith('TELLO');
-            })
+                return network.ssid.startsWith('TELLO-')
+            }).map(droneNetwork => droneNetwork.ssid)
 
-
-
-
-            if (droneWifiNetworks.length !== 0) {
+            console.log('droneWifiNetworks: ', droneWifiNetworks)
+            if (droneWifiNetworks.length > 0) {
                 // Select drone network
                 let selectedDroneSSID;
                 // Display drone networks to connect to
-                dialog.showMessageBox(mainWindow, {
+                const buttons = [...droneWifiNetworks, 'No']
+                console.log(buttons);
+                const res = dialog.showMessageBox(mainWindow, {
                     type: 'info',
-                    buttons: droneWifiNetworks,
+                    buttons: buttons,
                     message: 'Select the Drone network',
                     detail: 'Select the Drone network you would like to connect to'
-                }, res => {
-                    selectedDroneSSID = res;
                 })
-
-
-
-            // Create a Drone accesspoint object
-            const droneAP = {
-                ssid: selectedDroneSSID,
-                password: ''
-            };
-
-                if(connectButtonCounter === 0) {
-                    // Connect to a drone wifi network
-                    wifi.connect(droneAP, (err) => {
-                        if (err) {
-                            console.error(err);
-                            console.log(`Couldn't connect to the drone wifi network`);
-                        }
-                        connectButtonCounter++;
-                        droneMenu.submenu[0].enabled = false
-                        console.log(`Connected to drone Wifi: ${droneAP.ssid}`);
-                    });
+                console.log('res', res)
+                if(res !== buttons.length - 1) {
+                    selectedDroneSSID = buttons[res]
+                    // Create a Drone accesspoint object
+                    const droneAP = {
+                        ssid: selectedDroneSSID,
+                        password: ''
+                    };
+    
+                    if (connectButtonCounter < 1) {
+                        // Connect to a drone wifi network
+                        wifi.connect(droneAP, (err) => {
+                            if (err) {
+                                console.error(err);
+                                console.log(`Couldn't connect to the drone wifi network`);
+                            }
+                            connectButtonCounter++;
+                            droneMenu.submenu[0].enabled = false
+                            console.log(`Connected to drone Wifi: ${droneAP.ssid}`);
+                        });
+                    } else {
+                        console.log(`You have already connected to the drone.`)
+                    }
                 } else {
-                    console.log(`You have already connected to the drone.`)
+                    return;
                 }
             }
             console.log(`Couldn't find the drone WiFi network`);
         }
+
+        } catch (error) {
+            console.error(error);
+        }
+
 
     }
 
@@ -118,6 +119,7 @@ module.exports = mainWindow => {
             console.error(error);
         }
     }
+    return droneMenu;
 
 }
 
