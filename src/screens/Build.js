@@ -27,11 +27,6 @@ import {
 } from '../store/store';
 
 import { drawPath, getDroneCoords } from '../utils/drawPathUtils';
-import {
-  saveFlightInstructions,
-  loadFlightInstructions,
-} from '../utils/fileSystemUtils';
-import { SSL_OP_SINGLE_DH_USE } from 'constants';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -225,12 +220,6 @@ class Build extends Component {
     return currentPoint;
   };
 
-  handleLoadFlightInstructions = async () => {
-    const flightInstructions = await loadFlightInstructions();
-    this.props.updateInstructions(flightInstructions);
-    drawPath(this.props.flightInstructions, this.props.distance);
-  };
-
   flightCommandsIteratorReduxUpdater = async flightInstructions => {
     //Iterate over all flightInstructions
     for (let i = 0; i < flightInstructions.length; i++) {
@@ -310,23 +299,15 @@ class Build extends Component {
     const downDisabled = currentPoint.y === limits.minY;
     return (
       <div id="build-screen">
-        <Grid columns={3} padded celled>
+        <Grid columns={3} padded>
           <Grid.Row>
-            <Grid.Column width={4}>
-              <Button onClick={this.handleLoadFlightInstructions}>
-                Import Flight Path
-              </Button>
-              <Button
-                onClick={() =>
-                  saveFlightInstructions(this.props.flightInstructions)
-                }
-              >
-                Export Flight Path
-              </Button>
-              <Image
-                src={require('../assets/images/helper-images/build-instructions.png')}
-                size="large"
-              />
+            <Grid.Column width={3}>
+              <Grid.Row>
+                <Image
+                  src={require('../assets/images/helper-images/build-instructions.png')}
+                  size="large"
+                />
+              </Grid.Row>
             </Grid.Column>
 
             <Grid.Column width={9}>
@@ -542,15 +523,13 @@ const mapState = state => {
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
     obstacles: state.obstacles,
-    droneConnectionStatus: state.droneConnectionStatus
+    droneConnectionStatus: state.droneConnectionStatus,
   };
 };
 
 const mapDispatch = dispatch => {
   return {
     changeTab: tabName => dispatch(changeTab(tabName)),
-    updateInstructions: flightInstructions =>
-      dispatch(updateInstructions(flightInstructions)),
     clearInstructions: () => dispatch(clearInstructions()),
     updateCDP: newPosition => {
       dispatch(updateCDP(newPosition));
@@ -558,7 +537,8 @@ const mapDispatch = dispatch => {
     toggleObstacles: () => {
       dispatch(toggleObstacles());
     },
-    updateDroneConnectionStatus: droneStatus => dispatch(updateDroneConnectionStatus(droneStatus)),
+    updateDroneConnectionStatus: droneStatus =>
+      dispatch(updateDroneConnectionStatus(droneStatus)),
     rotateDrone: newOrientation => {
       dispatch(rotateDrone(newOrientation));
     },
