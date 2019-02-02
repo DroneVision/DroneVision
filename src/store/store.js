@@ -2,7 +2,7 @@ export const voxelSizeValue = 10;
 const startingPositionCoords = { x: 0, y: 0 + voxelSizeValue * -0.5, z: 0 };
 
 const INITIAL_STATE = {
-  distance: 50,
+  distance: 0.5,
   speed: 50,
   battery: 100,
   scale: 10,
@@ -41,6 +41,8 @@ const CLEAR_INSTRUCTIONS = 'CLEAR_INSTRUCTIONS';
 
 const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
 
+const ROTATE_DRONE = 'ROTATE_DRONE';
+
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
 export const decreaseDistance = () => ({ type: DECREASE_DISTANCE });
@@ -71,6 +73,11 @@ export const updateCDP = newPosition => ({
   newPosition,
 });
 
+export const rotateDrone = newOrientation => ({
+  type: ROTATE_DRONE,
+  newOrientation,
+});
+
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case INCREASE_DISTANCE:
@@ -97,6 +104,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, flightInstructions: action.flightInstructions };
     case UPDATE_CURRENT_DRONE_POSITION:
       return { ...state, currentDronePosition: action.newPosition };
+    case ROTATE_DRONE:
+      return { ...state, droneOrientation: action.newOrientation };
     default:
       return state;
   }
