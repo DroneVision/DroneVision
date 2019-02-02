@@ -2,13 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
-import Canvas from '../components/Canvas';
-import {
-  Button,
-  Grid,
-  Header,
-  Icon,
-} from 'semantic-ui-react';
+import AutoPilotCanvas from '../components/AutoPilotCanvas';
+import { Button, Grid, Header, Icon } from 'semantic-ui-react';
 import wait from 'waait';
 import { drawPath } from '../utils/drawPathUtils';
 import { updateCDP } from '../store/store';
@@ -171,7 +166,7 @@ class Run extends Component {
 
           <Grid.Row columns={2}>
             <Grid.Column>
-              <Canvas />
+              <AutoPilotCanvas />
             </Grid.Column>
 
             <Grid.Column>
