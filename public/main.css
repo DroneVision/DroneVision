@@ -58,10 +58,6 @@
 }
 
 #stream {
-  margin-top: 1em;
-  margin-right: 0;
-  margin-bottom: 2em;
-  margin-left: 0.5em;
   width: 640px;
   height: 360px;
   border-style: solid;

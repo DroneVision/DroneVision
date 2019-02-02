@@ -16,21 +16,21 @@ class Navbar extends Component {
             <Menu.Item
               as={Link}
               to={'/build'}
-              name="build"
+              name="path builder"
               active={activeTab === 'build'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
               as={Link}
               to={'/run'}
-              name="run"
+              name="autopilot"
               active={activeTab === 'run'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
               as={Link}
               to={'/fly'}
-              name="fly"
+              name="manual control"
               active={activeTab === 'fly'}
               onClick={this.handleTabChange}
             />
@@ -41,14 +41,6 @@ class Navbar extends Component {
               active={activeTab === 'about'}
               onClick={this.handleTabChange}
             />
-            <Menu.Menu position="right">
-              <Dropdown text="Drone" pointing className="link item">
-              <Dropdown.Menu>
-                <Dropdown.Item disabled={false}>Connect to Drone</Dropdown.Item>
-                <Dropdown.Item disabled={true}>Disconnect from Drone</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </Menu.Menu>
           </Menu>
         </Segment>
       </div>

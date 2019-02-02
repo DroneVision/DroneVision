@@ -61,6 +61,12 @@ class StatusSegment extends Component {
     return (
       <div id="status-segment">
         <Segment>
+          <List>
+            <List.Item>
+              <List.Content>Connection Status: {this.props.droneConnectionStatus.isConnected ? 'Connected': 'Not Connected'}</List.Content>
+              <List.Content>Connected to: {this.props.droneConnectionStatus.droneName}</List.Content>
+            </List.Item>
+          </List>
           <List divided relaxed="very" horizontal>
             <List.Item>
               <List.Content verticalAlign="bottom">
@@ -93,6 +99,7 @@ class StatusSegment extends Component {
 const mapState = state => {
   return {
     speed: state.speed,
+    droneConnectionStatus: state.droneConnectionStatus
   };
 };
 

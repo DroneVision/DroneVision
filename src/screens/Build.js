@@ -22,6 +22,7 @@ import {
   clearInstructions,
   updateCDP,
   toggleObstacles,
+  updateDroneConnectionStatus,
   rotateDrone,
 } from '../store/store';
 
@@ -66,6 +67,9 @@ class Build extends Component {
         'send-flightInstructions',
         this.props.flightInstructions
       );
+    });
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
     });
   }
 
@@ -459,7 +463,7 @@ class Build extends Component {
                 </Grid>
               </Grid.Row>
 
-              <Grid.Row>
+              <Grid.Row columns={3}>
                 <Grid.Column textAlign="center">
                   <Link to={'/run'}>
                     <Button onClick={() => this.props.changeTab('run')}>
@@ -538,6 +542,7 @@ const mapState = state => {
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
     obstacles: state.obstacles,
+    droneConnectionStatus: state.droneConnectionStatus
   };
 };
 
@@ -553,6 +558,7 @@ const mapDispatch = dispatch => {
     toggleObstacles: () => {
       dispatch(toggleObstacles());
     },
+    updateDroneConnectionStatus: droneStatus => dispatch(updateDroneConnectionStatus(droneStatus)),
     rotateDrone: newOrientation => {
       dispatch(rotateDrone(newOrientation));
     },
