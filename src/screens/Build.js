@@ -70,6 +70,8 @@ class Build extends Component {
     });
     ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
       this.props.updateDroneConnectionStatus(droneConnectionStatus);
+      // Send a command to drone
+      ipcRenderer.send('single-instruction', 'command');
     });
   }
 
