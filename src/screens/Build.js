@@ -11,6 +11,7 @@ import {
   Segment,
   Header,
   Grid,
+  Image,
 } from 'semantic-ui-react';
 
 import ButtonPanel from '../components/ButtonPanel';
@@ -28,6 +29,7 @@ import {
   saveFlightInstructions,
   loadFlightInstructions,
 } from '../utils/fileSystemUtils';
+import { SSL_OP_SINGLE_DH_USE } from 'constants';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -253,9 +255,9 @@ class Build extends Component {
     const downDisabled = currentPoint.y === limits.minY;
     return (
       <div id="build-screen">
-        <Grid columns={3} divided padded>
+        <Grid columns={3} padded celled>
           <Grid.Row>
-            <Grid.Column width={3}>
+            <Grid.Column width={4}>
               <Button onClick={this.handleLoadFlightInstructions}>
                 Import Flight Path
               </Button>
@@ -266,6 +268,10 @@ class Build extends Component {
               >
                 Export Flight Path
               </Button>
+              <Image
+                src={require('../assets/images/helper-images/build-instructions.png')}
+                size="large"
+              />
             </Grid.Column>
 
             <Grid.Column width={9}>
@@ -288,8 +294,17 @@ class Build extends Component {
               <Grid.Row>
                 <Grid columns={3} padded centered>
                   <Grid.Row>
-                    <Grid.Column as="h1" textAlign="center">
-                      Up
+                    <Grid.Column
+                      as="h1"
+                      textAlign="center"
+                      style={{
+                        color: '#ffffff',
+                        backgroundColor: '#00a651',
+                        borderStyle: 'solid',
+                        borderColor: '#484848',
+                      }}
+                    >
+                      Up + Strafe
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
@@ -304,8 +319,17 @@ class Build extends Component {
                       />
                     </Grid.Column>
 
-                    <Grid.Column as="h1" textAlign="center">
-                      Horizontal
+                    <Grid.Column
+                      as="h1"
+                      textAlign="center"
+                      style={{
+                        color: '#ffffff',
+                        backgroundColor: '#afafaf',
+                        borderStyle: 'solid',
+                        borderColor: '#484848',
+                      }}
+                    >
+                      Strafe
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
@@ -319,8 +343,17 @@ class Build extends Component {
                         type="Current"
                       />
                     </Grid.Column>
-                    <Grid.Column as="h1" textAlign="center">
-                      Down
+                    <Grid.Column
+                      as="h1"
+                      style={{
+                        color: '#ffffff',
+                        backgroundColor: '#00aeef',
+                        borderStyle: 'solid',
+                        borderColor: '#484848',
+                      }}
+                      textAlign="center"
+                    >
+                      Down + Strafe
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
@@ -444,7 +477,7 @@ const mapDispatch = dispatch => {
   return {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
-    dispatch(updateInstructions(flightInstructions)),
+      dispatch(updateInstructions(flightInstructions)),
     clearInstructions: () => dispatch(clearInstructions()),
     updateCDP: newPosition => {
       dispatch(updateCDP(newPosition));
