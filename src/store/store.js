@@ -20,6 +20,11 @@ const INITIAL_STATE = {
   ],
   droneOrientation: 0,
   obstacles: false,
+  isConnected: false,
+  droneConnectionStatus: {
+    droneName: 'Not Connected',
+    isConnected: false
+  }
 };
 
 //ACTION CONSTANTS
@@ -45,6 +50,8 @@ const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
 const ROTATE_DRONE = 'ROTATE_DRONE';
 
 const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
+
+const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -85,6 +92,12 @@ export const toggleObstacles = () => ({
   type: TOGGLE_OBSTACLES,
 });
 
+
+export const updateDroneConnectionStatus = droneConnectionStatus => ({
+  type: UPDATE_DRONE_CONNECTION_STATUS,
+  droneConnectionStatus
+});
+
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case INCREASE_DISTANCE:
@@ -115,6 +128,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, droneOrientation: action.newOrientation };
     case TOGGLE_OBSTACLES:
       return { ...state, obstacles: !state.obstacles };
+    case UPDATE_DRONE_CONNECTION_STATUS:
+      return { ...state, droneConnectionStatus: action.droneConnectionStatus };
     default:
       return state;
   }
