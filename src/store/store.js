@@ -22,7 +22,7 @@ const INITIAL_STATE = {
   obstacles: false,
   isConnected: false,
   droneConnectionStatus: {
-    droneName: 'Not Connected to the drone',
+    droneName: 'Not Connected to the Drone',
     isConnected: false
   }
 };
