@@ -213,7 +213,7 @@ class Run extends Component {
           <Grid.Row columns={2}>
             <Grid.Column id="centered">
               <Button
-                disabled={this.state.runButtonsDisabled}
+                disabled={!this.props.droneConnectionStatus.isConnected}
                 color="facebook"
                 labelPosition="left"
                 icon="military"
@@ -224,7 +224,7 @@ class Run extends Component {
 
             <Grid.Column id="centered">
               <Button
-                disabled={this.state.runButtonsDisabled}
+                disabled={!this.props.droneConnectionStatus.isConnected}
                 color="facebook"
                 labelPosition="left"
                 icon="play"
@@ -251,7 +251,8 @@ const mapState = state => {
     flightInstructions: state.flightInstructions,
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
-    voxelSize: state.voxelSize
+    voxelSize: state.voxelSize,
+    droneConnectionStatus: state.droneConnectionStatus
   };
 };
 
