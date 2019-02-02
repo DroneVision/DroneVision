@@ -22,6 +22,7 @@ const dirMap = {
   U: 5,
   D: 6,
 };
+
 function combineArrays() {
   let arrays = arguments,
     results = [],
