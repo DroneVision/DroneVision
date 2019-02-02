@@ -39,6 +39,7 @@ class Canvas extends Component {
 
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableKeys = false;
     this.controls.enableDamping = true; //an animation loop is required when damping or auto-rotation are enabled
     this.controls.dampingFactor = 1;
     this.controls.minDistance = 2;
