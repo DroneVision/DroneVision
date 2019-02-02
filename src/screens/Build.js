@@ -35,7 +35,16 @@ const { ipcRenderer } = window.require('electron');
 class Build extends Component {
   constructor(props) {
     super(props);
+    const { scale } = this.props;
     this.state = {
+      limits: {
+        maxX: scale / 2,
+        maxY: scale,
+        maxZ: scale / 2,
+        minX: -scale / 2,
+        minY: 1,
+        minZ: -scale / 2,
+      },
       startingPoint: { x: 0, y: 1, z: 0 },
       runButtonsDisabled: false,
     };
@@ -58,9 +67,13 @@ class Build extends Component {
     });
   }
 
-  addFlightInstruction = ({ flightInstruction, flightMessage }) => {
+  addFlightInstruction = instructionObj => {
     const { flightInstructions, speed, distance } = this.props;
-
+    console.log(instructionObj);
+    const {
+      instruction: flightInstruction,
+      message: flightMessage,
+    } = instructionObj;
     const latestInstructionObj =
       flightInstructions[flightInstructions.length - 2];
 
@@ -70,10 +83,12 @@ class Build extends Component {
       .join(' ');
 
     const latestInstructionArr = latestInstructionObj.instruction.split(' ');
-    const latestSpeed = latestInstructionArr[latestInstructionArr.length - 1];
+    const latestSpeed = Number(
+      latestInstructionArr[latestInstructionArr.length - 1]
+    );
 
     const flightInstructionObj = {};
-
+    console.log(flightMessage, latestMessage, speed, latestSpeed);
     let updatedFlightInstructions = flightInstructions.slice();
     if (flightMessage === latestMessage && speed === latestSpeed) {
       // Redundant instruction, so just adjust the last one's values
@@ -101,8 +116,8 @@ class Build extends Component {
         const latestDistance = Number(
           latestMessage.split(' ').slice(-2, -1)[0]
         );
-        const newDistance = Number(flightMessage.split(' ').slice(-2, -1)[0]);
-        const resultDistance = latestDistance + newDistance;
+
+        const resultDistance = latestDistance + distance;
 
         const newMessage = `${flightMessage} --> ${resultDistance.toFixed(
           1
@@ -230,25 +245,19 @@ class Build extends Component {
   };
 
   render() {
-    const {
-      gridWidth,
-      gridLength,
-      gridHeight,
-      flightInstructions,
-      distance,
-      droneOrientation,
-    } = this.props;
+    const { limits } = this.state;
+    const { flightInstructions, distance, droneOrientation } = this.props;
     const flightCoords = getFlightCoords(flightInstructions, distance);
     const currentPoint = this.getCurrentPoint(flightCoords);
 
     const latestInstructionMessage =
       flightInstructions[flightInstructions.length - 2].message;
-    const leftDisabled = currentPoint.x === gridWidth / 2;
-    const rightDisabled = currentPoint.x === -gridWidth / 2;
-    const forwardDisabled = currentPoint.z === gridLength / 2;
-    const reverseDisabled = currentPoint.z === -gridLength / 2;
-    const upDisabled = currentPoint.y === gridHeight;
-    const downDisabled = currentPoint.y === 1 * (distance / 100);
+    const leftDisabled = currentPoint.x === limits.maxX;
+    const rightDisabled = currentPoint.x === limits.minX;
+    const forwardDisabled = currentPoint.z === limits.maxZ;
+    const reverseDisabled = currentPoint.z === limits.minZ;
+    const upDisabled = currentPoint.y === limits.maxY;
+    const downDisabled = currentPoint.y === limits.minY;
     return (
       <div id="build-screen">
         <Grid columns={3} divided padded>
@@ -287,7 +296,7 @@ class Build extends Component {
                 <Grid columns={3} padded centered>
                   <Grid.Row>
                     <Grid.Column as="h1" textAlign="center">
-                      Up Plane
+                      Up
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
@@ -302,7 +311,7 @@ class Build extends Component {
                     </Grid.Column>
 
                     <Grid.Column as="h1" textAlign="center">
-                      Current Plane
+                      Current
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
@@ -317,7 +326,7 @@ class Build extends Component {
                     </Grid.Column>
 
                     <Grid.Column as="h1" textAlign="center">
-                      Down Plane
+                      Down
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
