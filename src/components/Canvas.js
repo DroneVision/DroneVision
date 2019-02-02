@@ -200,6 +200,7 @@ class Canvas extends Component {
       const startingPoint = { x: 0, y: 1, z: 0 };
       const point = { ...startingPoint };
       geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+      console.log('fc', flightCoords);
       flightCoords.forEach(command => {
         const [z, x, y] = command;
         point.x += x;

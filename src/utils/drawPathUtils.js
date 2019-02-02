@@ -1,6 +1,6 @@
 import PubSub from 'pubsub-js';
 
-export const getFlightCoords = (flightInstructions, distance) => {
+export const getDroneCoords = (flightInstructions, distance) => {
   return flightInstructions
     .slice(1, -1)
     .filter(instructionObj => {
@@ -16,6 +16,9 @@ export const getFlightCoords = (flightInstructions, distance) => {
 };
 
 export const drawPath = (flightInstructions, distance) => {
-  const flightCoords = getFlightCoords(flightInstructions, distance);
-  PubSub.publish('draw-path', flightCoords);
+  const drawCoords = flightInstructions
+    .slice(1, -1)
+    .map(instructionObj => instructionObj.drawInstruction)
+    .filter(instruction => instruction !== undefined);
+  PubSub.publish('draw-path', drawCoords);
 };

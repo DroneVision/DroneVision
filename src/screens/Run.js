@@ -130,7 +130,7 @@ class Run extends Component {
     //Prepare variables for flight
     const { flightInstructions } = this.props;
     const droneInstructions = flightInstructions.map(
-      flightInstructionObj => flightInstructionObj.instruction
+      flightInstructionObj => flightInstructionObj.droneInstruction
     );
     //Wait 5 Seconds, then fly the drone (gives camera time to initialize)
     setTimeout(() => {

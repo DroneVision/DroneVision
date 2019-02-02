@@ -15,8 +15,8 @@ const INITIAL_STATE = {
   startingPosition: startingPositionCoords,
   currentDronePosition: startingPositionCoords,
   flightInstructions: [
-    { droneInstruction: 'takeoff', message: 'Takeoff' },
-    { droneInstruction: 'land', message: 'Land' },
+    { droneInstruction: 'takeoff', message: 'Takeoff', drawInstruction: null },
+    { droneInstruction: 'land', message: 'Land', drawInstruction: null },
   ],
   droneOrientation: 0,
   obstacles: false,

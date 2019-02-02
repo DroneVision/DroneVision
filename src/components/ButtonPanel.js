@@ -1,15 +1,15 @@
 import React from 'react';
 import { Button, Icon } from 'semantic-ui-react';
 
-//Default Commands for North (N), East (E), South (S), West (W) assuming the drone is facing forward towards the north star
+//Default Commands for North (N), West (W), South (S), East (E) assuming the drone is facing forward towards the north star
 const dirs = [
-  [1, 0, 0],
-  [0, 1, 0],
-  [-1, 0, 0],
-  [0, -1, 0],
-  [0, 0, 0],
-  [0, 0, 1],
-  [0, 0, -1],
+  [1, 0, 0], // North
+  [0, 1, 0], // West
+  [-1, 0, 0], // South
+  [0, -1, 0], // East
+  [0, 0, 0], // Null
+  [0, 0, 1], // Up
+  [0, 0, -1], // Down
 ];
 const dirStrs = ['Forward', 'Left', 'Reverse', 'Right', null, 'Up', 'Down'];
 

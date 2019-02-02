@@ -25,7 +25,7 @@ import {
   rotateDrone,
 } from '../store/store';
 
-import { drawPath, getFlightCoords } from '../utils/drawPathUtils';
+import { drawPath, getDroneCoords } from '../utils/drawPathUtils';
 import {
   saveFlightInstructions,
   loadFlightInstructions,
@@ -101,28 +101,33 @@ class Build extends Component {
       if (newDroneInstruction === 'hold') {
         // TODO: add logic for hold
       } else {
+        //Updating drone instruction
         const lastDroneInstructionCoords = lastDroneInstruction
           .split(' ')
           .slice(1, 4);
+        console.log('newdroneinstruction', newDroneInstruction);
+        const resultDroneCoords = lastDroneInstructionCoords.map(
+          (coord, idx) => {
+            return Number(coord) + newDroneInstruction[idx] * distance * 100;
+          }
+        );
+        const updatedDroneInstruction = `go ${resultDroneCoords.join(
+          ' '
+        )} ${speed}`;
+        flightInstructionObj.droneInstruction = updatedDroneInstruction;
 
-        const resultCoords = lastDroneInstructionCoords.map((coord, idx) => {
-          return (
-            Number(coord) + Number(newDroneInstruction[idx]) * distance * 100
-          );
-        });
+        //Updating draw instruction
+        const newDrawCoords = lastDrawInstruction.map(
+          (coord, idx) => coord + newDrawInstruction[idx]
+        );
+        flightInstructionObj.drawInstruction = newDrawCoords;
 
-        const newDroneInstruction = `go ${resultCoords.join(' ')} ${speed}`;
-
-        flightInstructionObj.droneInstruction = newDroneInstruction;
-
+        //Updating instruction message
         const lastDistance = Number(lastMessage.split(' ').slice(-2, -1)[0]);
-
         const resultDistance = lastDistance + distance;
-
         const newMessage = `${newFlightMessage} --> ${resultDistance.toFixed(
           1
         )} m`;
-
         flightInstructionObj.message = newMessage;
       }
       //Overwrite the existing flight instruction object
@@ -131,6 +136,7 @@ class Build extends Component {
       flightInstructionObj.droneInstruction = `go ${newDroneInstruction
         .map(numStr => Number(numStr) * distance * 100)
         .join(' ')} ${speed}`;
+      flightInstructionObj.drawInstruction = newDrawInstruction;
       flightInstructionObj.message = `${newFlightMessage} --> ${distance} m`;
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
@@ -290,7 +296,7 @@ class Build extends Component {
   render() {
     const { limits } = this.state;
     const { flightInstructions, distance, droneOrientation } = this.props;
-    const flightCoords = getFlightCoords(flightInstructions, distance);
+    const flightCoords = getDroneCoords(flightInstructions, distance);
     const currentPoint = this.getCurrentPoint(flightCoords);
 
     const latestInstructionMessage =
