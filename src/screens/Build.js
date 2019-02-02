@@ -22,6 +22,7 @@ import {
   clearInstructions,
   updateCDP,
   toggleObstacles,
+  rotateDrone,
 } from '../store/store';
 
 import { drawPath, getFlightCoords } from '../utils/drawPathUtils';
@@ -69,44 +70,41 @@ class Build extends Component {
 
   addFlightInstruction = instructionObj => {
     const { flightInstructions, speed, distance } = this.props;
-    console.log(instructionObj);
     const {
-      instruction: flightInstruction,
-      message: flightMessage,
+      instruction: newflightInstruction,
+      message: newFlightMessage,
     } = instructionObj;
     const latestInstructionObj =
       flightInstructions[flightInstructions.length - 2];
+    const {
+      instruction: latestInstruction,
+      message: latestMessage,
+    } = latestInstructionObj;
 
-    const latestMessage = latestInstructionObj.message
+    const latestMessageName = latestMessage
       .split(' ')
       .slice(0, -3)
       .join(' ');
 
-    const latestInstructionArr = latestInstructionObj.instruction.split(' ');
+    const latestInstructionArr = latestInstruction.split(' ');
     const latestSpeed = Number(
       latestInstructionArr[latestInstructionArr.length - 1]
     );
 
     const flightInstructionObj = {};
-    console.log(flightMessage, latestMessage, speed, latestSpeed);
+
     let updatedFlightInstructions = flightInstructions.slice();
-    if (flightMessage === latestMessage && speed === latestSpeed) {
+    if (newFlightMessage === latestMessageName && speed === latestSpeed) {
       // Redundant instruction, so just adjust the last one's values
-      if (flightInstruction === 'hold') {
+      if (newflightInstruction === 'hold') {
         // TODO: add logic for hold
-      } else if (flightInstruction === 'rotate') {
-        console.log('hi');
       } else {
-        const {
-          instruction: latestInstruction,
-          message: latestMessage,
-        } = latestInstructionObj;
         const latestinstructionCoords = latestInstruction
           .split(' ')
           .slice(1, 4);
 
         const resultCoords = latestinstructionCoords.map((coord, idx) => {
-          return Number(coord) + Number(flightInstruction[idx]);
+          return Number(coord) + Number(newflightInstruction[idx]);
         });
 
         const newInstruction = `go ${resultCoords.join(' ')} ${speed}`;
@@ -119,7 +117,7 @@ class Build extends Component {
 
         const resultDistance = latestDistance + distance;
 
-        const newMessage = `${flightMessage} --> ${resultDistance.toFixed(
+        const newMessage = `${newFlightMessage} --> ${resultDistance.toFixed(
           1
         )} m`;
 
@@ -128,16 +126,56 @@ class Build extends Component {
       //Overwrite the existing flight instruction object
       updatedFlightInstructions.splice(-2, 1, flightInstructionObj);
     } else {
-      //New flight instruction (non-duplicate), so add it in
-      flightInstructionObj.instruction = `go ${flightInstruction.join(
+      flightInstructionObj.instruction = `go ${newflightInstruction.join(
         ' '
       )} ${speed}`;
-      flightInstructionObj.message = `${flightMessage} --> ${distance} m`;
+      flightInstructionObj.message = `${newFlightMessage} --> ${distance} m`;
+      //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
 
     drawPath(updatedFlightInstructions, this.props.distance);
     this.props.updateInstructions(updatedFlightInstructions);
+  };
+
+  addRotationInstruction = (direction, degs = 90) => {
+    const { flightInstructions, droneOrientation } = this.props;
+    const latestInstructionObj =
+      flightInstructions[flightInstructions.length - 2];
+
+    const { instruction: latestInstruction } = latestInstructionObj;
+
+    const newMessage =
+      direction === 'cw' ? `Rotate Clockwise` : `Rotate Counter-Clockwise`;
+
+    const flightInstructionObj = {};
+
+    let updatedFlightInstructions = flightInstructions.slice();
+
+    const latestInstructionArr = latestInstruction.split(' ');
+
+    if (direction === latestInstructionArr[0]) {
+      const oldDegs = latestInstructionArr[1];
+      const resultDegs = degs + Number(oldDegs);
+      flightInstructionObj.instruction = `${direction} ${resultDegs}`;
+      flightInstructionObj.message = `${newMessage} --> ${resultDegs} degrees`;
+      //Overwrite the existing flight instruction object
+      updatedFlightInstructions.splice(-2, 1, flightInstructionObj);
+    } else {
+      flightInstructionObj.instruction = `${direction} ${degs}`;
+      flightInstructionObj.message = `${newMessage} --> ${degs} degrees`;
+      //New flight instruction (non-duplicate), so add it in
+      updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
+    }
+    this.props.updateInstructions(updatedFlightInstructions);
+
+    let newOrientation;
+    if (direction === 'cw') {
+      newOrientation = (droneOrientation + 1) % 4;
+    } else {
+      newOrientation = (droneOrientation + 3) % 4;
+    }
+    this.props.rotateDrone(newOrientation);
   };
 
   deleteLastInstruction = () => {
@@ -342,7 +380,26 @@ class Build extends Component {
                   </Grid.Row>
                 </Grid>
               </Grid.Row>
-
+              <Grid.Row>
+                <Grid columns={2} padded>
+                  <Grid.Column textAlign="center">
+                    <Button onClick={() => this.addRotationInstruction('cw')}>
+                      <Button.Content visible>
+                        <Icon name="redo" />
+                        90 deg
+                      </Button.Content>
+                    </Button>
+                  </Grid.Column>
+                  <Grid.Column textAlign="center">
+                    <Button onClick={() => this.addRotationInstruction('ccw')}>
+                      <Button.Content visible>
+                        <Icon name="undo" />
+                        90 deg
+                      </Button.Content>
+                    </Button>
+                  </Grid.Column>
+                </Grid>
+              </Grid.Row>
               <Grid.Row>
                 <Grid columns={2} padded>
                   <Grid.Column textAlign="center">
@@ -457,6 +514,9 @@ const mapDispatch = dispatch => {
     },
     toggleObstacles: () => {
       dispatch(toggleObstacles());
+    },
+    rotateDrone: newOrientation => {
+      dispatch(rotateDrone(newOrientation));
     },
   };
 };
