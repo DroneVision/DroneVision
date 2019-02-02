@@ -23,7 +23,7 @@ class DroneTelemetry extends Component {
       1,
       1000
     );
-    this.camera.position.set(0, 10, 15);
+    this.camera.position.set(0, 6, 12);
 
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
