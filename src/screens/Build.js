@@ -181,6 +181,7 @@ class Build extends Component {
     if (direction === 'cw') {
       newOrientation = (droneOrientation + 1) % 4;
     } else {
+      //counter-clockwise
       newOrientation = (droneOrientation + 3) % 4;
     }
     this.props.rotateDrone(newOrientation);
@@ -200,6 +201,8 @@ class Build extends Component {
   clearFlightInstructions = () => {
     drawPath([], this.props.distance);
     this.props.clearInstructions();
+
+    //TODO: update droneRotation
     this.props.rotateDrone(0);
   };
 
