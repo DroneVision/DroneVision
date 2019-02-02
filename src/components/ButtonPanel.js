@@ -82,7 +82,9 @@ const renderCenterButton = (type, addFlightInstruction, allDisabled) => {
       return (
         <Button
           disabled={allDisabled}
-          onClick={() => addFlightInstruction('hold', 'Hold')}
+          onClick={() =>
+            addFlightInstruction({ instruction: 'hold', message: 'Hold' })
+          }
         >
           <Button.Content visible>
             <Icon className="hold" name="hourglass half" />
