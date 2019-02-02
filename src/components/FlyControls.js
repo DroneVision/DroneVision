@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
-import wait from 'waait';
 const { ipcRenderer } = window.require('electron');
 
 class FlyControls extends Component {
@@ -14,7 +13,7 @@ class FlyControls extends Component {
     ipcRenderer.send('takeoff');
   };
   render() {
-    const { distance, speed } = this.props;
+    const { distance } = this.props;
     return (
       <table>
         <tbody>

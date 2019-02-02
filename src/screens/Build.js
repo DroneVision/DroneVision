@@ -11,7 +11,6 @@ import {
   Segment,
   Header,
   Grid,
-  Responsive,
   Image,
 } from 'semantic-ui-react';
 
@@ -237,13 +236,6 @@ class Build extends Component {
     //Diable Buttons
     this.setState({ runButtonsDisabled: true });
     //Prepare variables for flight
-    const { flightInstructions } = this.props;
-    const droneInstructions = flightInstructions.map(
-      flightInstructionObj => flightInstructionObj.instruction
-    );
-    // //Fly drone
-    // ipcRenderer.send('autopilot', ['command', ...droneInstructions]);
-    //Animate 3D drone model on Canvas
     this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
   };
 

@@ -3,22 +3,16 @@ import { connect } from 'react-redux';
 import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import Canvas from '../components/Canvas';
-import Stream from '../components/Stream';
 import {
   Button,
   Grid,
   Header,
   Icon,
-  Input,
-  Modal,
-  Transition,
 } from 'semantic-ui-react';
-import PubSub from 'pubsub-js';
 import wait from 'waait';
 import { drawPath } from '../utils/drawPathUtils';
 import { updateCDP } from '../store/store';
 import commandDelays from '../drone/commandDelays';
-// import flightCommandsIteratorReduxUpdater from '../utils/animateDroneUtils';
 
 const { ipcRenderer } = window.require('electron');
 
