@@ -392,7 +392,7 @@ class Build extends Component {
                 </Grid>
               </Grid.Row>
 
-              <Grid.Row>
+              <Grid.Row columns={3}>
                 <Grid.Column textAlign="center">
                   <Link to={'/run'}>
                     <Button onClick={() => this.props.changeTab('run')}>
