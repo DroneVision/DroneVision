@@ -42,12 +42,18 @@ function combineArrays() {
 }
 
 const getFlightInstruction = (dirString, droneOrientation = 0) => {
-  const instruction = getInstruction(dirString, droneOrientation);
+  const droneInstruction = getDroneInstruction(dirString, droneOrientation);
+  const drawInstruction = getDrawInstruction(dirString);
   const message = getMessage(dirString, droneOrientation);
-  return { instruction, message };
+
+  return { droneInstruction, drawInstruction, message };
 };
 
-const getInstruction = (dirString, droneOrientation) => {
+const getDrawInstruction = dirString => {
+  return combineArrays(...dirString.split('').map(dir => dirs[dirMap[dir]]));
+};
+
+const getDroneInstruction = (dirString, droneOrientation) => {
   return combineArrays(
     ...dirString.split('').map(dir => {
       if (dirMap[dir] >= 4) {

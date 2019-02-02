@@ -71,53 +71,53 @@ class Build extends Component {
   addFlightInstruction = instructionObj => {
     const { flightInstructions, speed, distance } = this.props;
     const {
-      instruction: newflightInstruction,
+      droneInstruction: newDroneInstruction,
+      drawInstruction: newDrawInstruction,
       message: newFlightMessage,
     } = instructionObj;
-    const latestInstructionObj =
+    const lastInstructionObj =
       flightInstructions[flightInstructions.length - 2];
     const {
-      instruction: latestInstruction,
-      message: latestMessage,
-    } = latestInstructionObj;
+      droneInstruction: lastDroneInstruction,
+      drawInstruction: lastDrawInstruction,
+      message: lastMessage,
+    } = lastInstructionObj;
 
-    const latestMessageName = latestMessage
+    const lastMessageName = lastMessage
       .split(' ')
       .slice(0, -3)
       .join(' ');
 
-    const latestInstructionArr = latestInstruction.split(' ');
-    const latestSpeed = Number(
-      latestInstructionArr[latestInstructionArr.length - 1]
+    const lastDroneInstructionArr = lastDroneInstruction.split(' ');
+    const lastSpeed = Number(
+      lastDroneInstructionArr[lastDroneInstructionArr.length - 1]
     );
 
     const flightInstructionObj = {};
 
     let updatedFlightInstructions = flightInstructions.slice();
-    if (newFlightMessage === latestMessageName && speed === latestSpeed) {
+    if (newFlightMessage === lastMessageName && speed === lastSpeed) {
       // Redundant instruction, so just adjust the last one's values
-      if (newflightInstruction === 'hold') {
+      if (newDroneInstruction === 'hold') {
         // TODO: add logic for hold
       } else {
-        const latestinstructionCoords = latestInstruction
+        const lastDroneInstructionCoords = lastDroneInstruction
           .split(' ')
           .slice(1, 4);
 
-        const resultCoords = latestinstructionCoords.map((coord, idx) => {
+        const resultCoords = lastDroneInstructionCoords.map((coord, idx) => {
           return (
-            Number(coord) + Number(newflightInstruction[idx]) * distance * 100
+            Number(coord) + Number(newDroneInstruction[idx]) * distance * 100
           );
         });
 
-        const newInstruction = `go ${resultCoords.join(' ')} ${speed}`;
+        const newDroneInstruction = `go ${resultCoords.join(' ')} ${speed}`;
 
-        flightInstructionObj.instruction = newInstruction;
+        flightInstructionObj.droneInstruction = newDroneInstruction;
 
-        const latestDistance = Number(
-          latestMessage.split(' ').slice(-2, -1)[0]
-        );
+        const lastDistance = Number(lastMessage.split(' ').slice(-2, -1)[0]);
 
-        const resultDistance = latestDistance + distance;
+        const resultDistance = lastDistance + distance;
 
         const newMessage = `${newFlightMessage} --> ${resultDistance.toFixed(
           1
@@ -128,7 +128,7 @@ class Build extends Component {
       //Overwrite the existing flight instruction object
       updatedFlightInstructions.splice(-2, 1, flightInstructionObj);
     } else {
-      flightInstructionObj.instruction = `go ${newflightInstruction
+      flightInstructionObj.droneInstruction = `go ${newDroneInstruction
         .map(numStr => Number(numStr) * distance * 100)
         .join(' ')} ${speed}`;
       flightInstructionObj.message = `${newFlightMessage} --> ${distance} m`;
@@ -142,10 +142,10 @@ class Build extends Component {
 
   addRotationInstruction = (direction, degs = 90) => {
     const { flightInstructions, droneOrientation } = this.props;
-    const latestInstructionObj =
+    const lastInstructionObj =
       flightInstructions[flightInstructions.length - 2];
 
-    const { instruction: latestInstruction } = latestInstructionObj;
+    const { droneInstruction: lastDroneInstruction } = lastInstructionObj;
 
     const newMessage =
       direction === 'cw' ? `Rotate Clockwise` : `Rotate Counter-Clockwise`;
@@ -154,17 +154,17 @@ class Build extends Component {
 
     let updatedFlightInstructions = flightInstructions.slice();
 
-    const latestInstructionArr = latestInstruction.split(' ');
+    const lastDroneInstructionArr = lastDroneInstruction.split(' ');
 
-    if (direction === latestInstructionArr[0]) {
-      const oldDegs = latestInstructionArr[1];
+    if (direction === lastDroneInstructionArr[0]) {
+      const oldDegs = lastDroneInstructionArr[1];
       const resultDegs = degs + Number(oldDegs);
-      flightInstructionObj.instruction = `${direction} ${resultDegs}`;
+      flightInstructionObj.droneInstruction = `${direction} ${resultDegs}`;
       flightInstructionObj.message = `${newMessage} --> ${resultDegs} degrees`;
       //Overwrite the existing flight instruction object
       updatedFlightInstructions.splice(-2, 1, flightInstructionObj);
     } else {
-      flightInstructionObj.instruction = `${direction} ${degs}`;
+      flightInstructionObj.droneInstruction = `${direction} ${degs}`;
       flightInstructionObj.message = `${newMessage} --> ${degs} degrees`;
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
@@ -221,10 +221,10 @@ class Build extends Component {
     //Iterate over all flightInstructions
     for (let i = 0; i < flightInstructions.length; i++) {
       let flightInstruction = flightInstructions[i];
-      let instructionName = flightInstruction.instruction.split(' ')[0];
+      let instructionName = flightInstruction.droneInstruction.split(' ')[0];
       //create new object for new coordinates
       let newCoords = {};
-      let flightInstructionArray = flightInstruction.instruction
+      let flightInstructionArray = flightInstruction.droneInstruction
         .split(' ')
         .slice(1, 4)
         .map(numStr => Number(numStr) / this.props.distance);

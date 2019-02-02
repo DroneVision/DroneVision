@@ -4,11 +4,11 @@ export const getFlightCoords = (flightInstructions, distance) => {
   return flightInstructions
     .slice(1, -1)
     .filter(instructionObj => {
-      const instructionName = instructionObj.instruction.split(' ')[0];
+      const instructionName = instructionObj.droneInstruction.split(' ')[0];
       return instructionName !== 'cw' && instructionName !== 'ccw';
     })
     .map(instructionObj =>
-      instructionObj.instruction
+      instructionObj.droneInstruction
         .split(' ')
         .slice(1, 4)
         .map(numStr => Number(numStr) / distance)
