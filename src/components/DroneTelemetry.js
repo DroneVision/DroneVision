@@ -12,6 +12,7 @@ class DroneTelemetry extends Component {
     //RENDERER
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(640, 360, false);
+    this.renderer.setClearColor(0x00ff00);
 
     //SCENE
     this.scene = new THREE.Scene();
@@ -61,7 +62,7 @@ class DroneTelemetry extends Component {
       this.props.roll * -0.01
     );
 
-    this.controls.update();
+    // this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
 
