@@ -104,7 +104,9 @@ class Build extends Component {
           .slice(1, 4);
 
         const resultCoords = latestinstructionCoords.map((coord, idx) => {
-          return Number(coord) + Number(newflightInstruction[idx]);
+          return (
+            Number(coord) + Number(newflightInstruction[idx]) * distance * 100
+          );
         });
 
         const newInstruction = `go ${resultCoords.join(' ')} ${speed}`;
@@ -126,9 +128,9 @@ class Build extends Component {
       //Overwrite the existing flight instruction object
       updatedFlightInstructions.splice(-2, 1, flightInstructionObj);
     } else {
-      flightInstructionObj.instruction = `go ${newflightInstruction.join(
-        ' '
-      )} ${speed}`;
+      flightInstructionObj.instruction = `go ${newflightInstruction
+        .map(numStr => Number(numStr) * distance * 100)
+        .join(' ')} ${speed}`;
       flightInstructionObj.message = `${newFlightMessage} --> ${distance} m`;
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
