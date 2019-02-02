@@ -19,6 +19,7 @@ const INITIAL_STATE = {
     { instruction: 'land', message: 'Land' },
   ],
   obstacles: false,
+  isConnectedToNetwork: false,
 };
 
 //ACTION CONSTANTS
@@ -43,6 +44,9 @@ const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
 
 const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
+const CONNECT_TO_DRONE = 'CONNECT_TO_DRONE';
+const DISCONNECT_FROM_DRONE = 'DISCONNECT_FROM_DRONE';
+
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
 export const decreaseDistance = () => ({ type: DECREASE_DISTANCE });
@@ -57,6 +61,9 @@ export const changePitch = newPitch => ({ type: CHANGE_PITCH, newPitch });
 export const changeYaw = newYaw => ({ type: CHANGE_YAW, newYaw });
 
 export const changeTab = newTab => ({ type: CHANGE_TAB, newTab });
+
+export const connectToDrone = () => ({ type: CONNECT_TO_DRONE });
+export const disconnectFromDrone = () => ({ type: DISCONNECT_FROM_DRONE });
 
 export const updateInstructions = flightInstructions => ({
   type: UPDATE_INSTRUCTIONS,
@@ -105,6 +112,10 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, currentDronePosition: action.newPosition };
     case TOGGLE_OBSTACLES:
       return { ...state, obstacles: !state.obstacles };
+    case CONNECT_TO_DRONE:
+      return { ...state, isConnectedToNetwork: true };
+    case DISCONNECT_FROM_DRONE:
+      return { ...state, isConnectedToNetwork: false };
     default:
       return state;
   }

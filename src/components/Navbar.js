@@ -3,9 +3,14 @@ import { connect } from 'react-redux';
 import { Menu, Segment, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { changeTab } from '../store/store';
+import { connectToDroneWifi } from '../utils/wifiUtils'
 
 class Navbar extends Component {
   handleTabChange = (e, { name }) => this.props.changeTab(name);
+
+  handleConnectToDrone = async () => {
+    await connectToDroneWifi();
+  };
 
   render() {
     const { activeTab } = this.props;
@@ -44,7 +49,7 @@ class Navbar extends Component {
             <Menu.Menu position="right">
               <Dropdown text="Drone" pointing className="link item">
               <Dropdown.Menu>
-                <Dropdown.Item disabled={false}>Connect to Drone</Dropdown.Item>
+                <Dropdown.Item disabled={false} onClick={this.handleConnectToDrone}>Connect to Drone</Dropdown.Item>
                 <Dropdown.Item disabled={true}>Disconnect from Drone</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

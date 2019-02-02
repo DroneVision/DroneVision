@@ -90,7 +90,7 @@ module.exports = mainWindow => {
                             droneMenu.submenu[0].enabled = false
                             dialog.showMessageBox(mainWindow, {
                                 type: 'info',
-                                buttons: ['Cancel'],
+                                buttons: ['Ok'],
                                 message: 'Sucessfully connected',
                                 detail: `Connected to the Drone Wifi: ${droneAP.ssid}`
                             })
