@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Button } from 'semantic-ui-react';
 import FlyControls from '../components/FlyControls';
 import Stream from '../components/Stream';
 import StatusContainer from '../components/StatusContainer';
