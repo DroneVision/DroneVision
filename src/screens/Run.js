@@ -3,22 +3,16 @@ import { connect } from 'react-redux';
 import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import Canvas from '../components/Canvas';
-import Stream from '../components/Stream';
 import {
   Button,
   Grid,
   Header,
   Icon,
-  Input,
-  Modal,
-  Transition,
 } from 'semantic-ui-react';
-import PubSub from 'pubsub-js';
 import wait from 'waait';
 import { drawPath } from '../utils/drawPathUtils';
 import { updateCDP } from '../store/store';
 import commandDelays from '../drone/commandDelays';
-// import flightCommandsIteratorReduxUpdater from '../utils/animateDroneUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -52,10 +46,10 @@ class Run extends Component {
     //Iterate over all flightInstructions
     for (let i = 0; i < flightInstructions.length; i++) {
       let flightInstruction = flightInstructions[i];
-      let instructionName = flightInstruction.instruction.split(' ')[0];
+      let instructionName = flightInstruction.droneInstruction.split(' ')[0];
       //create new object for new coordinates
       let newCoords = {};
-      let flightInstructionArray = flightInstruction.instruction
+      let flightInstructionArray = flightInstruction.droneInstruction
         .split(' ')
         .slice(1, 4)
         .map(numStr => Number(numStr) / this.props.distance);
@@ -114,7 +108,7 @@ class Run extends Component {
     //Prepare variables for flight
     const { flightInstructions } = this.props;
     const droneInstructions = flightInstructions.map(
-      flightInstructionObj => flightInstructionObj.instruction
+      flightInstructionObj => flightInstructionObj.droneInstruction
     );
     //Fly drone
     ipcRenderer.send('autopilot', ['command', ...droneInstructions]);
@@ -130,7 +124,7 @@ class Run extends Component {
     //Prepare variables for flight
     const { flightInstructions } = this.props;
     const droneInstructions = flightInstructions.map(
-      flightInstructionObj => flightInstructionObj.instruction
+      flightInstructionObj => flightInstructionObj.droneInstruction
     );
     //Wait 5 Seconds, then fly the drone (gives camera time to initialize)
     setTimeout(() => {

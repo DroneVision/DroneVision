@@ -2,7 +2,7 @@ export const voxelSizeValue = 10;
 const startingPositionCoords = { x: 0, y: 0 + voxelSizeValue * -0.5, z: 0 };
 
 const INITIAL_STATE = {
-  distance: 50,
+  distance: 0.5,
   speed: 50,
   battery: 100,
   scale: 10,
@@ -15,9 +15,10 @@ const INITIAL_STATE = {
   startingPosition: startingPositionCoords,
   currentDronePosition: startingPositionCoords,
   flightInstructions: [
-    { instruction: 'takeoff', message: 'Takeoff' },
-    { instruction: 'land', message: 'Land' },
+    { droneInstruction: 'takeoff', message: 'Takeoff', drawInstruction: null },
+    { droneInstruction: 'land', message: 'Land', drawInstruction: null },
   ],
+  droneOrientation: 0,
   obstacles: false,
   isConnected: false,
   droneConnectionStatus: {
@@ -45,6 +46,8 @@ const UPDATE_INSTRUCTIONS = 'UPDATE_INSTRUCTIONS';
 const CLEAR_INSTRUCTIONS = 'CLEAR_INSTRUCTIONS';
 
 const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
+
+const ROTATE_DRONE = 'ROTATE_DRONE';
 
 const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
@@ -78,6 +81,11 @@ export const clearInstructions = () => ({
 export const updateCDP = newPosition => ({
   type: UPDATE_CURRENT_DRONE_POSITION,
   newPosition,
+});
+
+export const rotateDrone = newOrientation => ({
+  type: ROTATE_DRONE,
+  newOrientation,
 });
 
 export const toggleObstacles = () => ({
@@ -116,6 +124,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, flightInstructions: action.flightInstructions };
     case UPDATE_CURRENT_DRONE_POSITION:
       return { ...state, currentDronePosition: action.newPosition };
+    case ROTATE_DRONE:
+      return { ...state, droneOrientation: action.newOrientation };
     case TOGGLE_OBSTACLES:
       return { ...state, obstacles: !state.obstacles };
     case UPDATE_DRONE_CONNECTION_STATUS:

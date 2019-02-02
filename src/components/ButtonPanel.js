@@ -1,103 +1,128 @@
 import React from 'react';
 import { Button, Icon } from 'semantic-ui-react';
 
-const getInstruction = (name, distance, speed, type) => {
-  let xyz;
-  let z;
-  switch (type) {
-    case 'Current':
-      z = 0;
-      break;
-    case 'Up':
-      z = distance;
-      break;
-    case 'Down':
-      z = -distance;
-      break;
-    default:
-      z = null;
+//Default Commands for North (N), West (W), South (S), East (E) assuming the drone is facing forward towards the north star
+const dirs = [
+  [1, 0, 0], // North
+  [0, 1, 0], // West
+  [-1, 0, 0], // South
+  [0, -1, 0], // East
+  [0, 0, 0], // Null
+  [0, 0, 1], // Up
+  [0, 0, -1], // Down
+];
+const dirStrs = ['Forward', 'Left', 'Reverse', 'Right', null, 'Up', 'Down'];
+
+const dirMap = {
+  N: 0,
+  W: 1,
+  S: 2,
+  E: 3,
+  C: 4,
+  U: 5,
+  D: 6,
+};
+
+function combineArrays() {
+  let arrays = arguments,
+    results = [],
+    count = arrays[0].length,
+    L = arrays.length,
+    sum,
+    next = 0,
+    i;
+  while (next < count) {
+    sum = 0;
+    i = 0;
+    while (i < L) {
+      sum += Number(arrays[i++][next]);
+    }
+    results[next++] = sum;
   }
-  switch (name) {
-    case 'forward-left':
-      xyz = `${distance} ${distance} ${z}`;
-      break;
-    case 'forward':
-      xyz = `${distance} 0 ${z}`;
-      break;
-    case 'forward-right':
-      xyz = `${distance} -${distance} ${z}`;
-      break;
-    case 'left':
-      xyz = `0 ${distance} ${z}`;
-      break;
-    case 'right':
-      xyz = `0 -${distance} ${z}`;
-      break;
-    case 'reverse-left':
-      xyz = `-${distance} ${distance} ${z}`;
-      break;
-    case 'reverse':
-      xyz = `-${distance} 0 ${z}`;
-      break;
-    case 'reverse-right':
-      xyz = `-${distance} -${distance} ${z}`;
-      break;
-    case 'straight-up':
-      xyz = `0 0 ${z}`;
-      break;
-    case 'straight-down':
-      xyz = `0 0 ${z}`;
-      break;
-    default:
-      xyz = '';
-  }
-  return `go ${xyz} ${speed}`;
+  return results;
+}
+
+const getFlightInstruction = (dirString, droneOrientation = 0) => {
+  const droneInstruction = getDroneInstruction(dirString, droneOrientation);
+  const drawInstruction = getDrawInstruction(dirString);
+  const message = getMessage(dirString, droneOrientation);
+
+  return { droneInstruction, drawInstruction, message };
+};
+
+const getDrawInstruction = dirString => {
+  return combineArrays(...dirString.split('').map(dir => dirs[dirMap[dir]]));
+};
+
+const getDroneInstruction = (dirString, droneOrientation) => {
+  return combineArrays(
+    ...dirString.split('').map(dir => {
+      if (dirMap[dir] >= 4) {
+        // Current (C), Up (U), or Down (D)
+        return dirs[dirMap[dir]];
+      } else {
+        // All other directions
+        return dirs[(dirMap[dir] + droneOrientation) % 4];
+      }
+    })
+  );
+};
+
+const getMessage = (dirString, droneOrientation) => {
+  return dirString
+    .split('')
+    .filter(dir => dir !== 'C')
+    .map(dir => {
+      if (dirMap[dir] >= 4) {
+        //Up (U) or Down (D)
+        return dirStrs[dirMap[dir]];
+      } else {
+        return dirStrs[(dirMap[dir] + droneOrientation) % 4];
+      }
+    })
+    .join(' + ');
 };
 
 const renderCenterButton = (
   type,
-  distance,
-  speed,
   addFlightInstruction,
-  allDisabled
+  allDisabled,
+  droneOrientation
 ) => {
   switch (type) {
-    case 'Current':
-      return (
-        <Button
-          disabled={allDisabled}
-          onClick={() => addFlightInstruction('hold', 'Hold')}
-        >
-          <Button.Content visible>
-            <Icon className="hold" name="hourglass half" />
-          </Button.Content>
-        </Button>
-      );
-    case 'Up':
+    case 'C':
       return (
         <Button
           disabled={allDisabled}
           onClick={() =>
-            addFlightInstruction(
-              getInstruction('straight-up', distance, speed, type),
-              `Up --> ${distance / 100} m`
-            )
+            addFlightInstruction({ instruction: 'hold', message: 'Hold' })
           }
+        >
+          <Button.Content visible>
+            <Icon
+              className={`drone${droneOrientation}`}
+              name="hourglass half"
+            />
+          </Button.Content>
+        </Button>
+      );
+    case 'U':
+      return (
+        <Button
+          disabled={allDisabled}
+          onClick={() => addFlightInstruction(getFlightInstruction(type), `Up`)}
         >
           <Button.Content visible>
             <Icon className="straight-up" name="arrow circle up" />
           </Button.Content>
         </Button>
       );
-    case 'Down':
+    case 'D':
       return (
         <Button
           disabled={allDisabled}
           onClick={() =>
-            addFlightInstruction(
-              getInstruction('straight-down', distance, speed, type),
-              `Down --> ${distance / 100} m`
-            )
+            addFlightInstruction(getFlightInstruction(type), `Down`)
           }
         >
           <Button.Content visible>
@@ -113,16 +138,15 @@ const renderCenterButton = (
 const ButtonPanel = props => {
   const {
     type,
-    distance,
-    speed,
     addFlightInstruction,
     leftDisabled,
     rightDisabled,
     forwardDisabled,
     reverseDisabled,
     allDisabled,
+    droneOrientation,
   } = props;
-  const prefix = type === 'Current' ? '' : `${type} + `;
+
   return (
     <table>
       <tbody>
@@ -136,8 +160,7 @@ const ButtonPanel = props => {
               disabled={leftDisabled || forwardDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
-                  getInstruction('forward-left', distance, speed, type),
-                  `${prefix}Forward + Left --> ${distance / 100} m`
+                  getFlightInstruction(`${type}NW`, droneOrientation)
                 )
               }
             >
@@ -151,8 +174,7 @@ const ButtonPanel = props => {
               disabled={forwardDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
-                  getInstruction('forward', distance, speed, type),
-                  `${prefix}Forward --> ${distance / 100} m`
+                  getFlightInstruction(`${type}N`, droneOrientation)
                 )
               }
             >
@@ -166,8 +188,7 @@ const ButtonPanel = props => {
               disabled={rightDisabled || forwardDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
-                  getInstruction('forward-right', distance, speed, type),
-                  `${prefix}Forward + Right --> ${distance / 100} m`
+                  getFlightInstruction(`${type}NE`, droneOrientation)
                 )
               }
             >
@@ -183,8 +204,7 @@ const ButtonPanel = props => {
               disabled={leftDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
-                  getInstruction('left', distance, speed, type),
-                  `${prefix}Left --> ${distance / 100} m`
+                  getFlightInstruction(`${type}W`, droneOrientation)
                 )
               }
             >
@@ -196,10 +216,9 @@ const ButtonPanel = props => {
           <td>
             {renderCenterButton(
               type,
-              distance,
-              speed,
               addFlightInstruction,
-              allDisabled
+              allDisabled,
+              droneOrientation
             )}
           </td>
           <td>
@@ -207,8 +226,7 @@ const ButtonPanel = props => {
               disabled={rightDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
-                  getInstruction('right', distance, speed, type),
-                  `${prefix}Right --> ${distance / 100} m`
+                  getFlightInstruction(`${type}E`, droneOrientation)
                 )
               }
             >
@@ -224,8 +242,7 @@ const ButtonPanel = props => {
               disabled={leftDisabled || reverseDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
-                  getInstruction('reverse-left', distance, speed, type),
-                  `${prefix}Reverse + Left --> ${distance / 100} m`
+                  getFlightInstruction(`${type}SW`, droneOrientation)
                 )
               }
             >
@@ -239,8 +256,7 @@ const ButtonPanel = props => {
               disabled={reverseDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
-                  getInstruction('reverse', distance, speed, type),
-                  `${prefix}Reverse --> ${distance / 100} m`
+                  getFlightInstruction(`${type}S`, droneOrientation)
                 )
               }
             >
@@ -254,8 +270,7 @@ const ButtonPanel = props => {
               disabled={rightDisabled || reverseDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
-                  getInstruction('reverse-right', distance, speed, type),
-                  `${prefix}Reverse + Right --> ${distance / 100} m`
+                  getFlightInstruction(`${type}SE`, droneOrientation)
                 )
               }
             >

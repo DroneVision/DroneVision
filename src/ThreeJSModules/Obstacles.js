@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import voxelSizeValue from '../store/store';
 
 //OBSTACLES GROUP
 const Obstacles = new THREE.Group();
