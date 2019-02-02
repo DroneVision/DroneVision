@@ -15,7 +15,7 @@ import {
 } from 'semantic-ui-react';
 
 import ButtonPanel from '../components/ButtonPanel';
-import Canvas from '../components/Canvas';
+import BuildCanvas from '../components/BuildCanvas';
 import {
   changeTab,
   updateInstructions,
@@ -338,7 +338,7 @@ class Build extends Component {
 
               <Grid.Row>
                 <Grid.Column>
-                  <Canvas />
+                  <BuildCanvas />
                 </Grid.Column>
               </Grid.Row>
 
