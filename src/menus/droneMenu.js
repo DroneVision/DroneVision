@@ -90,7 +90,7 @@ module.exports = mainWindow => {
                             droneMenu.submenu[0].enabled = false
                             dialog.showMessageBox(mainWindow, {
                                 type: 'info',
-                                buttons: buttons,
+                                buttons: ['Cancel'],
                                 message: 'Sucessfully connected',
                                 detail: `Connected to the Drone Wifi: ${droneAP.ssid}`
                             })
@@ -98,7 +98,7 @@ module.exports = mainWindow => {
                     } else {
                         dialog.showMessageBox(mainWindow, {
                             type: 'warning',
-                            buttons: buttons,
+                            buttons: ['Cancel'],
                             message: 'Already connected',
                             detail: `You have already connected to the Drone Wifi: ${droneAP.ssid}`
                         })
