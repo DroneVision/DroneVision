@@ -26,7 +26,7 @@ module.exports = BrowserWindow => {
 		fileMenu(BrowserWindow),
 		viewMenu(BrowserWindow),
 		windowMenu,
-		droneMenu
+		droneMenu(BrowserWindow)
 	];
   
 	return Menu.buildFromTemplate(template);
