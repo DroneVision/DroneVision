@@ -16,21 +16,21 @@ class Navbar extends Component {
             <Menu.Item
               as={Link}
               to={'/build'}
-              name="build"
+              name="path builder"
               active={activeTab === 'build'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
               as={Link}
               to={'/run'}
-              name="run"
+              name="autopilot"
               active={activeTab === 'run'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
               as={Link}
               to={'/fly'}
-              name="fly"
+              name="manual control"
               active={activeTab === 'fly'}
               onClick={this.handleTabChange}
             />
