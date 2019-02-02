@@ -91,6 +91,11 @@ module.exports = mainWindow => {
                                     message: 'Sucessfully connected',
                                     detail: `Connected to the Drone Wifi: ${droneAP.ssid}`
                                 })
+                                const droneConnectionStatus = {
+                                    droneName: droneAP.ssid,
+                                    isConnected: true
+                                }
+                                mainWindow.webContents.send('drone-connection', droneConnectionStatus)
                             });
                         } else {
                             dialog.showMessageBox(mainWindow, {
@@ -119,6 +124,11 @@ module.exports = mainWindow => {
             if (disconnectionResult) {
                 droneMenu.submenu[1].enabled = true;
                 // console.log(`Resetting ${disconnectionResult} is successful `);
+                const droneConnectionStatus = {
+                    droneName: '',
+                    isConnected: false
+                }
+                mainWindow.webContents.send('drone-connection', droneConnectionStatus)
             }
         } catch (error) {
             console.error(error);

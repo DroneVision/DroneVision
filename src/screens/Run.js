@@ -257,7 +257,7 @@ const mapState = state => {
     flightInstructions: state.flightInstructions,
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
-    voxelSize: state.voxelSize,
+    voxelSize: state.voxelSize
   };
 };
 
