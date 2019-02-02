@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import * as THREE from 'three';
 import OrbitControls from 'three-orbitcontrols';
 import droneModel from '../ThreeJSModules/Drone3DModel';
-import droneModelSkybox from '../ThreeJSModules/DroneModelSkybox';
+import droneTelemetrySkybox from '../ThreeJSModules/DroneTelemetrySkybox';
 
 class DroneTelemetry extends Component {
   constructor(props) {
@@ -35,7 +35,7 @@ class DroneTelemetry extends Component {
     // this.controls.maxPolarAngle = Math.PI / 2;
 
     //SKYBOX
-    this.scene.add(droneModelSkybox);
+    this.scene.add(droneTelemetrySkybox);
 
     //3D DRONE MODEL
     this.drone3DModel = droneModel.clone();

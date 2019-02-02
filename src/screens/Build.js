@@ -15,7 +15,7 @@ import {
 } from 'semantic-ui-react';
 
 import ButtonPanel from '../components/ButtonPanel';
-import Canvas from '../components/Canvas';
+import BuildCanvas from '../components/BuildCanvas';
 import {
   changeTab,
   updateInstructions,
@@ -323,7 +323,7 @@ class Build extends Component {
 
               <Grid.Row>
                 <Grid.Column>
-                  <Canvas />
+                  <BuildCanvas />
                 </Grid.Column>
               </Grid.Row>
 
@@ -409,7 +409,7 @@ class Build extends Component {
                     <Button onClick={() => this.addRotationInstruction('cw')}>
                       <Button.Content visible>
                         <Icon name="redo" />
-                        90 deg
+                        90&deg;
                       </Button.Content>
                     </Button>
                   </Grid.Column>
@@ -417,7 +417,7 @@ class Build extends Component {
                     <Button onClick={() => this.addRotationInstruction('ccw')}>
                       <Button.Content visible>
                         <Icon name="undo" />
-                        90 deg
+                        90&deg;
                       </Button.Content>
                     </Button>
                   </Grid.Column>
