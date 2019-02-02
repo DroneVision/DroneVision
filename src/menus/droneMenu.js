@@ -62,7 +62,7 @@ module.exports = mainWindow => {
                 // Select drone network
                 let selectedDroneSSID;
                 // Display drone networks to connect to
-                const buttons = [...droneWifiNetworks, 'No']
+                const buttons = [...droneWifiNetworks, 'Cancel']
                 console.log(buttons);
                 const res = dialog.showMessageBox(mainWindow, {
                     type: 'info',
@@ -70,7 +70,7 @@ module.exports = mainWindow => {
                     message: 'Select the Drone network',
                     detail: 'Select the Drone network you would like to connect to'
                 })
-                console.log('res', res)
+                // Set the drone SSID if the user doesn't click the cancel button.
                 if(res !== buttons.length - 1) {
                     selectedDroneSSID = buttons[res]
                     // Create a Drone accesspoint object
@@ -84,26 +84,36 @@ module.exports = mainWindow => {
                         wifi.connect(droneAP, (err) => {
                             if (err) {
                                 console.error(err);
-                                console.log(`Couldn't connect to the drone wifi network`);
+                                // console.log(`Couldn't connect to the Drone Wifi Network`);
                             }
                             connectButtonCounter++;
                             droneMenu.submenu[0].enabled = false
-                            console.log(`Connected to drone Wifi: ${droneAP.ssid}`);
+                            dialog.showMessageBox(mainWindow, {
+                                type: 'info',
+                                buttons: buttons,
+                                message: 'Sucessfully connected',
+                                detail: `Connected to the Drone Wifi: ${droneAP.ssid}`
+                            })
                         });
                     } else {
-                        console.log(`You have already connected to the drone.`)
+                        dialog.showMessageBox(mainWindow, {
+                            type: 'warning',
+                            buttons: buttons,
+                            message: 'Already connected',
+                            detail: `You have already connected to the Drone Wifi: ${droneAP.ssid}`
+                        })
                     }
                 } else {
                     return;
                 }
             }
-            console.log(`Couldn't find the drone WiFi network`);
+            // For Top
+            // console.log(`Couldn't find the drone WiFi network`);
         }
 
         } catch (error) {
             console.error(error);
         }
-
 
     }
 
@@ -113,7 +123,7 @@ module.exports = mainWindow => {
             const disconnectionResult = await wifi.disconnect();
             if (disconnectionResult) {
                 droneMenu.submenu[1].enabled = true;
-                console.log(`Resetting ${disconnectionResult} is successful `);
+                // console.log(`Resetting ${disconnectionResult} is successful `);
             }
         } catch (error) {
             console.error(error);
