@@ -14,6 +14,16 @@
   transform: rotate(-45deg);
 }
 
+.drone1 {
+  transform: rotate(90deg);
+}
+.drone2 {
+  transform: rotate(180deg);
+}
+.drone3 {
+  transform: rotate(270deg);
+}
+
 .flight-message-single {
   margin: 2px 0px;
 }

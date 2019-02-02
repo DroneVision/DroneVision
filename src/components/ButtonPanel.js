@@ -76,7 +76,12 @@ const getMessage = (dirString, droneOrientation) => {
     .join(' + ');
 };
 
-const renderCenterButton = (type, addFlightInstruction, allDisabled) => {
+const renderCenterButton = (
+  type,
+  addFlightInstruction,
+  allDisabled,
+  droneOrientation
+) => {
   switch (type) {
     case 'C':
       return (
@@ -87,7 +92,10 @@ const renderCenterButton = (type, addFlightInstruction, allDisabled) => {
           }
         >
           <Button.Content visible>
-            <Icon className="hold" name="hourglass half" />
+            <Icon
+              className={`drone${droneOrientation}`}
+              name="hourglass half"
+            />
           </Button.Content>
         </Button>
       );
@@ -198,7 +206,14 @@ const ButtonPanel = props => {
               </Button.Content>
             </Button>
           </td>
-          <td>{renderCenterButton(type, addFlightInstruction, allDisabled)}</td>
+          <td>
+            {renderCenterButton(
+              type,
+              addFlightInstruction,
+              allDisabled,
+              droneOrientation
+            )}
+          </td>
           <td>
             <Button
               disabled={rightDisabled || allDisabled}
