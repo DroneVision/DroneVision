@@ -24,7 +24,7 @@ const INITIAL_STATE = {
     droneName: 'Drone Not Connected',
     isConnected: false,
   },
-  buildDronePosition: {
+  buildDroneStart: {
     x: startingPositionCoords.x,
     y: startingPositionCoords.y + 1,
     z: startingPositionCoords.z,

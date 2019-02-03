@@ -32,11 +32,6 @@ class BuildCanvas extends Component {
       1000
     );
     this.camera.position.set(-2.8, 5.4, -14.8);
-    // this.camera.position.set(
-    //   this.props.startingPosition.x,
-    //   this.props.startingPosition.y,
-    //   this.props.startingPosition.z
-    // );
 
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -53,9 +48,9 @@ class BuildCanvas extends Component {
     //DRONE 3D MODEL
     this.drone3DModel = droneModel.clone();
     this.drone3DModel.position.set(
-      this.props.buildDronePosition.x,
-      this.props.buildDronePosition.y,
-      this.props.buildDronePosition.z
+      this.props.droneStartPosition.x,
+      this.props.droneStartPosition.y,
+      this.props.droneStartPosition.z
     );
 
     this.controls.target = this.drone3DModel.position;
@@ -125,129 +120,93 @@ class BuildCanvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
+    this.updateEverything();
+  }
+
+  componentDidUpdate = prevProps => {
+    this.updateEverything(prevProps);
+  };
+
+  updateEverything = (prevProps = null) => {
+    const {
+      droneStartPosition,
+      flightInstructions: newFlightInstructions,
+      obstacles,
+    } = this.props;
+    let oldFlightInstructions;
+    if (prevProps) {
+      const { flightInstructions } = prevProps;
+      oldFlightInstructions = flightInstructions;
+    } else {
+      oldFlightInstructions = null;
+    }
+
+    this.drone3DModel.rotation.y = Math.PI;
 
     //OBSTACLES (toggled by redux store)
-    if (this.props.obstacles) {
+    if (obstacles) {
       this.scene.add(Obstacles);
     }
     //OBSTACLES (toggled by redux store)
-    if (!this.props.obstacles) {
+    if (!obstacles) {
       this.scene.remove(Obstacles);
     }
 
-    PubSub.subscribe('draw-path', (msg, flightCoords) => {
-      if (this.line) {
-        this.scene.remove(this.line);
-        this.scene.remove(this.landLine);
-      }
+    //REMOVE OLD LINE AND LAND LINE
+    if (this.line) {
+      this.scene.remove(this.line);
+      this.scene.remove(this.landLine);
+    }
 
-      //DRAWS FLIGHT PATH
-      const material = new THREE.LineBasicMaterial({
-        color: 0xff0000,
-      });
-      const geometry = new THREE.Geometry();
-      const startingPoint = { x: 0, y: 1, z: 0 };
-      const point = { ...startingPoint };
-      geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+    //DRAW NEW FLIGHT PATH
+    const material = new THREE.LineBasicMaterial({
+      color: 0xff0000,
+    });
+    const geometry = new THREE.Geometry();
 
-      flightCoords.forEach(command => {
-        const [z, x, y] = command;
-        point.x += x;
-        point.y += y;
-        point.z += z;
-        // x -> z
-        // y -> x
-        // z -> y
-        geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+    const point = { ...droneStartPosition };
+    geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+
+    if (!_.isEqual(oldFlightInstructions, newFlightInstructions)) {
+      newFlightInstructions.slice(1, -1).forEach(instructionObj => {
+        const { droneInstruction, drawInstruction } = instructionObj;
+        //just checking to see if the command is a rotation
+        const [command] = droneInstruction.split(' ');
+        if (command === 'cw') {
+          this.drone3DModel.rotation.y =
+            Math.PI - (Math.PI / 2) * this.props.droneOrientation;
+        } else if (command === 'ccw') {
+          this.drone3DModel.rotation.y =
+            -Math.PI - (Math.PI / 2) * this.props.droneOrientation;
+        } else {
+          const [z, x, y] = drawInstruction;
+          point.x += x;
+          point.y += y;
+          point.z += z;
+          // x -> z
+          // y -> x
+          // z -> y
+          geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+        }
       });
       this.line = new THREE.Line(geometry, material);
 
-      //move drone to the tip of the path
-      this.drone3DModel.position.set(
-        point.x,
-        point.y - this.gridEdgeLength * 0.5,
-        point.z
-      );
-
-      //shift position of line down because the plane had to be shifted down in 3d space
-      this.line.position.set(0, this.gridEdgeLength * -0.5, 0);
       this.scene.add(this.line);
 
-      if (!_.isEqual(point, startingPoint)) {
-        const landLineGeometry = new THREE.Geometry();
-        landLineGeometry.vertices.push(new THREE.Vector3(point.x, 0, point.z));
-        const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
+      //move drone to the tip of the path
+      this.drone3DModel.position.set(point.x, point.y, point.z);
+    }
+    if (!_.isEqual(point, droneStartPosition)) {
+      //add land line if drone is not still at the starting position
+      const landLineGeometry = new THREE.Geometry();
+      landLineGeometry.vertices.push(new THREE.Vector3(point.x, -5, point.z));
+      const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
 
-        landLineGeometry.vertices.push(
-          new THREE.Vector3(point.x, point.y, point.z)
-        );
-        this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
-        this.landLine.position.set(0, this.gridEdgeLength * -0.5, 0);
-        this.scene.add(this.landLine);
-      }
-    });
-  }
-
-  componentDidUpdate = () => {
-    //OBSTACLES (toggled by redux store)
-    if (this.props.obstacles) {
-      this.scene.add(Obstacles);
-    }
-    //OBSTACLES (toggled by redux store)
-    if (!this.props.obstacles) {
-      this.scene.remove(Obstacles);
-    }
-  };
-  moveDrone = object => {
-    let differenceX = this.props.currentDronePosition.x - object.position.x;
-    let differenceY = this.props.currentDronePosition.y - object.position.y;
-    let differenceZ = this.props.currentDronePosition.z - object.position.z;
-    let speed;
-
-    if (differenceX > 8 || differenceY > 8 || differenceZ > 8) {
-      speed = 0.05;
-    } else if (differenceX > 6 || differenceY > 6 || differenceZ > 6) {
-      speed = 0.04;
-    } else if (differenceX > 4 || differenceY > 4 || differenceZ > 4) {
-      speed = 0.03;
-    } else if (differenceX > 2 || differenceY > 2 || differenceZ > 2) {
-      speed = 0.02;
-    } else {
-      speed = 0.01;
-    }
-
-    if (object.position.x !== this.props.currentDronePosition.x) {
-      if (differenceX > 0) {
-        object.position.x = object.position.x + speed;
-      }
-      if (differenceX < 0) {
-        object.position.x = object.position.x - speed;
-      }
-      if (Math.abs(differenceX) < speed + 0.01) {
-        object.position.x = this.props.currentDronePosition.x;
-      }
-    }
-    if (object.position.y !== this.props.currentDronePosition.y) {
-      if (differenceY > 0) {
-        object.position.y = object.position.y + speed;
-      }
-      if (differenceY < 0) {
-        object.position.y = object.position.y - speed;
-      }
-      if (Math.abs(differenceY) < speed + 0.01) {
-        object.position.y = this.props.currentDronePosition.y;
-      }
-    }
-    if (object.position.z !== this.props.currentDronePosition.z) {
-      if (differenceZ > 0) {
-        object.position.z = object.position.z + speed;
-      }
-      if (differenceZ < 0) {
-        object.position.z = object.position.z - speed;
-      }
-      if (Math.abs(differenceZ) < speed + 0.01) {
-        object.position.z = this.props.currentDronePosition.z;
-      }
+      landLineGeometry.vertices.push(
+        new THREE.Vector3(point.x, point.y, point.z)
+      );
+      this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
+      this.scene.add(this.landLine);
     }
   };
 
@@ -270,7 +229,9 @@ const mapState = state => {
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
     obstacles: state.obstacles,
-    buildDronePosition: state.buildDronePosition,
+    droneStartPosition: state.buildDroneStart,
+    droneOrientation: state.droneOrientation,
+    flightInstructions: state.flightInstructions,
   };
 };
 
