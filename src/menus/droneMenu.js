@@ -31,11 +31,14 @@ module.exports = mainWindow => {
     });
 
     let connectButtonCounter = 0;
+    let currentSSID = '';
 
     async function connectToDroneWifi() {
         // Disconnect from current network
         try {
             const disconnectionResult = await wifi.disconnect();
+            await wifi.enableAirport();
+
             if (disconnectionResult) {
                 console.log(`Resetting ${disconnectionResult} is successful `);
             }
@@ -68,14 +71,15 @@ module.exports = mainWindow => {
                         detail: 'Select the Drone network you would like to connect to'
                     })
                     // Set the drone SSID if the user doesn't click the cancel button.
-                    if(res !== buttons.length - 1) {
+                    if (res !== buttons.length - 1) {
                         selectedDroneSSID = buttons[res]
+                        currentSSID = selectedDroneSSID;
                         // Create a Drone accesspoint object
                         const droneAP = {
                             ssid: selectedDroneSSID,
                             password: ''
                         };
-        
+
                         if (connectButtonCounter < 1) {
                             // Connect to a drone wifi network
                             wifi.connect(droneAP, (err) => {
@@ -95,6 +99,7 @@ module.exports = mainWindow => {
                                     droneName: droneAP.ssid,
                                     isConnected: true
                                 }
+                                let currentSSID = droneAP.ssid;
                                 mainWindow.webContents.send('drone-connection', droneConnectionStatus)
                             });
                         } else {
@@ -127,22 +132,27 @@ module.exports = mainWindow => {
     // Disconnect from current network
     async function disconnectFromDrone() {
         try {
+            // For Top
+            // console.log('currentSSID: ', currentSSID);
             const disconnectionResult = await wifi.disconnect();
+            await wifi.enableAirport();
+            await wifi.deleteConnection({ ssid: currentSSID });
             if (disconnectionResult) {
                 droneMenu.submenu[1].enabled = true;
+                dialog.showMessageBox(mainWindow, {
+                    type: 'info',
+                    buttons: ['OK'],
+                    message: 'Sucessfully disconnected',
+                    detail: `Disconnected fron the drone`
+                })
                 // console.log(`Resetting ${disconnectionResult} is successful `);
                 const droneConnectionStatus = {
                     droneName: 'Drone Not Connected',
                     isConnected: false
                 }
-                mainWindow.webContents.send('drone-connection', droneConnectionStatus)
+                mainWindow.webContents.send('drone-connection', droneConnectionStatus);
+
             }
-            // wifi.disconnect(function(err) {
-            //     if (err) {
-            //         console.log(err);
-            //     }
-            //     console.log('Disconnected');
-            // });
         } catch (error) {
             console.error(error);
         }
