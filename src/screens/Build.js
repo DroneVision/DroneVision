@@ -49,11 +49,9 @@ class Build extends Component {
   }
 
   componentDidMount() {
-    drawPath(this.props.flightInstructions, this.props.distance);
     // Listen for flight import from main process
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       this.props.updateInstructions(flightInstructions);
-      drawPath(flightInstructions, this.props.distance);
     });
     // Listen for request for flight instructions from main process
     ipcRenderer.on('request-flightInstructions', event => {
@@ -143,8 +141,6 @@ class Build extends Component {
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
-
-    drawPath(updatedFlightInstructions);
     this.props.updateInstructions(updatedFlightInstructions);
   };
 
@@ -209,12 +205,10 @@ class Build extends Component {
       this.props.rotateDrone(newOrientation);
     }
 
-    drawPath(updatedFlightInstructions, distance);
     this.props.updateInstructions(updatedFlightInstructions);
   };
 
   clearFlightInstructions = () => {
-    drawPath([], this.props.distance);
     this.props.rotateDrone(0);
     this.props.clearInstructions();
   };
