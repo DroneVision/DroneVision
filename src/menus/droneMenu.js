@@ -137,6 +137,12 @@ module.exports = mainWindow => {
                 }
                 mainWindow.webContents.send('drone-connection', droneConnectionStatus)
             }
+            // wifi.disconnect(function(err) {
+            //     if (err) {
+            //         console.log(err);
+            //     }
+            //     console.log('Disconnected');
+            // });
         } catch (error) {
             console.error(error);
         }
