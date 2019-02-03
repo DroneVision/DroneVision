@@ -70,7 +70,7 @@ class StatusSegment extends Component {
     return (
       <div id="status-segment">
         <Segment>
-          <List divided relaxed="very" vertical>
+          <List divided relaxed="very" vertical="true">
             <List.Item>
               <List.Content>
                 Connection Status:{' '}
