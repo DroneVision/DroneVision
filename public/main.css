@@ -14,6 +14,10 @@
   transform: rotate(-45deg);
 }
 
+.drone0 {
+  transform: rotate(0deg);
+}
+
 .drone1 {
   transform: rotate(90deg);
 }
