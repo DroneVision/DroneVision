@@ -50,33 +50,12 @@ class BuildCanvas extends Component {
     // //SKYBOX
     this.scene.add(buildCanvasSkybox);
 
-    //LOADING AN EXTERNAL OBJECT
-    // this.loader = new THREE.ObjectLoader();
-    // this.loader.load('../ThreeJSModules/robot.json', function(object) {
-    //   var material = new THREE.MeshToonMaterial({
-    //     color: 0x3f3f3f,
-    //     alphaTest: 0.5,
-    //   });
-    //   object.traverse(function(child) {
-    //     if (child instanceof THREE.Mesh) {
-    //       child.material = material;
-    //       child.drawMode = THREE.TrianglesDrawMode;
-    //     }
-    //   });
-    //   object.scale.set(0.1, 0.1, 0.1);
-    //   object.position.x = 1;
-    //   object.position.y = 1;
-    //   object.position.z = 1;
-    //   object.rotation.set(25, 25, 25);
-    //   this.scene.add(object);
-    // });
-
     //DRONE 3D MODEL
     this.drone3DModel = droneModel.clone();
     this.drone3DModel.position.set(
-      this.props.startingPosition.x,
-      this.props.startingPosition.y,
-      this.props.startingPosition.z
+      this.props.buildDronePosition.x,
+      this.props.buildDronePosition.y,
+      this.props.buildDronePosition.z
     );
 
     this.controls.target = this.drone3DModel.position;
@@ -156,37 +135,6 @@ class BuildCanvas extends Component {
       this.scene.remove(Obstacles);
     }
 
-    ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
-      ipcRenderer.send('get-drone-moves');
-
-      if (singleFlightCoord === 'command') {
-      } else if (singleFlightCoord === 'takeoff') {
-        updateCDP(this.props.startingPosition);
-      } else if (singleFlightCoord === 'land') {
-        updateCDP({
-          x: this.props.currentDronePosition.x,
-          y: this.props.currentDronePosition.y,
-          z: 0,
-        });
-      } else {
-        let newCoords = {};
-        let singleFlightCoordArray = singleFlightCoord
-          .split(' ')
-          .slice(1, 4)
-          .map(numStr => Number(numStr) / this.props.distance);
-
-        const [z, x, y] = singleFlightCoordArray;
-        // x -> z
-        // y -> x
-        // z -> y
-        newCoords.x = this.props.currentDronePosition.x + x;
-        newCoords.y = this.props.currentDronePosition.y + y;
-        newCoords.z = this.props.currentDronePosition.z + z;
-
-        updateCDP(newCoords);
-      }
-    });
-
     PubSub.subscribe('draw-path', (msg, flightCoords) => {
       if (this.line) {
         this.scene.remove(this.line);
@@ -201,7 +149,7 @@ class BuildCanvas extends Component {
       const startingPoint = { x: 0, y: 1, z: 0 };
       const point = { ...startingPoint };
       geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
-      // console.log('fc', flightCoords);
+
       flightCoords.forEach(command => {
         const [z, x, y] = command;
         point.x += x;
@@ -213,6 +161,14 @@ class BuildCanvas extends Component {
         geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
       });
       this.line = new THREE.Line(geometry, material);
+
+      //move drone to the tip of the path
+      this.drone3DModel.position.set(
+        point.x,
+        point.y - this.gridEdgeLength * 0.5,
+        point.z
+      );
+
       //shift position of line down because the plane had to be shifted down in 3d space
       this.line.position.set(0, this.gridEdgeLength * -0.5, 0);
       this.scene.add(this.line);
@@ -298,9 +254,6 @@ class BuildCanvas extends Component {
   animate = async () => {
     requestAnimationFrame(this.animate);
 
-    this.moveDrone(this.drone3DModel);
-    // this.moveDrone(this.camera);
-
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
@@ -317,6 +270,7 @@ const mapState = state => {
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
     obstacles: state.obstacles,
+    buildDronePosition: state.buildDronePosition,
   };
 };
 
