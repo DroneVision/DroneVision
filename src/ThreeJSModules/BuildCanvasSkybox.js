@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 
 //SKYBOX IMAGES
-const backImage = require('../assets/skybox/misty/back.png');
-const frontImage = require('../assets/skybox/misty/front.png');
-const upImage = require('../assets/skybox/misty/up.png');
-const downImage = require('../assets/skybox/misty/down.png');
-const rightImage = require('../assets/skybox/misty/right.png');
-const leftImage = require('../assets/skybox/misty/left.png');
+const backImage = require('../assets/skybox/oasis/back.png');
+const frontImage = require('../assets/skybox/oasis/front.png');
+const upImage = require('../assets/skybox/oasis/up.png');
+const downImage = require('../assets/skybox/oasis/down.png');
+const rightImage = require('../assets/skybox/oasis/right.png');
+const leftImage = require('../assets/skybox/oasis/left.png');
 
 //SKYBOX
 let skyboxCube = new THREE.CubeGeometry(1000, 1000, 1000);

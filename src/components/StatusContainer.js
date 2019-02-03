@@ -61,33 +61,67 @@ class StatusSegment extends Component {
     return (
       <div id="status-segment">
         <Segment>
-        <List divided relaxed="very" horizontal>
+          <List divided relaxed="very" vertical>
             <List.Item>
-              <List.Content>Connection Status: {this.props.droneConnectionStatus.isConnected ? <Icon name="circle" color="green" />: <Icon name="circle" color="red" />}</List.Content>
-              <List.Content>Connected to: {this.props.droneConnectionStatus.droneName}</List.Content>
-            </List.Item>
-          
-            <List.Item>
-              <List.Content verticalAlign="bottom">
-                <Battery percent={this.state.battery} />
+              <List.Content>
+                Connection Status:{' '}
+                {this.props.droneConnectionStatus.isConnected ? (
+                  <Icon name="circle" color="green" />
+                ) : (
+                  <Icon name="circle" color="red" />
+                )}
               </List.Content>
+
+              {this.props.droneConnectionStatus.isConnected ? (
+                <List.Content>
+                  Connected to: {this.props.droneConnectionStatus.droneName}
+                </List.Content>
+              ) : null}
             </List.Item>
-            <List.Item>
-              <List.Content>Flight Time: {this.state.time}</List.Content>
-            </List.Item>
-            <List.Item>
-              <List.Content>Temp: {this.state.temph}</List.Content>
-            </List.Item>
-            <List.Item />
-            <List.Item>
-              <List.Content>Pitch: {this.state.pitch}</List.Content>
-            </List.Item>
-            <List.Item>
-              <List.Content>Roll: {this.state.roll}</List.Content>
-            </List.Item>
-            <List.Item>
-              <List.Content>Yaw: {this.state.yaw}</List.Content>
-            </List.Item>
+
+            {/* Battery */}
+            {this.props.droneConnectionStatus.isConnected ? (
+              <List.Item>
+                <List.Content verticalAlign="bottom">
+                  <Battery percent={this.state.battery} />
+                </List.Content>
+              </List.Item>
+            ) : null}
+
+            {/* Flight Time */}
+            {this.props.droneConnectionStatus.isConnected ? (
+              <List.Item>
+                <List.Content>Flight Time: {this.state.time}</List.Content>
+              </List.Item>
+            ) : null}
+
+            {/* Temp */}
+            {this.props.droneConnectionStatus.isConnected ? (
+              <List.Item>
+                <List.Content>Temp: {this.state.temph}</List.Content>
+              </List.Item>
+            ) : null}
+
+            {/* Roll */}
+            {this.props.droneConnectionStatus.isConnected ? (
+              <List.Item>
+                <List.Content>Roll: {this.state.roll}</List.Content>
+              </List.Item>
+            ) : null}
+
+            {/* Pitch */}
+            {this.props.droneConnectionStatus.isConnected ? (
+              <List.Item>
+                <List.Content>Pitch: {this.state.pitch}</List.Content>
+              </List.Item>
+            ) : null}
+
+            {/* Yaw */}
+            {this.props.droneConnectionStatus.isConnected ? (
+              <List.Item>
+                <List.Content>Yaw: {this.state.yaw}</List.Content>
+              </List.Item>
+            ) : null}
           </List>
         </Segment>
       </div>
@@ -98,7 +132,7 @@ class StatusSegment extends Component {
 const mapState = state => {
   return {
     speed: state.speed,
-    droneConnectionStatus: state.droneConnectionStatus
+    droneConnectionStatus: state.droneConnectionStatus,
   };
 };
 

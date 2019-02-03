@@ -174,7 +174,7 @@ class Run extends Component {
             </Grid.Column>
           </Grid.Row>
 
-          <Grid.Row columns={2}>
+          <Grid.Row columns={3}>
             <Grid.Column>
               <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="rocket" />
@@ -185,6 +185,9 @@ class Run extends Component {
                   </Header.Subheader>
                 </Header.Content>
               </Header>
+            </Grid.Column>
+            <Grid.Column id="centered">
+              <StatusContainer />
             </Grid.Column>
 
             <Grid.Column>
@@ -216,7 +219,6 @@ class Run extends Component {
                 onClick={this.runFlightInstructions}
               />
             </Grid.Column>
-
             <Grid.Column id="centered">
               <Button
                 disabled={!this.props.droneConnectionStatus.isConnected}
@@ -226,12 +228,6 @@ class Run extends Component {
                 content="Record Flight"
                 onClick={this.runFlightInstructionsAndRecord}
               />
-            </Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row columns={1}>
-            <Grid.Column id="centered">
-              <StatusContainer />
             </Grid.Column>
           </Grid.Row>
         </Grid>
@@ -247,7 +243,7 @@ const mapState = state => {
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
-    droneConnectionStatus: state.droneConnectionStatus
+    droneConnectionStatus: state.droneConnectionStatus,
   };
 };
 
