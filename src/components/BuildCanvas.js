@@ -48,9 +48,9 @@ class BuildCanvas extends Component {
     //DRONE 3D MODEL
     this.drone3DModel = droneModel.clone();
     this.drone3DModel.position.set(
-      this.props.droneStartPosition.x,
-      this.props.droneStartPosition.y,
-      this.props.droneStartPosition.z
+      this.props.postTakeoffPosition.x,
+      this.props.postTakeoffPosition.y,
+      this.props.postTakeoffPosition.z
     );
 
     this.controls.target = this.drone3DModel.position;
@@ -129,7 +129,7 @@ class BuildCanvas extends Component {
 
   updateEverything = (prevProps = null) => {
     const {
-      droneStartPosition,
+      postTakeoffPosition,
       flightInstructions: newFlightInstructions,
       obstacles,
     } = this.props;
@@ -164,12 +164,13 @@ class BuildCanvas extends Component {
     });
     const geometry = new THREE.Geometry();
 
-    const point = { ...droneStartPosition };
+    const point = { ...postTakeoffPosition };
     geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
 
     if (!_.isEqual(oldFlightInstructions, newFlightInstructions)) {
       newFlightInstructions.slice(1, -1).forEach(instructionObj => {
         const { droneInstruction, drawInstruction } = instructionObj;
+
         //just checking to see if the command is a rotation
         const [command] = droneInstruction.split(' ');
         if (command === 'cw') {
@@ -189,6 +190,7 @@ class BuildCanvas extends Component {
           geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
         }
       });
+
       this.line = new THREE.Line(geometry, material);
 
       this.scene.add(this.line);
@@ -196,7 +198,7 @@ class BuildCanvas extends Component {
       //move drone to the tip of the path
       this.drone3DModel.position.set(point.x, point.y, point.z);
     }
-    if (!_.isEqual(point, droneStartPosition)) {
+    if (!_.isEqual(point, postTakeoffPosition)) {
       //add land line if drone is not still at the starting position
       const landLineGeometry = new THREE.Geometry();
       landLineGeometry.vertices.push(new THREE.Vector3(point.x, -5, point.z));
@@ -229,7 +231,7 @@ const mapState = state => {
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
     obstacles: state.obstacles,
-    droneStartPosition: state.buildDroneStart,
+    postTakeoffPosition: state.postTakeoffPosition,
     droneOrientation: state.droneOrientation,
     flightInstructions: state.flightInstructions,
   };

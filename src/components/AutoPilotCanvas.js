@@ -143,7 +143,6 @@ class AutoPilotCanvas extends Component {
   }
 
   componentDidMount() {
-    console.log('hi');
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
 
@@ -187,7 +186,7 @@ class AutoPilotCanvas extends Component {
 
   updateEverything = (prevProps = null) => {
     const {
-      droneStartPosition,
+      postTakeoffPosition,
       flightInstructions: newFlightInstructions,
       obstacles,
     } = this.props;
@@ -222,12 +221,13 @@ class AutoPilotCanvas extends Component {
     });
     const geometry = new THREE.Geometry();
 
-    const point = { ...droneStartPosition };
+    const point = { ...postTakeoffPosition };
     geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
 
     if (!_.isEqual(oldFlightInstructions, newFlightInstructions)) {
       newFlightInstructions.slice(1, -1).forEach(instructionObj => {
         const { droneInstruction, drawInstruction } = instructionObj;
+
         //just checking to see if the command is a rotation
         const [command] = droneInstruction.split(' ');
         if (command !== 'cw' && command !== 'ccw') {
@@ -241,11 +241,12 @@ class AutoPilotCanvas extends Component {
           geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
         }
       });
+
       this.line = new THREE.Line(geometry, material);
 
       this.scene.add(this.line);
     }
-    if (!_.isEqual(point, droneStartPosition)) {
+    if (!_.isEqual(point, postTakeoffPosition)) {
       //add land line if drone is not still at the starting position
       const landLineGeometry = new THREE.Geometry();
       landLineGeometry.vertices.push(new THREE.Vector3(point.x, -5, point.z));
@@ -334,7 +335,7 @@ const mapState = state => {
     startingPosition: state.startingPosition,
     obstacles: state.obstacles,
     flightInstructions: state.flightInstructions,
-    droneStartPosition: state.droneStartPosition,
+    postTakeoffPosition: state.postTakeoffPosition,
   };
 };
 
