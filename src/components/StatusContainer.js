@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Battery from './Battery';
 import { connect } from 'react-redux';
-import { List, Segment } from 'semantic-ui-react';
+import { List, Segment, Icon } from 'semantic-ui-react';
 import { changeRoll, changePitch, changeYaw } from '../store/store';
 const { ipcRenderer } = window.require('electron');
 
@@ -61,13 +61,12 @@ class StatusSegment extends Component {
     return (
       <div id="status-segment">
         <Segment>
-          <List>
+        <List divided relaxed="very" horizontal>
             <List.Item>
-              <List.Content>Connection Status: {this.props.droneConnectionStatus.isConnected ? 'Connected': 'Not Connected'}</List.Content>
+              <List.Content>Connection Status: {this.props.droneConnectionStatus.isConnected ? <Icon name="circle" color="green" />: <Icon name="circle" color="red" />}</List.Content>
               <List.Content>Connected to: {this.props.droneConnectionStatus.droneName}</List.Content>
             </List.Item>
-          </List>
-          <List divided relaxed="very" horizontal>
+          
             <List.Item>
               <List.Content verticalAlign="bottom">
                 <Battery percent={this.state.battery} />
