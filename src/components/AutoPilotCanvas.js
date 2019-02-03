@@ -146,14 +146,7 @@ class AutoPilotCanvas extends Component {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
 
-    //OBSTACLES (toggled by redux store)
-    if (this.props.obstacles) {
-      this.scene.add(Obstacles);
-    }
-    //OBSTACLES (toggled by redux store)
-    if (!this.props.obstacles) {
-      this.scene.remove(Obstacles);
-    }
+    this.updateEverything();
 
     ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
       ipcRenderer.send('get-drone-moves');
@@ -185,62 +178,88 @@ class AutoPilotCanvas extends Component {
         updateCDP(newCoords);
       }
     });
-
-    PubSub.subscribe('draw-path', (msg, flightCoords) => {
-      if (this.line) {
-        this.scene.remove(this.line);
-        this.scene.remove(this.landLine);
-      }
-
-      //DRAWS FLIGHT PATH
-      const material = new THREE.LineBasicMaterial({
-        color: 0xff0000,
-      });
-      const geometry = new THREE.Geometry();
-      const startingPoint = { x: 0, y: 1, z: 0 };
-      const point = { ...startingPoint };
-      geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
-      console.log('fc', flightCoords);
-      flightCoords.forEach(command => {
-        const [z, x, y] = command;
-        point.x += x;
-        point.y += y;
-        point.z += z;
-        // x -> z
-        // y -> x
-        // z -> y
-        geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
-      });
-      this.line = new THREE.Line(geometry, material);
-      //shift position of line down because the plane had to be shifted down in 3d space
-      this.line.position.set(0, this.gridEdgeLength * -0.5, 0);
-      this.scene.add(this.line);
-
-      if (!_.isEqual(point, startingPoint)) {
-        const landLineGeometry = new THREE.Geometry();
-        landLineGeometry.vertices.push(new THREE.Vector3(point.x, 0, point.z));
-        const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
-
-        landLineGeometry.vertices.push(
-          new THREE.Vector3(point.x, point.y, point.z)
-        );
-        this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
-        this.landLine.position.set(0, this.gridEdgeLength * -0.5, 0);
-        this.scene.add(this.landLine);
-      }
-    });
   }
 
-  componentDidUpdate = () => {
+  componentDidUpdate = prevProps => {
+    this.updateEverything(prevProps);
+  };
+
+  updateEverything = (prevProps = null) => {
+    const {
+      postTakeoffPosition,
+      flightInstructions: newFlightInstructions,
+      obstacles,
+    } = this.props;
+    let oldFlightInstructions;
+    if (prevProps) {
+      const { flightInstructions } = prevProps;
+      oldFlightInstructions = flightInstructions;
+    } else {
+      oldFlightInstructions = null;
+    }
+
+    this.drone3DModel.rotation.y = Math.PI;
+
     //OBSTACLES (toggled by redux store)
-    if (this.props.obstacles) {
+    if (obstacles) {
       this.scene.add(Obstacles);
     }
     //OBSTACLES (toggled by redux store)
-    if (!this.props.obstacles) {
+    if (!obstacles) {
       this.scene.remove(Obstacles);
     }
+
+    //REMOVE OLD LINE AND LAND LINE
+    if (this.line) {
+      this.scene.remove(this.line);
+      this.scene.remove(this.landLine);
+    }
+
+    //DRAW NEW FLIGHT PATH
+    const material = new THREE.LineBasicMaterial({
+      color: 0xff0000,
+    });
+    const geometry = new THREE.Geometry();
+
+    const point = { ...postTakeoffPosition };
+    geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+
+    if (!_.isEqual(oldFlightInstructions, newFlightInstructions)) {
+      newFlightInstructions.slice(1, -1).forEach(instructionObj => {
+        const { droneInstruction, drawInstruction } = instructionObj;
+
+        //just checking to see if the command is a rotation
+        const [command] = droneInstruction.split(' ');
+        if (command !== 'cw' && command !== 'ccw') {
+          const [z, x, y] = drawInstruction;
+          point.x += x;
+          point.y += y;
+          point.z += z;
+          // x -> z
+          // y -> x
+          // z -> y
+          geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+        }
+      });
+
+      this.line = new THREE.Line(geometry, material);
+
+      this.scene.add(this.line);
+    }
+    if (!_.isEqual(point, postTakeoffPosition)) {
+      //add land line if drone is not still at the starting position
+      const landLineGeometry = new THREE.Geometry();
+      landLineGeometry.vertices.push(new THREE.Vector3(point.x, -5, point.z));
+      const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
+
+      landLineGeometry.vertices.push(
+        new THREE.Vector3(point.x, point.y, point.z)
+      );
+      this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
+      this.scene.add(this.landLine);
+    }
   };
+
   moveDrone = object => {
     let differenceX = this.props.currentDronePosition.x - object.position.x;
     let differenceY = this.props.currentDronePosition.y - object.position.y;
@@ -315,6 +334,8 @@ const mapState = state => {
     currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
     obstacles: state.obstacles,
+    flightInstructions: state.flightInstructions,
+    postTakeoffPosition: state.postTakeoffPosition,
   };
 };
 
