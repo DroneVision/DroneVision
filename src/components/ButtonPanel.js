@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button, Icon, Image } from 'semantic-ui-react';
 
 //Default Commands for North (N), West (W), South (S), East (E) assuming the drone is facing forward towards the north star
 const dirs = [
@@ -92,19 +92,11 @@ const renderCenterButton = (
   switch (type) {
     case 'C':
       return (
-        <Button
-          disabled={allDisabled}
-          onClick={() =>
-            addFlightInstruction({ instruction: 'hold', message: 'Hold' })
-          }
-        >
-          <Button.Content visible>
-            <Icon
-              className={`drone${droneOrientation}`}
-              name="hourglass half"
-            />
-          </Button.Content>
-        </Button>
+        <Image
+          className={`drone${droneOrientation}`}
+          src={require('../assets/images/helper-images/top-view-up.png')}
+          size="small"
+        />
       );
     case 'U':
       return (
