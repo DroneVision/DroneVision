@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Grid, Header, Icon } from 'semantic-ui-react';
+import VideoPlayer from '../components/VideoPlayer';
 
 class Videos extends Component {
   render() {
@@ -7,16 +8,22 @@ class Videos extends Component {
       <div i="videos">
         <Grid>
           <Grid.Row>
-            <Grid.Column>
+            <Grid.Column >
               <Header as="h1" dividing id="centered-padded-top">
-                <Icon name="settings" />
+                <Icon name="video" />
                 <Header.Content>
-                  AutoPilot Builder
+                  My Video Library
                   <Header.Subheader>
-                    <i>Visualize your build path</i>
+                    <i>Watch your recorded videos</i>
                   </Header.Subheader>
                 </Header.Content>
               </Header>
+            </Grid.Column>
+          </Grid.Row>
+          
+          <Grid.Row>
+            <Grid.Column>
+              <VideoPlayer/>
             </Grid.Column>
           </Grid.Row>
         </Grid>
