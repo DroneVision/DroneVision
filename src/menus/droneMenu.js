@@ -127,22 +127,22 @@ module.exports = mainWindow => {
     // Disconnect from current network
     async function disconnectFromDrone() {
         try {
-            // const disconnectionResult = await wifi.disconnect();
-            // if (disconnectionResult) {
-            //     droneMenu.submenu[1].enabled = true;
-            //     // console.log(`Resetting ${disconnectionResult} is successful `);
-            //     const droneConnectionStatus = {
-            //         droneName: 'Drone Not Connected',
-            //         isConnected: false
-            //     }
-            //     mainWindow.webContents.send('drone-connection', droneConnectionStatus)
-            // }
-            wifi.disconnect(function(err) {
-                if (err) {
-                    console.log(err);
+            const disconnectionResult = await wifi.disconnect();
+            if (disconnectionResult) {
+                droneMenu.submenu[1].enabled = true;
+                // console.log(`Resetting ${disconnectionResult} is successful `);
+                const droneConnectionStatus = {
+                    droneName: 'Drone Not Connected',
+                    isConnected: false
                 }
-                console.log('Disconnected');
-            });
+                mainWindow.webContents.send('drone-connection', droneConnectionStatus)
+            }
+            // wifi.disconnect(function(err) {
+            //     if (err) {
+            //         console.log(err);
+            //     }
+            //     console.log('Disconnected');
+            // });
         } catch (error) {
             console.error(error);
         }
