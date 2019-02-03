@@ -11,7 +11,7 @@ const INITIAL_STATE = {
   pitch: 0,
   yaw: 0,
   debugMode: true,
-  navTab: 'build',
+  navTab: 'path-builder',
   startingPosition: startingPositionCoords,
   currentDronePosition: startingPositionCoords,
   flightInstructions: [
@@ -22,8 +22,8 @@ const INITIAL_STATE = {
   obstacles: false,
   droneConnectionStatus: {
     droneName: 'Drone Not Connected',
-    isConnected: false
-  }
+    isConnected: false,
+  },
 };
 
 //ACTION CONSTANTS
@@ -91,10 +91,9 @@ export const toggleObstacles = () => ({
   type: TOGGLE_OBSTACLES,
 });
 
-
 export const updateDroneConnectionStatus = droneConnectionStatus => ({
   type: UPDATE_DRONE_CONNECTION_STATUS,
-  droneConnectionStatus
+  droneConnectionStatus,
 });
 
 const reducer = (state = INITIAL_STATE, action) => {

@@ -28,7 +28,7 @@ class Navbar extends Component {
   }
 
   render() {
-    const { activeTab} = this.props;
+    const { activeTab } = this.props;
     const { flightInstructions, distance, droneOrientation } = this.props;
     const flightCoords = getDroneCoords(flightInstructions, distance);
     return (
@@ -36,24 +36,32 @@ class Navbar extends Component {
         <Segment inverted>
           <Menu inverted pointing secondary>
             <Menu.Item
-              as={Link}
-              to={'/build'}
-              name="build"
-              active={activeTab === 'build'}
+              disabled={true}
+              // as={Link}
+              // to={'/path-builder'}
+              name="scene-builder"
+              active={activeTab === 'scene-builder'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
               as={Link}
-              to={'/run'}
-              name="run"
-              active={activeTab === 'run'}
+              to={'/path-builder'}
+              name="path-builder"
+              active={activeTab === 'path-builder'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
               as={Link}
-              to={'/fly'}
-              name="fly"
-              active={activeTab === 'fly'}
+              to={'/autopilot'}
+              name="autopilot"
+              active={activeTab === 'autopilot'}
+              onClick={this.handleTabChange}
+            />
+            <Menu.Item
+              as={Link}
+              to={'/manual-flight'}
+              name="manual-flight"
+              active={activeTab === 'manual-flight'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
@@ -99,7 +107,6 @@ const mapDispatch = dispatch => {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
       dispatch(updateInstructions(flightInstructions)),
-      
   };
 };
 

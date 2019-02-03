@@ -9,14 +9,15 @@ import Footer from './components/Footer';
 
 const Routes = props => (
   <div id="body">
-    <div id="left-column"/>
-    <div id="right-column"/>
+    <div id="left-column" />
+    <div id="right-column" />
     <Navbar />
     <Switch>
       <Route exact path="/" component={Build} />
-      <Route path="/build" component={Build} />
-      <Route path="/run" component={Run} />
-      <Route path="/fly" component={FlyScreen} />
+      {/* <Route path='/scene-builder' component={Scene}/> */}
+      <Route path="/path-builder" component={Build} />
+      <Route path="/autopilot" component={Run} />
+      <Route path="/manual-flight" component={FlyScreen} />
       <Route path="/about" component={About} />
     </Switch>
     <Footer />
