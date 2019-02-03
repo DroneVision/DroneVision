@@ -34,7 +34,6 @@ class StatusSegment extends Component {
 	getDroneState = () => {
 		ipcRenderer.send('getDroneState');
 		ipcRenderer.on('updatedDroneState', (event, arg) => {
-			// console.log('arg: ', arg);
 			if (arg) {
 				this.setState({
 					battery: arg.bat,
@@ -50,11 +49,6 @@ class StatusSegment extends Component {
 				this.props.changeYaw(arg.yaw);
 			}
 		});
-		// ipcRenderer.send('getDroneState');
-		// console.log('getDroneState from StatusContainer invoked');
-		// ipcRenderer.on('returnedState', (event, arg) => {
-		//   console.log('getReturnedState: ', arg);
-		// })
 	};
 
 	resetDroneState = () => {
