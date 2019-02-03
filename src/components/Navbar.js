@@ -47,7 +47,7 @@ class Navbar extends Component {
               as={Link}
               to={'/path-builder'}
               name="path-builder"
-              active={activeTab === 'build'}
+              active={activeTab === 'path-builder'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
