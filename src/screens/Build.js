@@ -544,6 +544,8 @@ const mapDispatch = dispatch => {
     rotateDrone: newOrientation => {
       dispatch(rotateDrone(newOrientation));
     },
+    updateInstructions: updatedFlightInstructions =>
+      dispatch(updateInstructions(updatedFlightInstructions)),
   };
 };
 
