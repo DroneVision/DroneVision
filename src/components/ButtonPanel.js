@@ -92,19 +92,6 @@ const renderCenterButton = (
   switch (type) {
     case 'C':
       return (
-        // <Button
-        //   disabled={allDisabled}
-        //   onClick={() =>
-        //     addFlightInstruction({ instruction: 'hold', message: 'Hold' })
-        //   }
-        // >
-        //   <Button.Content visible>
-        //     <Icon
-        //       className={`drone${droneOrientation}`}
-        //       name="hourglass half"
-        //     />
-        //   </Button.Content>
-        // </Button>
         <Image
           className={`drone${droneOrientation}`}
           src={require('../assets/images/helper-images/top-view-up.png')}
