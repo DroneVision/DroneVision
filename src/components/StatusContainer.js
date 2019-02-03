@@ -23,14 +23,12 @@ class StatusSegment extends Component {
 	async componentDidMount() {
 		interval = setInterval(async () => {
 			await this.getDroneState();
-			this.resetDroneState();
 		}, 100);
 		// console.log('this.state: ', this.state);
 	}
 
 	componentWillUnmount() {
 		clearInterval(interval);
-		this.resetDroneState();
 	}
 
 	getDroneState = () => {
@@ -62,7 +60,7 @@ class StatusSegment extends Component {
 	resetDroneState = () => {
 		ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
 			this.props.updateDroneConnectionStatus(droneConnectionStatus);
-			if (droneConnectionStatus.isConnected === false) {
+			if (!droneConnectionStatus.isConnected) {
 				this.setState({
 					battery: 0,
 					pitch: 'no data',
