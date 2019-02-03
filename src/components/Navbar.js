@@ -66,9 +66,9 @@ class Navbar extends Component {
             />
             <Menu.Item
               as={Link}
-              to={'/videos'}
-              name="my videos"
-              active={activeTab === 'videos'}
+              to={'/my-videos'}
+              name="my-videos"
+              active={activeTab === 'my-videos'}
               onClick={this.handleTabChange}
             />
             <Menu.Item
