@@ -105,7 +105,7 @@ class Build extends Component {
         const lastDroneInstructionCoords = lastDroneInstruction
           .split(' ')
           .slice(1, 4);
-        console.log('newdroneinstruction', newDroneInstruction);
+
         const resultDroneCoords = lastDroneInstructionCoords.map(
           (coord, idx) => {
             return Number(coord) + newDroneInstruction[idx] * distance * 100;
