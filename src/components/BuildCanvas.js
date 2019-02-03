@@ -9,6 +9,7 @@ import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
 import { updateCDP } from '../store/store';
+import throttle from 'lodash/throttle';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -200,7 +201,7 @@ class BuildCanvas extends Component {
       const startingPoint = { x: 0, y: 1, z: 0 };
       const point = { ...startingPoint };
       geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
-      console.log('fc', flightCoords);
+      // console.log('fc', flightCoords);
       flightCoords.forEach(command => {
         const [z, x, y] = command;
         point.x += x;
@@ -296,6 +297,7 @@ class BuildCanvas extends Component {
 
   animate = async () => {
     requestAnimationFrame(this.animate);
+
     this.moveDrone(this.drone3DModel);
     // this.moveDrone(this.camera);
 
