@@ -20,7 +20,7 @@ const Routes = props => (
       <Route path="/path-builder" component={Build} />
       <Route path="/autopilot" component={Run} />
       <Route path="/manual-flight" component={FlyScreen} />
-      <Route path="/videos" component={Videos}/>
+      <Route path="/my-videos" component={Videos}/>
       <Route path="/about" component={About} />
     </Switch>
     <Footer />
