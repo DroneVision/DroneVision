@@ -25,7 +25,6 @@ class StatusSegment extends Component {
       await this.getDroneState();
     }, 100);
     ipcRenderer.on('updatedDroneState', (event, arg) => {
-      // console.log('arg: ', arg);
       if (arg) {
         this.setState({
           battery: arg.bat,
@@ -41,7 +40,6 @@ class StatusSegment extends Component {
         this.props.changeYaw(arg.yaw);
       }
     });
-    // console.log('this.state: ', this.state);
   }
 
   componentWillUnmount() {
@@ -50,19 +48,29 @@ class StatusSegment extends Component {
 
   getDroneState = () => {
     ipcRenderer.send('getDroneState');
+  };
 
-    // ipcRenderer.send('getDroneState');
-    // console.log('getDroneState from StatusContainer invoked');
-    // ipcRenderer.on('returnedState', (event, arg) => {
-    //   console.log('getReturnedState: ', arg);
-    // })
+  resetDroneState = () => {
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+      if (!droneConnectionStatus.isConnected) {
+        this.setState({
+          battery: 0,
+          pitch: 'no data',
+          roll: 'no data',
+          yaw: 'no data',
+          temph: 'no data',
+          time: 'no data',
+        });
+      }
+    });
   };
 
   render() {
     return (
       <div id="status-segment">
         <Segment>
-          <List divided relaxed="very" vertical="true">
+          <List divided relaxed="very" vertical>
             <List.Item>
               <List.Content>
                 Connection Status:{' '}
