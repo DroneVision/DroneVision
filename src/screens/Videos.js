@@ -7,14 +7,16 @@ const { ipcRenderer } = window.require('electron');
 class Videos extends Component {
   constructor() {
     super();
+    this.state = {
+      avilableVideos: [],
+    };
+
     ipcRenderer.send('get-available-videos');
-    ipcRenderer.on('has-available-videos', (evt, arg) => {
-      console.log('videos', arg)
-    })
+    ipcRenderer.on('has-available-videos', (evt, videos) => {
+      this.setState({ avilableVideos: videos });
+    });
   }
-  componentDidMount() {
-    
-  }
+  componentDidMount() {}
   render() {
     const settings = {
       dots: true,
