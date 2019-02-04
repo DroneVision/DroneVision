@@ -347,7 +347,8 @@ class Build extends Component {
                       <h1>Down + Strafe</h1>
                     </Grid.Column>
                   </Grid.Row>
-                  <Grid.Row columns={3}>
+
+                  <Grid.Row columns={3} padded>
                     <Grid.Column
                       id="centered-panel"
                       className="rounded"
@@ -490,7 +491,7 @@ class Build extends Component {
           </Grid.Row>
 
           <Grid.Row columns={3}>
-            <Grid.Column textAlign="center">
+            <Grid.Column>
               <Link to={'/autopilot'}>
                 <Button onClick={() => this.props.changeTab('autopilot')}>
                   View On Run Screen!

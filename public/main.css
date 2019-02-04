@@ -110,17 +110,12 @@
 #centered-panel {
   display: flex;
   justify-content: center;
-  padding: 2rem;
+  padding: 3rem;
 }
 
 #video-player {
   display: flex;
   justify-content: center;
-}
-
-#flight-instruction-list {
-  height: 50%;
-  overflow: scroll;
 }
 
 .rounded {
