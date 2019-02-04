@@ -26,8 +26,6 @@ import {
   rotateDrone,
 } from '../store/store';
 
-import { drawPath, getDroneCoords } from '../utils/drawPathUtils';
-
 const { ipcRenderer } = window.require('electron');
 
 class Build extends Component {
@@ -186,7 +184,7 @@ class Build extends Component {
   };
 
   deleteLastInstruction = () => {
-    const { flightInstructions, distance, droneOrientation } = this.props;
+    const { flightInstructions, droneOrientation } = this.props;
     let updatedFlightInstructions = flightInstructions.slice();
 
     const removedInstruction = updatedFlightInstructions.splice(-2, 1);
@@ -211,20 +209,6 @@ class Build extends Component {
   clearFlightInstructions = () => {
     this.props.rotateDrone(0);
     this.props.clearInstructions();
-  };
-
-  getCurrentPoint = flightCoords => {
-    const currentPoint = flightCoords.reduce(
-      (currentPoint, item) => {
-        const [z, x, y] = item;
-        currentPoint.x = currentPoint.x + x;
-        currentPoint.y = currentPoint.y + y;
-        currentPoint.z += currentPoint.z = z;
-        return currentPoint;
-      },
-      { ...this.props.startingPosition }
-    );
-    return currentPoint;
   };
 
   flightCommandsIteratorReduxUpdater = async flightInstructions => {
@@ -292,18 +276,20 @@ class Build extends Component {
 
   render() {
     const { limits } = this.state;
-    const { flightInstructions, distance, droneOrientation } = this.props;
-    const flightCoords = getDroneCoords(flightInstructions, distance);
-    const currentPoint = this.getCurrentPoint(flightCoords);
+    const {
+      flightInstructions,
+      droneOrientation,
+      buildDronePosition,
+    } = this.props;
 
     const latestInstructionMessage =
       flightInstructions[flightInstructions.length - 2].message;
-    const leftDisabled = currentPoint.x === limits.maxX;
-    const rightDisabled = currentPoint.x === limits.minX;
-    const forwardDisabled = currentPoint.z === limits.maxZ;
-    const reverseDisabled = currentPoint.z === limits.minZ;
-    const upDisabled = currentPoint.y === limits.maxY;
-    const downDisabled = currentPoint.y === limits.minY;
+    const leftDisabled = buildDronePosition.x === limits.maxX;
+    const rightDisabled = buildDronePosition.x === limits.minX;
+    const forwardDisabled = buildDronePosition.z === limits.maxZ;
+    const reverseDisabled = buildDronePosition.z === limits.minZ;
+    const upDisabled = buildDronePosition.y === limits.maxY;
+    const downDisabled = buildDronePosition.y === limits.minY;
     return (
       <div id="build-screen">
         <Grid columns={3} padded>
@@ -531,6 +517,7 @@ const mapState = state => {
     voxelSize: state.voxelSize,
     obstacles: state.obstacles,
     droneConnectionStatus: state.droneConnectionStatus,
+    buildDronePosition: state.buildDronePosition,
   };
 };
 
