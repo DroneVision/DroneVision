@@ -30,7 +30,7 @@ const INITIAL_STATE = {
     z: startingPositionCoords.z,
   },
   sceneObjects: [],
-  
+  canvasScene: null
 };
 
 //ACTION CONSTANTS
@@ -60,6 +60,8 @@ const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
 const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
+
+const CONNECT_TO_CANVAS_SCENE = 'CONNECT_TO_CANVAS_SCENE';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -110,6 +112,11 @@ export const addObjectToScene = newObject => ({
   newObject,
 });
 
+export const connectToCanvasScene = scene => ({
+  type: CONNECT_TO_CANVAS_SCENE,
+  scene
+})
+
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case INCREASE_DISTANCE:
@@ -146,6 +153,11 @@ const reducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         sceneObjects: [...state.sceneObjects, action.newObject],
+      };
+    case CONNECT_TO_CANVAS_SCENE:
+      return {
+        ...state,
+        canvasScene: action.scene
       };
     default:
       return state;
