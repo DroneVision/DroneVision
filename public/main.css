@@ -112,3 +112,10 @@
   display: flex;
   justify-content: center;
 }
+
+#video-list {
+  align-items: center;
+  height: 100%;
+  overflow: scroll;
+  width: 50%;
+}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Header, Icon } from 'semantic-ui-react';
+import { Grid, Header, Icon, List, Segment } from 'semantic-ui-react';
 import VideoPlayer from '../components/VideoPlayer';
 import Slider from 'react-slick';
 const { ipcRenderer } = window.require('electron');
@@ -8,23 +8,21 @@ class Videos extends Component {
   constructor() {
     super();
     this.state = {
-      avilableVideos: [],
+      availableVideos: [],
+      selectedVideo: null,
     };
 
     ipcRenderer.send('get-available-videos');
     ipcRenderer.on('has-available-videos', (evt, videos) => {
-      this.setState({ avilableVideos: videos });
+      this.setState({ availableVideos: videos, selectedVideo: videos[0] });
     });
   }
-  componentDidMount() {}
+  handleVideoClick = (e, { name }) => {
+    this.setState({ selectedVideo: name });
+  };
+
   render() {
-    const settings = {
-      dots: true,
-      infinite: true,
-      speed: 500,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-    };
+    const { availableVideos } = this.state;
     return (
       <div i="videos">
         <Grid centered padded>
@@ -44,32 +42,31 @@ class Videos extends Component {
 
           <Grid.Row>
             <Grid.Column>
-              <VideoPlayer video="DroneVision-Feb-01-2019-12:09:38" />
+              <VideoPlayer video={this.state.selectedVideo} />
             </Grid.Column>
           </Grid.Row>
 
           <Grid.Row>
             <Grid.Column>
-              <Slider {...settings}>
-                <div>
-                  <h3>1</h3>
-                </div>
-                <div>
-                  <h3>2</h3>
-                </div>
-                <div>
-                  <h3>3</h3>
-                </div>
-                <div>
-                  <h3>4</h3>
-                </div>
-                <div>
-                  <h3>5</h3>
-                </div>
-                <div>
-                  <h3>6</h3>
-                </div>
-              </Slider>
+              <Segment textAlign="center" compact id="video-list">
+                <List link>
+                  <List.Header>
+                    <i>Recorded Videos</i>
+                  </List.Header>
+                  {availableVideos.map(video => {
+                    return (
+                      <List.Item
+                      key={video}
+                        as="a"
+                        name={video}
+                        onClick={this.handleVideoClick}
+                      >
+                        {video}
+                      </List.Item>
+                    );
+                  })}
+                </List>
+              </Segment>
             </Grid.Column>
           </Grid.Row>
         </Grid>
