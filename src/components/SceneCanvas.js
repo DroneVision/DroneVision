@@ -131,6 +131,21 @@ class SceneCanvas extends Component {
     this.renderer.render(this.scene, this.camera);
   };
 
+  createCube = (w, l, h) => {
+    const obstacleGeometry = new THREE.CubeGeometry(w, l, h);
+    const obstacleMaterial = new THREE.MeshPhongMaterial({
+      color: 0x6666ff,
+      flatShading: false,
+    });
+    const obstacleEdges = new THREE.EdgesGeometry(obstacleGeometry);
+    const obstacleLines = new THREE.LineSegments(
+      obstacleEdges,
+      new THREE.LineBasicMaterial({ color: 0x000000 })
+    );
+    const obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
+    this.scene.add(obstacle);
+  }
+
   render() {
     return <div id="canvas" />;
   }

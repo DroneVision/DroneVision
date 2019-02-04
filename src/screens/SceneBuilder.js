@@ -22,6 +22,7 @@ import {
   toggleObstacles,
   updateDroneConnectionStatus,
   rotateDrone,
+  addObjectToScene
 } from '../store/store';
 
 const { ipcRenderer } = window.require('electron');
@@ -40,7 +41,15 @@ class SceneBuilder extends Component {
         minZ: -scale / 2,
       },
       startingPoint: { x: 0, y: 1, z: 0 },
-      selectedObject: {},
+      selectedObject: {
+        name: '',
+        length: 2,
+        width: 2,
+        height: 2,
+        position: {
+          x: 0, y: 0, z: 0
+        }
+      },
     };
   }
 
@@ -89,7 +98,7 @@ class SceneBuilder extends Component {
                 />
               </Grid.Row>
               <Grid.Row>
-                <Button onClick={null}>
+                <Button onClick={() => this.addObjectToScene(this.state.selectedObject)}>
                   <Button.Content visible>
                     <Icon name="plus" />
                     Create New Object
@@ -306,6 +315,9 @@ const mapDispatch = dispatch => {
     },
     updateInstructions: updatedFlightInstructions =>
       dispatch(updateInstructions(updatedFlightInstructions)),
+      addObjectToScene: selectedObj => {
+        dispatch(addObjectToScene(selectedObj));
+      }
   };
 };
 

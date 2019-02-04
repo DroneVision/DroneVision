@@ -30,6 +30,7 @@ const INITIAL_STATE = {
     z: startingPositionCoords.z,
   },
   sceneObjects: [],
+  
 };
 
 //ACTION CONSTANTS
