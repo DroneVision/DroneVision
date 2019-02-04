@@ -333,6 +333,89 @@ class Build extends Component {
                   <BuildCanvas />
                 </Grid.Column>
               </Grid.Row>
+
+              <Grid.Row>
+                <Grid padded>
+                  <Grid.Row columns={3} id="centered-padded-top">
+                    <Grid.Column>
+                      <h1>Up + Strafe</h1>
+                    </Grid.Column>
+                    <Grid.Column>
+                      <h1>Strafe</h1>
+                    </Grid.Column>
+                    <Grid.Column>
+                      <h1>Down + Strafe</h1>
+                    </Grid.Column>
+                  </Grid.Row>
+                  <Grid.Row columns={3}>
+                    <Grid.Column
+                      id="centered-panel"
+                      className="rounded"
+                      style={{
+                        backgroundColor: '#00a651',
+                        borderStyle: 'solid',
+                        borderColor: '#484848',
+                        borderRadius: '500'
+                      }}
+                    >
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={upDisabled}
+                        addFlightInstruction={this.addFlightInstruction}
+                        type="U"
+                        droneOrientation={droneOrientation}
+                      />
+                    </Grid.Column>
+
+                    <Grid.Column
+                      className="rounded"
+                      id="centered-panel"
+                      style={{
+                        backgroundColor: '#afafaf',
+                        borderStyle: 'solid',
+                        borderColor: '#484848',
+                      }}
+                    >
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={false}
+                        addFlightInstruction={this.addFlightInstruction}
+                        type="C"
+                        droneOrientation={droneOrientation}
+                      />
+                    </Grid.Column>
+                    <Grid.Column
+                      id="centered-panel"
+                      style={{
+                        color: '#ffffff',
+                        backgroundColor: '#00aeef',
+                        borderStyle: 'solid',
+                        borderColor: '#484848',
+                      }}
+                    >
+                      <ButtonPanel
+                        latestInstructionMessage={latestInstructionMessage}
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={downDisabled}
+                        addFlightInstruction={this.addFlightInstruction}
+                        type="D"
+                        droneOrientation={droneOrientation}
+                      />
+                    </Grid.Column>
+                  </Grid.Row>
+                </Grid>
+              </Grid.Row>
             </Grid.Column>
 
             <Grid.Column width={3}>
@@ -365,83 +448,6 @@ class Build extends Component {
                     })}
                 </List>
               </Segment>
-            </Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row columns={3}>
-            <Grid.Column>
-              <h1>Up + Strafe</h1>
-            </Grid.Column>
-            <Grid.Column>
-              <h1>Strafe</h1>
-            </Grid.Column>
-            <Grid.Column>
-              <h1>Down + Strafe</h1>
-            </Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row columns={3}>
-            <Grid.Column
-              id="centered"
-              style={{
-                backgroundColor: '#00a651',
-                borderStyle: 'solid',
-                borderColor: '#484848',
-              }}
-            >
-              <ButtonPanel
-                latestInstructionMessage={latestInstructionMessage}
-                leftDisabled={leftDisabled}
-                rightDisabled={rightDisabled}
-                forwardDisabled={forwardDisabled}
-                reverseDisabled={reverseDisabled}
-                allDisabled={upDisabled}
-                addFlightInstruction={this.addFlightInstruction}
-                type="U"
-                droneOrientation={droneOrientation}
-              />
-            </Grid.Column>
-
-            <Grid.Column
-              id="centered"
-              style={{
-                backgroundColor: '#afafaf',
-                borderStyle: 'solid',
-                borderColor: '#484848',
-              }}
-            >
-              <ButtonPanel
-                latestInstructionMessage={latestInstructionMessage}
-                leftDisabled={leftDisabled}
-                rightDisabled={rightDisabled}
-                forwardDisabled={forwardDisabled}
-                reverseDisabled={reverseDisabled}
-                allDisabled={false}
-                addFlightInstruction={this.addFlightInstruction}
-                type="C"
-                droneOrientation={droneOrientation}
-              />
-            </Grid.Column>
-            <Grid.Column
-              id="centered"
-              style={{
-                color: '#ffffff',
-                backgroundColor: '#00aeef',
-                borderStyle: 'solid',
-                borderColor: '#484848',
-              }}
-            >
-              <ButtonPanel
-                latestInstructionMessage={latestInstructionMessage}
-                leftDisabled={leftDisabled}
-                rightDisabled={rightDisabled}
-                forwardDisabled={forwardDisabled}
-                reverseDisabled={reverseDisabled}
-                allDisabled={downDisabled}
-                addFlightInstruction={this.addFlightInstruction}
-                type="D"
-                droneOrientation={droneOrientation}
-              />
             </Grid.Column>
           </Grid.Row>
 

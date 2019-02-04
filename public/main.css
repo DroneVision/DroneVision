@@ -99,7 +99,7 @@
 #centered-padded-top {
   display: flex;
   justify-content: center;
-  padding-top: 2rem;
+  padding-top: 3rem;
 }
 
 #centered {
@@ -107,7 +107,22 @@
   justify-content: center;
 }
 
+#centered-panel {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
 #video-player {
   display: flex;
   justify-content: center;
+}
+
+#flight-instruction-list {
+  height: 50%;
+  overflow: scroll;
+}
+
+.rounded {
+  border-radius: 200;
 }
