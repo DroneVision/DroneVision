@@ -90,7 +90,7 @@ class SceneBuilder extends Component {
     });
   }
 
-  createCube = ({ length, width, height, position }) => {
+  createCube = ({id, length, width, height, position }) => {
     const { x, y, z } = position;
     const objGeometry = new THREE.CubeGeometry(width, height, length);
     const objMaterial = new THREE.MeshPhongMaterial({
@@ -104,10 +104,11 @@ class SceneBuilder extends Component {
     // );
     const obj = new THREE.Mesh(objGeometry, objMaterial);
     obj.position.set(x, y, z);
-    const id = this.objId++
+
+    const objId = id || this.objId++;
     const newObj = {
-      id,
-      name: `obj${id}`,
+      id: objId,
+      name: `obj${objId}`,
       length,
       width,
       height,
@@ -126,11 +127,14 @@ class SceneBuilder extends Component {
   }
 
   handleObjChange = (valNum, valStr, inputElem) => {
-    const sceneObj = this.props.sceneObjects.find(sceneObj => Number(inputElem.id) === sceneObj.id)
+    const sceneObj = this.props.sceneObjects.find(sceneObj => Number(inputElem.id) === sceneObj.id);
     // propertyName is length/width/height.
-    const propertyName = inputElem.name
-    sceneObj[propertyName] = valNum
-    this.props.updateSceneObj(sceneObj)
+    const propertyName = inputElem.name; 
+    sceneObj[propertyName] = valNum;
+    this.props.updateSceneObj(sceneObj);
+    this.props.canvasScene.remove(sceneObj.ref);
+    const newObj = this.createCube(sceneObj);
+    this.props.canvasScene.add(newObj.ref);
   }
 
   render() {
@@ -177,7 +181,7 @@ class SceneBuilder extends Component {
                       <i>Your objects</i>
                     </List.Header>
                     {sceneObjects
-                      .map(sceneObj => {
+                      .sort((a, b) => a.id - b.id).map(sceneObj => {
                         return (
                           <List.Item
                             className="flight-message-single"
