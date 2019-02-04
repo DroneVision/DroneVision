@@ -121,3 +121,7 @@
 .rounded {
   border-radius: 200;
 }
+
+#status-segment {
+  position: fixed;
+}

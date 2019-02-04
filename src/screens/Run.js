@@ -138,7 +138,7 @@ class Run extends Component {
     return (
       <div id="run">
         <Grid padded>
-          <Grid.Row columns={2}>
+          <Grid.Row columns={3}>
             <Grid.Column>
               <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="paper plane" />
@@ -164,13 +164,17 @@ class Run extends Component {
             </Grid.Column>
           </Grid.Row>
 
-          <Grid.Row columns={2}>
-            <Grid.Column>
+          <Grid.Row columns={3}>
+            <Grid.Column id="centered" width={6}>
               <AutoPilotCanvas />
             </Grid.Column>
 
-            <Grid.Column>
+            <Grid.Column id="centered" width={6}>
               <DroneTelemetry />
+            </Grid.Column>
+
+            <Grid.Column id="centered" width={3}>
+              <StatusContainer />
             </Grid.Column>
           </Grid.Row>
 
@@ -185,9 +189,6 @@ class Run extends Component {
                   </Header.Subheader>
                 </Header.Content>
               </Header>
-            </Grid.Column>
-            <Grid.Column id="centered">
-              <StatusContainer />
             </Grid.Column>
 
             <Grid.Column>
@@ -208,7 +209,7 @@ class Run extends Component {
             </Grid.Column>
           </Grid.Row>
 
-          <Grid.Row columns={2}>
+          <Grid.Row columns={3}>
             <Grid.Column id="centered">
               <Button
                 disabled={!this.props.droneConnectionStatus.isConnected}
