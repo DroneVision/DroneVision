@@ -8,7 +8,8 @@ import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
-import { updateCDP } from '../store/store';
+import { updateCDP, connectToCanvasScene } from '../store/store';
+import { ENGINE_METHOD_ALL } from 'constants';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -22,7 +23,7 @@ class SceneCanvas extends Component {
 
     //SCENE
     this.scene = new THREE.Scene();
-
+    this.props.connectToCanvasScene(this.scene);
     //CAMERA
     this.camera = new THREE.PerspectiveCamera(
       60,
@@ -120,6 +121,7 @@ class SceneCanvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
+
   }
 
   componentDidUpdate = prevProps => {};
@@ -131,21 +133,7 @@ class SceneCanvas extends Component {
     this.renderer.render(this.scene, this.camera);
   };
 
-  createCube = (w, l, h) => {
-    const obstacleGeometry = new THREE.CubeGeometry(w, l, h);
-    const obstacleMaterial = new THREE.MeshPhongMaterial({
-      color: 0x6666ff,
-      flatShading: false,
-    });
-    const obstacleEdges = new THREE.EdgesGeometry(obstacleGeometry);
-    const obstacleLines = new THREE.LineSegments(
-      obstacleEdges,
-      new THREE.LineBasicMaterial({ color: 0x000000 })
-    );
-    const obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
-    this.scene.add(obstacle);
-  }
-
+  
   render() {
     return <div id="canvas" />;
   }
@@ -163,21 +151,13 @@ const mapState = state => {
   };
 };
 
-// const mapDispatch = dispatch => {
-//   return {
-//     changeRoll: newRoll => {
-//       dispatch(changeRoll(newRoll));
-//     },
-//     changePitch: newPitch => {
-//       dispatch(changePitch(newPitch));
-//     },
-//     changeYaw: newYaw => {
-//       dispatch(changeYaw(newYaw));
-//     },
-//   };
-// };
+const mapDispatch = dispatch => {
+  return {
+    connectToCanvasScene: scene => dispatch(connectToCanvasScene(scene))
+  };
+};
 
 export default connect(
   mapState,
-  null
+  mapDispatch,
 )(SceneCanvas);
