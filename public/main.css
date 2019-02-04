@@ -105,7 +105,6 @@
 #centered {
   display: flex;
   justify-content: center;
-  padding-top: 2rem;
 }
 
 #video-player {

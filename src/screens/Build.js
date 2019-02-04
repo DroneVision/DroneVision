@@ -384,7 +384,6 @@ class Build extends Component {
             <Grid.Column
               id="centered"
               style={{
-                color: '#ffffff',
                 backgroundColor: '#00a651',
                 borderStyle: 'solid',
                 borderColor: '#484848',
@@ -406,7 +405,6 @@ class Build extends Component {
             <Grid.Column
               id="centered"
               style={{
-                color: '#ffffff',
                 backgroundColor: '#afafaf',
                 borderStyle: 'solid',
                 borderColor: '#484848',
