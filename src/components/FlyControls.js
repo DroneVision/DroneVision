@@ -42,11 +42,18 @@ class FlyControls extends Component {
             <Grid.Column id="centered">
               <Button
                 content={<Icon name="arrow up" />}
-                onClick={() => this.realTimeFly(`up ${distance}`)}
+                onClick={() => this.realTimeFly(`forward ${distance}`)}
               />
             </Grid.Column>
           </Grid.Row>
-          <Grid.Row columns={3}>
+
+          <Grid.Row columns={4}>
+            <Grid.Column id="centered">
+              <Button
+                onClick={() => this.realTimeFly(`up ${distance}`)}
+                content="Up"
+              />
+            </Grid.Column>
             <Grid.Column id="centered">
               <Button
                 content={<Icon name="arrow left" />}
@@ -57,6 +64,12 @@ class FlyControls extends Component {
               <Button
                 content={<Icon name="arrow right" />}
                 onClick={() => this.realTimeFly(`right ${distance}`)}
+              />
+            </Grid.Column>
+            <Grid.Column id="centered">
+              <Button
+                onClick={() => this.realTimeFly(`down ${distance}`)}
+                content="Down"
               />
             </Grid.Column>
           </Grid.Row>
@@ -96,7 +109,7 @@ class FlyControls extends Component {
           <Grid.Row>
             <Grid.Column id="centered">
               <Button
-              icon={<Icon name="hand paper"/>}
+                icon={<Icon name="hand paper" />}
                 color="youtube"
                 content="Emergency"
                 onClick={() => this.realTimeFly(`emergency`)}
