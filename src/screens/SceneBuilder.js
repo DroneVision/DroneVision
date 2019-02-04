@@ -88,6 +88,14 @@ class SceneBuilder extends Component {
                   size="large"
                 />
               </Grid.Row>
+              <Grid.Row>
+                <Button onClick={null}>
+                  <Button.Content visible>
+                    <Icon name="plus" />
+                    Create New Object
+                  </Button.Content>
+                </Button>
+              </Grid.Row>
             </Grid.Column>
 
             <Grid.Column width={9}>
