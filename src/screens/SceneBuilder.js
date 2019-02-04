@@ -10,7 +10,12 @@ import {
   Header,
   Grid,
   Image,
+  ListContent,
+  Input
 } from 'semantic-ui-react';
+
+import NumericInput from 'react-numeric-input';
+
 
 import ButtonPanel from '../components/ButtonPanel';
 import SceneCanvas from '../components/SceneCanvas';
@@ -22,25 +27,26 @@ import {
   toggleObstacles,
   updateDroneConnectionStatus,
   rotateDrone,
-  addObjectToScene
+  addObjectToScene,
+  updateSceneObj
 } from '../store/store';
 
 const { ipcRenderer } = window.require('electron');
 
 
 const defaultObj = {
-    name: '',
-    length: 2,
-    width: 2,
-    height: 2,
-    position: {
-      x: 0, y: 0, z: 0
-    }
+  length: 2,
+  width: 2,
+  height: 2,
+  position: {
+    x: 0, y: 0, z: 0
+  }
 }
 
 class SceneBuilder extends Component {
   constructor(props) {
     super(props);
+    this.objId = 1;
     const { scale } = this.props;
     this.state = {
       limits: {
@@ -84,8 +90,8 @@ class SceneBuilder extends Component {
     });
   }
 
-  createCube = ({length, width, height, position}) => {
-    const {x, y, z} = position; 
+  createCube = ({ length, width, height, position }) => {
+    const { x, y, z } = position;
     const objGeometry = new THREE.CubeGeometry(width, height, length);
     const objMaterial = new THREE.MeshPhongMaterial({
       color: 0x6666ff,
@@ -98,25 +104,38 @@ class SceneBuilder extends Component {
     // );
     const obj = new THREE.Mesh(objGeometry, objMaterial);
     obj.position.set(x, y, z);
-    this.props.canvasScene.add(obj);
+    const id = this.objId++
     const newObj = {
+      id,
+      name: `obj${id}`,
       length,
       width,
       height,
       position,
       ref: obj
     }
-    this.props.addObjectToScene(newObj);
+
+    return newObj;
   }
 
 
   addAndCreateObj = () => {
-    this.createCube(defaultObj);
+    const newObj = this.createCube(defaultObj);
+    this.props.canvasScene.add(newObj.ref);
+    this.props.addObjectToScene(newObj);
+  }
+
+  handleObjChange = (valNum, valStr, inputElem) => {
+    const sceneObj = this.props.sceneObjects.find(sceneObj => Number(inputElem.id) === sceneObj.id)
+    // propertyName is length/width/height.
+    const propertyName = inputElem.name
+    sceneObj[propertyName] = valNum
+    this.props.updateSceneObj(sceneObj)
   }
 
   render() {
     const { limits } = this.state;
-    const { flightInstructions, distance, droneOrientation } = this.props;
+    const { flightInstructions, distance, droneOrientation, sceneObjects } = this.props;
 
     const latestInstructionMessage =
       flightInstructions[flightInstructions.length - 2].message;
@@ -127,6 +146,9 @@ class SceneBuilder extends Component {
     const reverseDisabled = currentPoint.z === limits.minZ;
     const upDisabled = currentPoint.y === limits.maxY;
     const downDisabled = currentPoint.y === limits.minY;
+
+
+
     return (
       <div id="build-screen">
         <Grid columns={3} padded>
@@ -146,6 +168,74 @@ class SceneBuilder extends Component {
                   </Button.Content>
                 </Button>
               </Grid.Row>
+
+
+              <Grid.Row>
+                <Segment inverted>
+                  <List divided inverted animated>
+                    <List.Header>
+                      <i>Your objects</i>
+                    </List.Header>
+                    {sceneObjects
+                      .map(sceneObj => {
+                        return (
+                          <List.Item
+                            className="flight-message-single"
+                            key={sceneObj.id}
+                          >
+                            <List.Content>
+                              Name: {sceneObj.name}
+                            </List.Content>
+                            <ListContent>
+                              {`Width:   `}
+                              <NumericInput
+                                id={sceneObj.id}
+                                name={'width'}
+                                size={3}
+                                min={1}
+                                max={this.props.scale}
+                                value={sceneObj.width}
+                                onChange={this.handleObjChange}
+                              />
+                              {`   m.`}
+                            </ListContent>
+                            <ListContent>
+                              {`Length:   `}
+                              <NumericInput
+                                id={sceneObj.id}
+                                name={'length'}
+                                size={3}
+                                min={1}
+                                max={this.props.scale}
+                                value={sceneObj.length}
+                                onChange={this.handleObjChange}
+                              />
+                              {`   m.`}
+                            </ListContent>
+                            <ListContent>
+                            {`Height:   `}
+                              <NumericInput
+                                id={sceneObj.id}
+                                name={'height'}
+                                size={3}
+                                min={1}
+                                max={this.props.scale}
+                                value={sceneObj.height}
+                                onChange={this.handleObjChange}
+                              />
+                              {`   m.`}
+                            </ListContent>
+                          </List.Item>
+                        );
+                      })}
+                  </List>
+                </Segment>
+              </Grid.Row>
+
+
+
+
+
             </Grid.Column>
 
             <Grid.Column width={9}>
@@ -277,10 +367,10 @@ class SceneBuilder extends Component {
                         Remove Obstacles
                       </Button>
                     ) : (
-                      <Button onClick={this.props.toggleObstacles}>
-                        Insert Obstacles
+                        <Button onClick={this.props.toggleObstacles}>
+                          Insert Obstacles
                       </Button>
-                    )}
+                      )}
                   </Grid.Column>
                 </Grid>
               </Grid.Row>
@@ -336,7 +426,8 @@ const mapState = state => {
     voxelSize: state.voxelSize,
     obstacles: state.obstacles,
     droneConnectionStatus: state.droneConnectionStatus,
-    canvasScene: state.canvasScene
+    canvasScene: state.canvasScene,
+    sceneObjects: state.sceneObjects
   };
 };
 
@@ -357,9 +448,10 @@ const mapDispatch = dispatch => {
     },
     updateInstructions: updatedFlightInstructions =>
       dispatch(updateInstructions(updatedFlightInstructions)),
-      addObjectToScene: selectedObj => {
-        dispatch(addObjectToScene(selectedObj));
-      }
+    addObjectToScene: selectedObj => {
+      dispatch(addObjectToScene(selectedObj));
+    },
+    updateSceneObj: updatedObj => dispatch(updateSceneObj(updatedObj))
   };
 };
 

@@ -1,3 +1,5 @@
+import { stat } from "fs";
+
 export const voxelSizeValue = 10;
 const startingPositionCoords = { x: 0, y: 0 + voxelSizeValue * -0.5, z: 0 };
 
@@ -60,6 +62,7 @@ const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
 const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
+const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT'
 
 const CONNECT_TO_CANVAS_SCENE = 'CONNECT_TO_CANVAS_SCENE';
 
@@ -112,6 +115,11 @@ export const addObjectToScene = newObject => ({
   newObject,
 });
 
+export const updateSceneObj = updatedObj => ({
+  type: UPDATE_SCENE_OBJECT,
+  updatedObj
+})
+
 export const connectToCanvasScene = scene => ({
   type: CONNECT_TO_CANVAS_SCENE,
   scene
@@ -159,6 +167,12 @@ const reducer = (state = INITIAL_STATE, action) => {
         ...state,
         canvasScene: action.scene
       };
+    case UPDATE_SCENE_OBJECT:
+      const remainingObjs = state.sceneObjects.filter(sceneObj => sceneObj.id !== action.updatedObj.id)
+      return {
+        ...state,
+        sceneObjects: [...remainingObjs, action.updatedObj]
+      }
     default:
       return state;
   }
