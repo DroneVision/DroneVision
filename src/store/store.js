@@ -29,6 +29,11 @@ const INITIAL_STATE = {
     y: startingPositionCoords.y + 1,
     z: startingPositionCoords.z,
   },
+  buildDronePosition: {
+    x: startingPositionCoords.x,
+    y: startingPositionCoords.y + 1,
+    z: startingPositionCoords.z,
+  },
   sceneObjects: [],
   canvasScene: null
 };
@@ -63,6 +68,8 @@ const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
 const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT'
 
 const SEND_SCENE_CANVAS_TO_REDUX = 'SEND_SCENE_CANVAS_TO_REDUX';
+
+const UPDATE_BUILD_DRONE_POSITION = 'UPDATE_BUILD_DRONE_POSITION';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -122,6 +129,10 @@ export const sendSceneCanvasToRedux = scene => ({
   type: SEND_SCENE_CANVAS_TO_REDUX,
   scene
 })
+export const updateBuildDronePosition = updatedPosition => ({
+  type: UPDATE_BUILD_DRONE_POSITION,
+  updatedPosition,
+});
 
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -171,6 +182,11 @@ const reducer = (state = INITIAL_STATE, action) => {
         ...state,
         sceneObjects: [...remainingObjs, action.updatedObj]
       }
+    case UPDATE_BUILD_DRONE_POSITION:
+      return {
+        ...state,
+        buildDronePosition: action.updatedPosition,
+      };
     default:
       return state;
   }
