@@ -2,16 +2,12 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
-import PubSub from 'pubsub-js';
 import buildCanvasSkybox from '../ThreeJSModules/BuildCanvasSkybox';
 import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
-import { updateCDP } from '../store/store';
-import throttle from 'lodash/throttle';
-
-const { ipcRenderer } = window.require('electron');
+import { updateBuildDronePosition } from '../store/store';
 
 class BuildCanvas extends Component {
   constructor(props) {
@@ -120,14 +116,14 @@ class BuildCanvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
-    this.updateEverything();
+    this.redrawLinesAndMoveDrone();
   }
 
   componentDidUpdate = prevProps => {
-    this.updateEverything(prevProps);
+    this.redrawLinesAndMoveDrone(prevProps);
   };
 
-  updateEverything = (prevProps = null) => {
+  redrawLinesAndMoveDrone = (prevProps = null) => {
     const {
       postTakeoffPosition,
       flightInstructions: newFlightInstructions,
@@ -197,6 +193,12 @@ class BuildCanvas extends Component {
 
       //move drone to the tip of the path
       this.drone3DModel.position.set(point.x, point.y, point.z);
+      //update the drone's position for redux
+      this.props.updateBuildDronePosition({
+        x: point.x,
+        y: point.y + 5, //account for shifted plane in y-coordinate
+        z: point.z,
+      });
     }
     if (!_.isEqual(point, postTakeoffPosition)) {
       //add land line if drone is not still at the starting position
@@ -237,21 +239,15 @@ const mapState = state => {
   };
 };
 
-// const mapDispatch = dispatch => {
-//   return {
-//     changeRoll: newRoll => {
-//       dispatch(changeRoll(newRoll));
-//     },
-//     changePitch: newPitch => {
-//       dispatch(changePitch(newPitch));
-//     },
-//     changeYaw: newYaw => {
-//       dispatch(changeYaw(newYaw));
-//     },
-//   };
-// };
+const mapDispatch = dispatch => {
+  return {
+    updateBuildDronePosition: updatedPosition => {
+      dispatch(updateBuildDronePosition(updatedPosition));
+    },
+  };
+};
 
 export default connect(
   mapState,
-  null
+  mapDispatch
 )(BuildCanvas);
