@@ -16,6 +16,7 @@ import {
 
 import NumericInput from 'react-numeric-input';
 
+import {getDrawInstruction} from '../utils/buttonPanelUtils'
 
 import ButtonPanel from '../components/ButtonPanel';
 import SceneCanvas from '../components/SceneCanvas';
@@ -138,6 +139,10 @@ class SceneBuilder extends Component {
     this.props.updateSceneObj(sceneObj);
     const newObj = this.createCube(sceneObj);
     this.props.canvasScene.add(newObj.ref);
+  }
+
+  handleButtonClick = (dirString) => {
+    const drawInstruction = getDrawInstruction(dirString)
   }
 
   render() {
@@ -283,6 +288,7 @@ class SceneBuilder extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={upDisabled}
+                        clickHandler = {this.handleButtonClick}
                         addFlightInstruction={this.addFlightInstruction}
                         type="U"
                         droneOrientation={droneOrientation}

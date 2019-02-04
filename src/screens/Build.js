@@ -26,7 +26,7 @@ import {
   rotateDrone,
 } from '../store/store';
 
-import { drawPath, getDroneCoords } from '../utils/drawPathUtils';
+import { getFlightInstruction} from '../utils/buttonPanelUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -289,6 +289,10 @@ class Build extends Component {
     //Prepare variables for flight
     this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
   };
+
+  handleButtonClick = (dirString,droneOrientation=0) => {
+    this.addFlightInstruction(getFlightInstruction(dirString,droneOrientation))
+  }
 
   render() {
     const { limits } = this.state;

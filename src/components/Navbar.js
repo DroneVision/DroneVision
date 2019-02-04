@@ -7,7 +7,7 @@ import {
   saveFlightInstructions,
   loadFlightInstructions,
 } from '../utils/fileSystemUtils';
-import { drawPath, getDroneCoords } from '../utils/drawPathUtils';
+import { drawPath, getDroneCoords } from '../utils/buttonPanelUtils';
 
 const { ipcRenderer } = window.require('electron');
 
