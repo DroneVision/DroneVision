@@ -2,9 +2,18 @@ import React, { Component } from 'react';
 import { Grid, Header, Icon } from 'semantic-ui-react';
 import VideoPlayer from '../components/VideoPlayer';
 import Slider from 'react-slick';
+const { ipcRenderer } = window.require('electron');
 
 class Videos extends Component {
+  constructor() {
+    super();
+    ipcRenderer.send('get-available-videos');
+    ipcRenderer.on('has-available-videos', (evt, arg) => {
+      console.log('videos', arg)
+    })
+  }
   componentDidMount() {
+    
   }
   render() {
     const settings = {

@@ -10,7 +10,6 @@ const { runSingleInstruction, runInstructionList, getDroneState } = droneInit();
 //Video streaming
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
-// const fs = require('fs');
 
 //BEGIN RECORD VIDEO
 
@@ -20,7 +19,6 @@ const stopRecording = movie => {
 };
 
 let currentVid;
-
 
 ipcMain.on('start-recording', () => {
   let formattedDateString = new Date()
@@ -54,6 +52,16 @@ ipcMain.on('stop-recording', () => {
 });
 
 // END RECORD VIDEO
+
+ipcMain.on('get-available-videos', evt => {
+  fs.readdir(`${__dirname}/videos`, (err, files) => {
+    if (err) {
+      console.log('error', err);
+    } else {
+      evt.sender.send('has-available-videos', files);
+    }
+  });
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
