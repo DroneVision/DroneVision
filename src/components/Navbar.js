@@ -29,16 +29,15 @@ class Navbar extends Component {
 
   render() {
     const { activeTab } = this.props;
-    const { flightInstructions, distance, droneOrientation } = this.props;
-    const flightCoords = getDroneCoords(flightInstructions, distance);
+    const { flightInstructions } = this.props;
+
     return (
       <div id="navbar">
         <Segment inverted>
           <Menu inverted pointing secondary>
             <Menu.Item
-              disabled={true}
-              // as={Link}
-              // to={'/path-builder'}
+              as={Link}
+              to={'/scene-builder'}
               name="scene-builder"
               active={activeTab === 'scene-builder'}
               onClick={this.handleTabChange}
@@ -85,9 +84,7 @@ class Navbar extends Component {
                     Import Flight Path
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() =>
-                      saveFlightInstructions(this.props.flightInstructions)
-                    }
+                    onClick={() => saveFlightInstructions(flightInstructions)}
                   >
                     Export Flight Path
                   </Dropdown.Item>

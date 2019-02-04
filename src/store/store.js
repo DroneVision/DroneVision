@@ -29,6 +29,7 @@ const INITIAL_STATE = {
     y: startingPositionCoords.y + 1,
     z: startingPositionCoords.z,
   },
+  sceneObjects: [],
 };
 
 //ACTION CONSTANTS
@@ -56,6 +57,8 @@ const ROTATE_DRONE = 'ROTATE_DRONE';
 const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
+
+const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -101,6 +104,11 @@ export const updateDroneConnectionStatus = droneConnectionStatus => ({
   droneConnectionStatus,
 });
 
+export const addObjectToScene = newObject => ({
+  type: ADD_OBJECT_TO_SCENE,
+  newObject,
+});
+
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case INCREASE_DISTANCE:
@@ -133,6 +141,11 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, obstacles: !state.obstacles };
     case UPDATE_DRONE_CONNECTION_STATUS:
       return { ...state, droneConnectionStatus: action.droneConnectionStatus };
+    case ADD_OBJECT_TO_SCENE:
+      return {
+        ...state,
+        sceneObjects: [...state.sceneObjects, action.newObject],
+      };
     default:
       return state;
   }
