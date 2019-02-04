@@ -333,152 +333,6 @@ class Build extends Component {
                   <BuildCanvas />
                 </Grid.Column>
               </Grid.Row>
-
-              <Grid.Row>
-                <Grid columns={3} padded centered>
-                  <Grid.Row>
-                    <Grid.Column
-                      as="h1"
-                      textAlign="center"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00a651',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
-                      Up + Strafe
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={upDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
-                        type="U"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-
-                    <Grid.Column
-                      as="h1"
-                      textAlign="center"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#afafaf',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
-                      Strafe
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={false}
-                        addFlightInstruction={this.addFlightInstruction}
-                        type="C"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-                    <Grid.Column
-                      as="h1"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00aeef',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                      textAlign="center"
-                    >
-                      Down + Strafe
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={downDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
-                        type="D"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid columns={2} padded>
-                  <Grid.Column textAlign="center">
-                    <Button onClick={() => this.addRotationInstruction('ccw')}>
-                      <Button.Content visible>
-                        <Icon name="undo" />
-                        90&deg;
-                      </Button.Content>
-                    </Button>
-                  </Grid.Column>
-                  <Grid.Column textAlign="center">
-                    <Button onClick={() => this.addRotationInstruction('cw')}>
-                      <Button.Content visible>
-                        <Icon name="redo" />
-                        90&deg;
-                      </Button.Content>
-                    </Button>
-                  </Grid.Column>
-                </Grid>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid columns={2} padded>
-                  <Grid.Column textAlign="center">
-                    <Button
-                      disabled={flightInstructions.length <= 2}
-                      onClick={() => this.deleteLastInstruction()}
-                    >
-                      Delete Last Instruction
-                    </Button>
-                  </Grid.Column>
-                  <Grid.Column textAlign="center">
-                    <Button
-                      disabled={flightInstructions.length <= 2}
-                      onClick={() => this.clearFlightInstructions()}
-                    >
-                      Clear All Instructions
-                    </Button>
-                  </Grid.Column>
-                </Grid>
-              </Grid.Row>
-
-              <Grid.Row columns={3}>
-                <Grid.Column textAlign="center">
-                  <Link to={'/autopilot'}>
-                    <Button onClick={() => this.props.changeTab('autopilot')}>
-                      View On Run Screen!
-                    </Button>
-                  </Link>
-                </Grid.Column>
-                <Grid.Column>
-                  <Button
-                    disabled={this.state.runButtonsDisabled}
-                    onClick={this.preVisualizePath}
-                  >
-                    Pre-Visualize Path
-                  </Button>
-                </Grid.Column>
-                <Grid.Column>
-                  {this.props.obstacles ? (
-                    <Button onClick={this.props.toggleObstacles}>
-                      Remove Obstacles
-                    </Button>
-                  ) : (
-                    <Button onClick={this.props.toggleObstacles}>
-                      Insert Obstacles
-                    </Button>
-                  )}
-                </Grid.Column>
-              </Grid.Row>
             </Grid.Column>
 
             <Grid.Column width={3}>
@@ -511,6 +365,152 @@ class Build extends Component {
                     })}
                 </List>
               </Segment>
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row columns={3}>
+            <Grid.Column>
+              <h1>Up + Strafe</h1>
+            </Grid.Column>
+            <Grid.Column>
+              <h1>Strafe</h1>
+            </Grid.Column>
+            <Grid.Column>
+              <h1>Down + Strafe</h1>
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row columns={3}>
+            <Grid.Column
+              id="centered"
+              style={{
+                color: '#ffffff',
+                backgroundColor: '#00a651',
+                borderStyle: 'solid',
+                borderColor: '#484848',
+              }}
+            >
+              <ButtonPanel
+                latestInstructionMessage={latestInstructionMessage}
+                leftDisabled={leftDisabled}
+                rightDisabled={rightDisabled}
+                forwardDisabled={forwardDisabled}
+                reverseDisabled={reverseDisabled}
+                allDisabled={upDisabled}
+                addFlightInstruction={this.addFlightInstruction}
+                type="U"
+                droneOrientation={droneOrientation}
+              />
+            </Grid.Column>
+
+            <Grid.Column
+              id="centered"
+              style={{
+                color: '#ffffff',
+                backgroundColor: '#afafaf',
+                borderStyle: 'solid',
+                borderColor: '#484848',
+              }}
+            >
+              <ButtonPanel
+                latestInstructionMessage={latestInstructionMessage}
+                leftDisabled={leftDisabled}
+                rightDisabled={rightDisabled}
+                forwardDisabled={forwardDisabled}
+                reverseDisabled={reverseDisabled}
+                allDisabled={false}
+                addFlightInstruction={this.addFlightInstruction}
+                type="C"
+                droneOrientation={droneOrientation}
+              />
+            </Grid.Column>
+            <Grid.Column
+              id="centered"
+              style={{
+                color: '#ffffff',
+                backgroundColor: '#00aeef',
+                borderStyle: 'solid',
+                borderColor: '#484848',
+              }}
+            >
+              <ButtonPanel
+                latestInstructionMessage={latestInstructionMessage}
+                leftDisabled={leftDisabled}
+                rightDisabled={rightDisabled}
+                forwardDisabled={forwardDisabled}
+                reverseDisabled={reverseDisabled}
+                allDisabled={downDisabled}
+                addFlightInstruction={this.addFlightInstruction}
+                type="D"
+                droneOrientation={droneOrientation}
+              />
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row columns={2}>
+            <Grid.Column>
+              <Button onClick={() => this.addRotationInstruction('ccw')}>
+                <Button.Content visible>
+                  <Icon name="undo" />
+                  90&deg;
+                </Button.Content>
+              </Button>
+            </Grid.Column>
+            <Grid.Column>
+              <Button onClick={() => this.addRotationInstruction('cw')}>
+                <Button.Content visible>
+                  <Icon name="redo" />
+                  90&deg;
+                </Button.Content>
+              </Button>
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row columns={2}>
+            <Grid.Column>
+              <Button
+                disabled={flightInstructions.length <= 2}
+                onClick={() => this.deleteLastInstruction()}
+              >
+                Delete Last Instruction
+              </Button>
+            </Grid.Column>
+            <Grid.Column>
+              <Button
+                disabled={flightInstructions.length <= 2}
+                onClick={() => this.clearFlightInstructions()}
+              >
+                Clear All Instructions
+              </Button>
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row columns={3}>
+            <Grid.Column textAlign="center">
+              <Link to={'/autopilot'}>
+                <Button onClick={() => this.props.changeTab('autopilot')}>
+                  View On Run Screen!
+                </Button>
+              </Link>
+            </Grid.Column>
+            <Grid.Column>
+              <Button
+                disabled={this.state.runButtonsDisabled}
+                onClick={this.preVisualizePath}
+              >
+                Pre-Visualize Path
+              </Button>
+            </Grid.Column>
+            <Grid.Column>
+              {this.props.obstacles ? (
+                <Button onClick={this.props.toggleObstacles}>
+                  Remove Obstacles
+                </Button>
+              ) : (
+                <Button onClick={this.props.toggleObstacles}>
+                  Insert Obstacles
+                </Button>
+              )}
             </Grid.Column>
           </Grid.Row>
         </Grid>

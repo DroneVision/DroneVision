@@ -95,7 +95,8 @@ const renderCenterButton = (
         <Image
           className={`drone${droneOrientation}`}
           src={require('../assets/images/helper-images/top-view-up.png')}
-          size="small"
+          style={{fontSize: 20}}
+          avatar
         />
       );
     case 'U':
