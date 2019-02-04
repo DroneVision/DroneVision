@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-
+import * as THREE from 'three';
 import {
   Button,
   Icon,
@@ -26,6 +26,17 @@ import {
 } from '../store/store';
 
 const { ipcRenderer } = window.require('electron');
+
+
+const defaultObj = {
+    name: '',
+    length: 2,
+    width: 2,
+    height: 2,
+    position: {
+      x: 0, y: 0, z: 0
+    }
+}
 
 class SceneBuilder extends Component {
   constructor(props) {
@@ -73,6 +84,36 @@ class SceneBuilder extends Component {
     });
   }
 
+  createCube = ({length, width, height, position}) => {
+    const {x, y, z} = position; 
+    const objGeometry = new THREE.CubeGeometry(width, height, length);
+    const objMaterial = new THREE.MeshPhongMaterial({
+      color: 0x6666ff,
+      flatShading: false,
+    });
+    // const obstacleEdges = new THREE.EdgesGeometry(objGeometry);
+    // const obstacleLines = new THREE.LineSegments(
+    //   obstacleEdges,
+    //   new THREE.LineBasicMaterial({ color: 0x000000 })
+    // );
+    const obj = new THREE.Mesh(objGeometry, objMaterial);
+    obj.position.set(x, y, z);
+    this.props.canvasScene.add(obj);
+    const newObj = {
+      length,
+      width,
+      height,
+      position,
+      ref: obj
+    }
+    this.props.addObjectToScene(newObj);
+  }
+
+
+  addAndCreateObj = () => {
+    this.createCube(defaultObj);
+  }
+
   render() {
     const { limits } = this.state;
     const { flightInstructions, distance, droneOrientation } = this.props;
@@ -98,7 +139,7 @@ class SceneBuilder extends Component {
                 />
               </Grid.Row>
               <Grid.Row>
-                <Button onClick={() => this.addObjectToScene(this.state.selectedObject)}>
+                <Button onClick={this.addAndCreateObj}>
                   <Button.Content visible>
                     <Icon name="plus" />
                     Create New Object
@@ -295,6 +336,7 @@ const mapState = state => {
     voxelSize: state.voxelSize,
     obstacles: state.obstacles,
     droneConnectionStatus: state.droneConnectionStatus,
+    canvasScene: state.canvasScene
   };
 };
 
