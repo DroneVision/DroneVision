@@ -1,5 +1,3 @@
-import { stat } from "fs";
-
 export const voxelSizeValue = 10;
 const startingPositionCoords = { x: 0, y: 0 + voxelSizeValue * -0.5, z: 0 };
 
@@ -64,7 +62,7 @@ const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
 const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT'
 
-const CONNECT_TO_CANVAS_SCENE = 'CONNECT_TO_CANVAS_SCENE';
+const SEND_SCENE_CANVAS_TO_REDUX = 'SEND_SCENE_CANVAS_TO_REDUX';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -120,8 +118,8 @@ export const updateSceneObj = updatedObj => ({
   updatedObj
 })
 
-export const connectToCanvasScene = scene => ({
-  type: CONNECT_TO_CANVAS_SCENE,
+export const sendSceneCanvasToRedux = scene => ({
+  type: SEND_SCENE_CANVAS_TO_REDUX,
   scene
 })
 
@@ -162,7 +160,7 @@ const reducer = (state = INITIAL_STATE, action) => {
         ...state,
         sceneObjects: [...state.sceneObjects, action.newObject],
       };
-    case CONNECT_TO_CANVAS_SCENE:
+    case SEND_SCENE_CANVAS_TO_REDUX:
       return {
         ...state,
         canvasScene: action.scene

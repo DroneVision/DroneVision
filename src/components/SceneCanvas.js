@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
-import PubSub from 'pubsub-js';
 import autoPilotCanvasSkybox from '../ThreeJSModules/AutoPilotCanvasSkybox';
-import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
-import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
-import { updateCDP, connectToCanvasScene } from '../store/store';
-import { ENGINE_METHOD_ALL } from 'constants';
+import { sendSceneCanvasToRedux } from '../store/store';
+
 
 const { ipcRenderer } = window.require('electron');
 
@@ -23,7 +20,7 @@ class SceneCanvas extends Component {
 
     //SCENE
     this.scene = new THREE.Scene();
-    this.props.connectToCanvasScene(this.scene);
+    this.props.sendSceneCanvasToRedux(this.scene);
     //CAMERA
     this.camera = new THREE.PerspectiveCamera(
       60,
@@ -153,7 +150,7 @@ const mapState = state => {
 
 const mapDispatch = dispatch => {
   return {
-    connectToCanvasScene: scene => dispatch(connectToCanvasScene(scene))
+    sendSceneCanvasToRedux: scene => dispatch(sendSceneCanvasToRedux(scene))
   };
 };
 

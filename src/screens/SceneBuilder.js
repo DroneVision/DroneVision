@@ -106,6 +106,7 @@ class SceneBuilder extends Component {
     obj.position.set(x, y, z);
 
     const objId = id || this.objId++;
+    obj.name = `${objId}`
     const newObj = {
       id: objId,
       name: `obj${objId}`,
@@ -131,8 +132,10 @@ class SceneBuilder extends Component {
     // propertyName is length/width/height.
     const propertyName = inputElem.name; 
     sceneObj[propertyName] = valNum;
+    // need to get reference to the object in order to remove it
+    const objToRemove = this.props.canvasScene.getObjectByName(sceneObj.ref.name)
+    this.props.canvasScene.remove(objToRemove);
     this.props.updateSceneObj(sceneObj);
-    this.props.canvasScene.remove(sceneObj.ref);
     const newObj = this.createCube(sceneObj);
     this.props.canvasScene.add(newObj.ref);
   }
