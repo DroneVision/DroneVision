@@ -49,11 +49,9 @@ class Build extends Component {
   }
 
   componentDidMount() {
-    drawPath(this.props.flightInstructions, this.props.distance);
     // Listen for flight import from main process
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       this.props.updateInstructions(flightInstructions);
-      drawPath(flightInstructions, this.props.distance);
     });
     // Listen for request for flight instructions from main process
     ipcRenderer.on('request-flightInstructions', event => {
@@ -107,7 +105,7 @@ class Build extends Component {
         const lastDroneInstructionCoords = lastDroneInstruction
           .split(' ')
           .slice(1, 4);
-        console.log('newdroneinstruction', newDroneInstruction);
+
         const resultDroneCoords = lastDroneInstructionCoords.map(
           (coord, idx) => {
             return Number(coord) + newDroneInstruction[idx] * distance * 100;
@@ -143,8 +141,6 @@ class Build extends Component {
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
-
-    drawPath(updatedFlightInstructions, this.props.distance);
     this.props.updateInstructions(updatedFlightInstructions);
   };
 
@@ -190,22 +186,31 @@ class Build extends Component {
   };
 
   deleteLastInstruction = () => {
-    const { flightInstructions, distance } = this.props;
+    const { flightInstructions, distance, droneOrientation } = this.props;
     let updatedFlightInstructions = flightInstructions.slice();
-    updatedFlightInstructions.splice(-2, 1);
+
+    const removedInstruction = updatedFlightInstructions.splice(-2, 1);
 
     //TODO: update droneRotation if the last instruction was a rotation
+    const [command, amount] = removedInstruction[0].droneInstruction.split(' ');
 
-    drawPath(updatedFlightInstructions, distance);
+    if (command === 'cw') {
+      const newOrientation =
+        (droneOrientation + (3 + Number(amount) / 90 - 1)) % 4;
+      this.props.rotateDrone(newOrientation);
+    } else if (command === 'ccw') {
+      //counter-clockwise
+      const newOrientation =
+        (droneOrientation + (1 + Number(amount) / 90 - 1)) % 4;
+      this.props.rotateDrone(newOrientation);
+    }
+
     this.props.updateInstructions(updatedFlightInstructions);
   };
 
   clearFlightInstructions = () => {
-    drawPath([], this.props.distance);
-    this.props.clearInstructions();
-
-    //TODO: update droneRotation
     this.props.rotateDrone(0);
+    this.props.clearInstructions();
   };
 
   getCurrentPoint = flightCoords => {
@@ -408,17 +413,17 @@ class Build extends Component {
               <Grid.Row>
                 <Grid columns={2} padded>
                   <Grid.Column textAlign="center">
-                    <Button onClick={() => this.addRotationInstruction('cw')}>
+                    <Button onClick={() => this.addRotationInstruction('ccw')}>
                       <Button.Content visible>
-                        <Icon name="redo" />
+                        <Icon name="undo" />
                         90&deg;
                       </Button.Content>
                     </Button>
                   </Grid.Column>
                   <Grid.Column textAlign="center">
-                    <Button onClick={() => this.addRotationInstruction('ccw')}>
+                    <Button onClick={() => this.addRotationInstruction('cw')}>
                       <Button.Content visible>
-                        <Icon name="undo" />
+                        <Icon name="redo" />
                         90&deg;
                       </Button.Content>
                     </Button>

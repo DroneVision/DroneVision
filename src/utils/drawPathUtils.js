@@ -15,10 +15,10 @@ export const getDroneCoords = (flightInstructions, distance) => {
     );
 };
 
-export const drawPath = (flightInstructions, distance) => {
+export const drawPath = flightInstructions => {
   const drawCoords = flightInstructions
     .slice(1, -1)
     .map(instructionObj => instructionObj.drawInstruction)
     .filter(instruction => instruction !== undefined);
-  PubSub.publish('draw-path', drawCoords);
+  // PubSub.publish('draw-path', drawCoords);
 };

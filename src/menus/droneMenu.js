@@ -134,25 +134,20 @@ module.exports = mainWindow => {
         try {
             // For Top
             // console.log('currentSSID: ', currentSSID);
-            const disconnectionResult = await wifi.disconnect();
+            await wifi.disconnect();
             await wifi.enableAirport();
             await wifi.deleteConnection({ ssid: currentSSID });
-            if (disconnectionResult) {
-                droneMenu.submenu[1].enabled = true;
-                dialog.showMessageBox(mainWindow, {
-                    type: 'info',
-                    buttons: ['OK'],
-                    message: 'Sucessfully disconnected',
-                    detail: `Disconnected fron the drone`
-                })
-                // console.log(`Resetting ${disconnectionResult} is successful `);
-                const droneConnectionStatus = {
-                    droneName: 'Drone Not Connected',
-                    isConnected: false
-                }
-                mainWindow.webContents.send('drone-connection', droneConnectionStatus);
-
+            const droneConnectionStatus = {
+                droneName: 'Drone Not Connected',
+                isConnected: false
             }
+            mainWindow.webContents.send('drone-connection', droneConnectionStatus);
+            dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                buttons: ['OK'],
+                message: 'Sucessfully disconnected',
+                detail: `Disconnected fron the drone`
+            })
         } catch (error) {
             console.error(error);
         }

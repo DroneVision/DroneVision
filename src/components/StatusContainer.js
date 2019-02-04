@@ -24,17 +24,7 @@ class StatusSegment extends Component {
     interval = setInterval(async () => {
       await this.getDroneState();
     }, 100);
-    // console.log('this.state: ', this.state);
-  }
-
-  componentWillUnmount() {
-    clearInterval(interval);
-  }
-
-  getDroneState = () => {
-    ipcRenderer.send('getDroneState');
     ipcRenderer.on('updatedDroneState', (event, arg) => {
-      // console.log('arg: ', arg);
       if (arg) {
         this.setState({
           battery: arg.bat,
@@ -50,18 +40,37 @@ class StatusSegment extends Component {
         this.props.changeYaw(arg.yaw);
       }
     });
-    // ipcRenderer.send('getDroneState');
-    // console.log('getDroneState from StatusContainer invoked');
-    // ipcRenderer.on('returnedState', (event, arg) => {
-    //   console.log('getReturnedState: ', arg);
-    // })
+  }
+
+  componentWillUnmount() {
+    clearInterval(interval);
+  }
+
+  getDroneState = () => {
+    ipcRenderer.send('getDroneState');
+  };
+
+  resetDroneState = () => {
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+      if (!droneConnectionStatus.isConnected) {
+        this.setState({
+          battery: 0,
+          pitch: 'no data',
+          roll: 'no data',
+          yaw: 'no data',
+          temph: 'no data',
+          time: 'no data',
+        });
+      }
+    });
   };
 
   render() {
     return (
       <div id="status-segment">
         <Segment>
-          <List divided relaxed="very" vertical>
+          <List divided relaxed="very" vertical="true">
             <List.Item>
               <List.Content>
                 Connection Status:{' '}
