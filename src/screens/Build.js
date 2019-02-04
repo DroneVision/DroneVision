@@ -453,8 +453,8 @@ class Build extends Component {
 
               <Grid.Row columns={3}>
                 <Grid.Column textAlign="center">
-                  <Link to={'/run'}>
-                    <Button onClick={() => this.props.changeTab('run')}>
+                  <Link to={'/autopilot'}>
+                    <Button onClick={() => this.props.changeTab('autopilot')}>
                       View On Run Screen!
                     </Button>
                   </Link>
