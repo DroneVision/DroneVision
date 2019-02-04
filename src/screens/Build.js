@@ -347,7 +347,7 @@ class Build extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={upDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
+                        clickHandler={this.handleButtonClick}
                         type="U"
                         droneOrientation={droneOrientation}
                       />
@@ -371,7 +371,7 @@ class Build extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={false}
-                        addFlightInstruction={this.addFlightInstruction}
+                        clickHandler={this.handleButtonClick}
                         type="C"
                         droneOrientation={droneOrientation}
                       />
@@ -394,7 +394,7 @@ class Build extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={downDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
+                        clickHandler={this.handleButtonClick}
                         type="D"
                         droneOrientation={droneOrientation}
                       />

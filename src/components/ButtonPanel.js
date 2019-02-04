@@ -4,7 +4,7 @@ import { Button, Icon, Image } from 'semantic-ui-react';
 
 const renderCenterButton = (
   type,
-  addFlightInstruction,
+  clickHandler,
   allDisabled,
   droneOrientation
 ) => {
@@ -21,7 +21,7 @@ const renderCenterButton = (
       return (
         <Button
           disabled={allDisabled}
-          onClick={() => addFlightInstruction(getFlightInstruction(type))}
+          onClick={() => clickHandler(type)}
         >
           <Button.Content visible>
             <Icon className="straight-up" name="arrow circle up" />
@@ -33,7 +33,7 @@ const renderCenterButton = (
         <Button
           disabled={allDisabled}
           onClick={() =>
-            addFlightInstruction(getFlightInstruction(type))
+            clickHandler(type)
           }
         >
           <Button.Content visible>
@@ -49,7 +49,6 @@ const renderCenterButton = (
 const ButtonPanel = props => {
   const {
     type,
-    addFlightInstruction,
     leftDisabled,
     rightDisabled,
     forwardDisabled,
@@ -81,9 +80,8 @@ const ButtonPanel = props => {
             <Button
               disabled={forwardDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction(
-                  getFlightInstruction(`${type}N`, droneOrientation)
-                )
+                clickHandler(`${type}N`, droneOrientation)
+                
               }
             >
               <Button.Content visible>
@@ -95,9 +93,8 @@ const ButtonPanel = props => {
             <Button
               disabled={rightDisabled || forwardDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction(
-                  getFlightInstruction(`${type}NE`, droneOrientation)
-                )
+                clickHandler(`${type}NE`, droneOrientation)
+                
               }
             >
               <Button.Content visible>
@@ -111,9 +108,8 @@ const ButtonPanel = props => {
             <Button
               disabled={leftDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction(
-                  getFlightInstruction(`${type}W`, droneOrientation)
-                )
+                clickHandler(`${type}W`, droneOrientation)
+                
               }
             >
               <Button.Content visible>
@@ -124,7 +120,7 @@ const ButtonPanel = props => {
           <td>
             {renderCenterButton(
               type,
-              addFlightInstruction,
+              clickHandler,
               allDisabled,
               droneOrientation
             )}
@@ -133,9 +129,8 @@ const ButtonPanel = props => {
             <Button
               disabled={rightDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction(
-                  getFlightInstruction(`${type}E`, droneOrientation)
-                )
+                clickHandler(`${type}E`, droneOrientation)
+                
               }
             >
               <Button.Content visible>
@@ -149,9 +144,8 @@ const ButtonPanel = props => {
             <Button
               disabled={leftDisabled || reverseDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction(
-                  getFlightInstruction(`${type}SW`, droneOrientation)
-                )
+                clickHandler(`${type}SW`, droneOrientation)
+                
               }
             >
               <Button.Content visible>
@@ -163,9 +157,8 @@ const ButtonPanel = props => {
             <Button
               disabled={reverseDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction(
-                  getFlightInstruction(`${type}S`, droneOrientation)
-                )
+                clickHandler(`${type}S`, droneOrientation)
+                
               }
             >
               <Button.Content visible>
@@ -177,9 +170,8 @@ const ButtonPanel = props => {
             <Button
               disabled={rightDisabled || reverseDisabled || allDisabled}
               onClick={() =>
-                addFlightInstruction(
-                  getFlightInstruction(`${type}SE`, droneOrientation)
-                )
+                clickHandler(`${type}SE`, droneOrientation)
+                
               }
             >
               <Button.Content visible>

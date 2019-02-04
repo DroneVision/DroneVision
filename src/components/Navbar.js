@@ -7,7 +7,7 @@ import {
   saveFlightInstructions,
   loadFlightInstructions,
 } from '../utils/fileSystemUtils';
-import { drawPath, getDroneCoords } from '../utils/buttonPanelUtils';
+
 
 const { ipcRenderer } = window.require('electron');
 
@@ -17,13 +17,13 @@ class Navbar extends Component {
   handleLoadFlightInstructions = async () => {
     const flightInstructions = await loadFlightInstructions();
     this.props.updateInstructions(flightInstructions);
-    drawPath(this.props.flightInstructions, this.props.distance);
+    
   };
 
   componentDidMount() {
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       this.props.updateInstructions(flightInstructions);
-      drawPath(flightInstructions, this.props.distance);
+      
     });
   }
 

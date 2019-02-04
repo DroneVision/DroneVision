@@ -59,15 +59,7 @@ class SceneBuilder extends Component {
         minZ: -scale / 2,
       },
       startingPoint: { x: 0, y: 1, z: 0 },
-      selectedObject: {
-        name: '',
-        length: 2,
-        width: 2,
-        height: 2,
-        position: {
-          x: 0, y: 0, z: 0
-        }
-      },
+      selectedObj: {}
     };
   }
 
@@ -126,6 +118,7 @@ class SceneBuilder extends Component {
     const newObj = this.createCube(defaultObj);
     this.props.canvasScene.add(newObj.ref);
     this.props.addObjectToScene(newObj);
+    this.setState({selectedObj:newObj})
   }
 
   handleObjChange = (valNum, valStr, inputElem) => {
@@ -139,10 +132,20 @@ class SceneBuilder extends Component {
     this.props.updateSceneObj(sceneObj);
     const newObj = this.createCube(sceneObj);
     this.props.canvasScene.add(newObj.ref);
+    this.setState({selectedObj:newObj})
   }
 
   handleButtonClick = (dirString) => {
     const drawInstruction = getDrawInstruction(dirString)
+    const selectedObj = this.state.selectedObj
+    const [z, x, y] = drawInstruction;
+    selectedObj.ref.translateX(x)
+    selectedObj.ref.translateY(y)
+    selectedObj.ref.translateZ(z)
+    const {x:newX,y:newY,z:newZ} = selectedObj.ref.position
+    const updatedObj = {...selectedObj}
+    updatedObj.position = {x:newX,y:newY,z:newZ}
+    this.props.updateSceneObj(updatedObj)
   }
 
   render() {
@@ -289,7 +292,6 @@ class SceneBuilder extends Component {
                         reverseDisabled={reverseDisabled}
                         allDisabled={upDisabled}
                         clickHandler = {this.handleButtonClick}
-                        addFlightInstruction={this.addFlightInstruction}
                         type="U"
                         droneOrientation={droneOrientation}
                       />
@@ -313,7 +315,7 @@ class SceneBuilder extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={false}
-                        addFlightInstruction={this.addFlightInstruction}
+                        clickHandler = {this.handleButtonClick}
                         type="C"
                         droneOrientation={droneOrientation}
                       />
@@ -336,7 +338,7 @@ class SceneBuilder extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={downDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
+                        clickHandler = {this.handleButtonClick}
                         type="D"
                         droneOrientation={droneOrientation}
                       />
