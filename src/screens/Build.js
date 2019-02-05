@@ -280,7 +280,13 @@ class Build extends Component {
     this.addFlightInstruction(
       getFlightInstruction(dirString, droneOrientation)
     );
+    this.updateScroll();
   };
+
+  updateScroll = () => {
+    const instructions = document.getElementById("flight-instructions");
+    instructions.scrollTop = instructions.scrollHeight;
+}
 
   render() {
     const { limits } = this.state;
