@@ -168,9 +168,7 @@ class SceneBuilder extends Component {
     );
     if (previouslySelectedObj.id !== selectedObj.id) {
       previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
-
       selectedObj.lineRef.material.color = new THREE.Color(0xccff00);
-
       this.setState({ selectedObj });
     }
   };
