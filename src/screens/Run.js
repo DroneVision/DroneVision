@@ -20,9 +20,7 @@ class Run extends Component {
     };
   }
 
-  componentDidMount() {
-    
-  }
+  componentDidMount() {}
 
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');
@@ -135,102 +133,90 @@ class Run extends Component {
 
   render() {
     return (
-      <div id="run">
-        <Grid padded>
-          <Grid.Row columns={3}>
-            <Grid.Column>
-              <Header as="h1" dividing id="centered-padded-top">
-                <Icon name="paper plane" />
-                <Header.Content>
-                  AutoPilot
-                  <Header.Subheader>
-                    <i>Visualize your build path</i>
-                  </Header.Subheader>
-                </Header.Content>
-              </Header>
-            </Grid.Column>
-
-            <Grid.Column>
-              <Header as="h1" dividing id="centered-padded-top">
-                <Icon name="cloudscale" />
-                <Header.Content>
-                  Drone Telemetry
-                  <Header.Subheader>
-                    <i>Real-Time UAV Telemetry</i>
-                  </Header.Subheader>
-                </Header.Content>
-              </Header>
-            </Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row columns={3}>
-            <Grid.Column id="centered" width={6}>
-              <AutoPilotCanvas />
-            </Grid.Column>
-
-            <Grid.Column id="centered" width={6}>
-              <DroneTelemetry />
-            </Grid.Column>
-
-            <Grid.Column id="centered" width={3}>
-              <StatusContainer />
-            </Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row columns={3}>
-            <Grid.Column>
-              <Header as="h1" dividing id="centered-padded-top">
-                <Icon name="rocket" />
-                <Header.Content>
-                  Run Flight
-                  <Header.Subheader>
-                    <i>Fly your drone</i>
-                  </Header.Subheader>
-                </Header.Content>
-              </Header>
-            </Grid.Column>
-
-            <Grid.Column>
-              <Header as="h1" dividing id="centered-padded-top">
-                <Icon name="video camera" />
-                <Header.Content>
-                  Record Video
-                  <Header.Subheader>
-                    {this.state.isRecording ? 'Recording: ' : null}
-                    {this.state.isRecording ? (
-                      <Icon name="circle" color="red" />
-                    ) : (
-                      'Record a video of your flight path'
-                    )}
-                  </Header.Subheader>
-                </Header.Content>
-              </Header>
-            </Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row columns={3}>
-            <Grid.Column id="centered">
-              <Button
-                disabled={!this.props.droneConnectionStatus.isConnected}
-                color="facebook"
-                labelPosition="left"
-                icon="military"
-                content="Run Flight"
-                onClick={this.runFlightInstructions}
-              />
-            </Grid.Column>
-            <Grid.Column id="centered">
-              <Button
-                disabled={!this.props.droneConnectionStatus.isConnected}
-                color="facebook"
-                labelPosition="left"
-                icon="play"
-                content="Record Flight"
-                onClick={this.runFlightInstructionsAndRecord}
-              />
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+      <div id="run-screen">
+        <div className="row">
+          <div className="row-item">
+            <Header as="h1" dividing>
+              <Icon name="paper plane" />
+              <Header.Content>
+                AutoPilot
+                <Header.Subheader>
+                  <i>Visualize your build path</i>
+                </Header.Subheader>
+              </Header.Content>
+            </Header>
+          </div>
+          <div className="row-item">
+            <Header as="h1" dividing>
+              <Icon name="cloudscale" />
+              <Header.Content>
+                Drone Telemetry
+                <Header.Subheader>
+                  <i>Real-Time UAV Telemetry</i>
+                </Header.Subheader>
+              </Header.Content>
+            </Header>
+          </div>
+        </div>
+        <div className="row">
+          <div className="row-item">
+            <AutoPilotCanvas />
+          </div>
+          <div className="row-item">
+            <DroneTelemetry />
+          </div>
+        </div>
+        <div className="row">
+          <div className="row-item">
+            <Header as="h1" dividing id="centered-padded-top">
+              <Icon name="rocket" />
+              <Header.Content>
+                Run Flight
+                <Header.Subheader>
+                  <i>Fly your drone</i>
+                </Header.Subheader>
+              </Header.Content>
+            </Header>
+          </div>
+          <div className="row-item">
+            <Header as="h1" dividing id="centered-padded-top">
+              <Icon name="video camera" />
+              <Header.Content>
+                Record Video
+                <Header.Subheader>
+                  {this.state.isRecording ? 'Recording: ' : null}
+                  {this.state.isRecording ? (
+                    <Icon name="circle" color="red" />
+                  ) : (
+                    'Record a video of your flight path'
+                  )}
+                </Header.Subheader>
+              </Header.Content>
+            </Header>
+          </div>
+        </div>
+        <div className="row">
+          <div className="row-item">
+            <Button
+              disabled={!this.props.droneConnectionStatus.isConnected}
+              color="facebook"
+              labelPosition="left"
+              icon="military"
+              content="Run Flight"
+              onClick={this.runFlightInstructions}
+            />
+          </div>
+          <div className="row-item">
+            <Button
+              disabled={!this.props.droneConnectionStatus.isConnected}
+              color="facebook"
+              labelPosition="left"
+              icon="play"
+              content="Record Flight"
+              onClick={this.runFlightInstructionsAndRecord}
+            />
+          </div>
+        </div>
       </div>
     );
   }
