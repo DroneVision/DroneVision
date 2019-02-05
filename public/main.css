@@ -176,14 +176,14 @@
   right: 0;
 }
 
-#run-screen {
-  
-  
-}
-
 .row > .row-item {
   padding-top: 2rem;
   flex: 1;
   display: flex;
   justify-content: center;
+}
+
+#scene-help {
+  position: absolute;
+  padding: 2rem;
 }
