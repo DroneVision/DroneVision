@@ -162,10 +162,6 @@
   overflow: auto;
 }
 
-#build-screen {
-
-}
-
 #controls {
   display: flex;
   
@@ -174,4 +170,9 @@
 .row {
   display: flex;
   flex-wrap: wrap;
+}
+
+#build-help {
+  position: relative;
+  right: 0;
 }

@@ -12,6 +12,7 @@ import {
   Header,
   Grid,
   Image,
+  Modal,
 } from 'semantic-ui-react';
 
 import ButtonPanel from '../components/ButtonPanel';
@@ -45,6 +46,7 @@ class Build extends Component {
       },
       startingPoint: { x: 0, y: 1, z: 0 },
       runButtonsDisabled: false,
+      helpOpen: false,
     };
   }
 
@@ -284,9 +286,12 @@ class Build extends Component {
   };
 
   updateScroll = () => {
-    const instructions = document.getElementById("flight-instructions");
+    const instructions = document.getElementById('flight-instructions');
     instructions.scrollTop = instructions.scrollHeight;
-}
+  };
+
+  buildHelp = () => this.setState({ helpOpen: true });
+  handleClose = () => this.setState({ helpOpen: false });
 
   render() {
     const { limits } = this.state;
@@ -383,6 +388,13 @@ class Build extends Component {
                         droneOrientation={droneOrientation}
                       />
                     </td>
+                    <div id="build-help">
+                      <Icon
+                        name="question circle"
+                        size="large"
+                        onClick={this.buildHelp}
+                      />
+                    </div>
                   </tr>
                 </tbody>
               </table>
@@ -461,28 +473,47 @@ class Build extends Component {
           </div>
 
           <div className="row">
-              <Link to={'/autopilot'}>
-                <Button onClick={() => this.props.changeTab('autopilot')}>
-                  View On Run Screen!
-                </Button>
-              </Link>
-              <Button
-                disabled={this.state.runButtonsDisabled}
-                onClick={this.preVisualizePath}
-              >
-                Pre-Visualize Path
+            <Link to={'/autopilot'}>
+              <Button onClick={() => this.props.changeTab('autopilot')}>
+                View On Run Screen!
               </Button>
-              {this.props.obstacles ? (
-                <Button onClick={this.props.toggleObstacles}>
-                  Remove Obstacles
-                </Button>
-              ) : (
-                <Button onClick={this.props.toggleObstacles}>
-                  Insert Obstacles
-                </Button>
-              )}
+            </Link>
+            <Button
+              disabled={this.state.runButtonsDisabled}
+              onClick={this.preVisualizePath}
+            >
+              Pre-Visualize Path
+            </Button>
+            {this.props.obstacles ? (
+              <Button onClick={this.props.toggleObstacles}>
+                Remove Obstacles
+              </Button>
+            ) : (
+              <Button onClick={this.props.toggleObstacles}>
+                Insert Obstacles
+              </Button>
+            )}
           </div>
         </Grid>
+        <Modal
+          open={this.state.helpOpen}
+          onClose={this.handleClose}
+          basic
+          size="small"
+        >
+          <Header icon="info" content="Build Controls" />
+          <Modal.Content>
+            <Image
+              src={require('../assets/images/helper-images/build-instructions.png')}
+              size="large"
+            />
+          </Modal.Content>
+          <Modal.Actions>
+            <Button color="green" onClick={this.handleClose} inverted>
+              <Icon name="checkmark" /> Got it
+            </Button>
+          </Modal.Actions>
+        </Modal>
       </div>
     );
   }
