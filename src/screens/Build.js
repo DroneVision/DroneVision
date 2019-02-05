@@ -499,7 +499,7 @@ class Build extends Component {
           open={this.state.helpOpen}
           onClose={this.handleClose}
           basic
-          size="small"
+          size="mini"
         >
           <Header icon="info" content="Build Controls" />
           <Modal.Content>
