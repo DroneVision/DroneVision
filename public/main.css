@@ -162,6 +162,11 @@
   overflow: auto;
 }
 
+#object-list {
+  height: 30rem;
+  overflow: auto;
+}
+
 #controls {
   display: flex;
 }
@@ -186,4 +191,10 @@
 #scene-help {
   position: absolute;
   padding: 2rem;
+  text-align: center;
+}
+
+#scene-builder {
+  display: flex;
+  flex-direction: column;
 }
