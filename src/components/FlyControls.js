@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from 'semantic-ui-react';
+import { Button, Grid, Icon, Image } from 'semantic-ui-react';
 const { ipcRenderer } = window.require('electron');
 
 class FlyControls extends Component {
@@ -15,94 +15,109 @@ class FlyControls extends Component {
   render() {
     const { distance } = this.props;
     return (
-      <table>
-        <tbody>
-          <tr>
-            <td>
-              <p>FLY IN REAL TIME</p>
-              <Button onClick={() => this.realTimeTakeOff()}>Take Off</Button>
-              <br />
-              <br />
-              <Button onClick={() => this.realTimeFly(`up ${distance}`)}>
-                Up
-              </Button>
-              <Button onClick={() => this.realTimeFly(`forward ${distance}`)}>
-                Forward
-              </Button>
-              <br />
-              <Button onClick={() => this.realTimeFly(`right ${distance}`)}>
-                Right
-              </Button>
-              <Button onClick={() => this.realTimeFly(`left ${distance}`)}>
-                Left
-              </Button>
-              <br />
-              <Button onClick={() => this.realTimeFly(`down ${distance}`)}>
-                Down
-              </Button>
-              <Button onClick={() => this.realTimeFly(`back ${distance}`)}>
-                Back
-              </Button>
-              <br />
-              <br />
+      <div id="manual-screen">
+        <Grid centered>
+          <Grid.Row columns={2}>
+            <Grid.Column id="centered">
+              <Button
+                color="facebook"
+                labelPosition="left"
+                icon="military"
+                content="Take Off"
+                onClick={() => this.realTimeTakeOff()}
+              />
+            </Grid.Column>
+            <Grid.Column id="centered">
+              <Button
+                color="facebook"
+                labelPosition="left"
+                icon="military"
+                content="Land"
+                onClick={() => this.realTimeFly(`land`)}
+              />
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row columns={1}>
+            <Grid.Column id="centered">
+              <Button
+                content={<Icon name="arrow up" />}
+                onClick={() => this.realTimeFly(`forward ${distance}`)}
+              />
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row columns={4}>
+            <Grid.Column id="centered">
+              <Button
+                onClick={() => this.realTimeFly(`up ${distance}`)}
+                content="Up"
+              />
+            </Grid.Column>
+            <Grid.Column id="centered">
+              <Button
+                content={<Icon name="arrow left" />}
+                onClick={() => this.realTimeFly(`left ${distance}`)}
+              />
+            </Grid.Column>
+            <Grid.Column id="centered">
+              <Button
+                content={<Icon name="arrow right" />}
+                onClick={() => this.realTimeFly(`right ${distance}`)}
+              />
+            </Grid.Column>
+            <Grid.Column id="centered">
+              <Button
+                onClick={() => this.realTimeFly(`down ${distance}`)}
+                content="Down"
+              />
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row>
+            <Grid.Column id="centered">
+              <Button
+                content={<Icon name="arrow down" />}
+                onClick={() => this.realTimeFly(`back ${distance}`)}
+              />
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row>
+            <Grid.Column id="centered">
               <Button onClick={() => this.realTimeFly(`flip f`)}>
                 Front-Flip
               </Button>
+            </Grid.Column>
+            <Grid.Column id="centered">
               <Button onClick={() => this.realTimeFly(`flip b`)}>
                 Back-Flip
               </Button>
+            </Grid.Column>
+            <Grid.Column id="centered">
               <Button onClick={() => this.realTimeFly(`flip l`)}>
                 Left-Flip
               </Button>
+            </Grid.Column>
+            <Grid.Column id="centered">
               <Button onClick={() => this.realTimeFly(`flip r`)}>
                 Right-Flip
               </Button>
-              <br />
-              <br />
-              <Button onClick={() => this.realTimeFly(`land`)}>Land</Button>
-              &nbsp;&nbsp;&nbsp;
-              <Button onClick={() => this.realTimeFly(`emergency`)}>
-                EMERGENCY STOP
-              </Button>
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row>
+            <Grid.Column id="centered">
               <Button
-                onClick={() => {
-                  //100% for 1 second is about 90deg turn
-                  this.realTimeFly(`rc 0 0 0 100`);
-                  setTimeout(() => {
-                    this.realTimeFly(`rc 0 0 0 0`);
-                  }, 1000);
-                }}
-              >
-                RC f
-              </Button>
-              <Button
-                onClick={() => {
-                  this.realTimeFly(`rc 0 20 0 0`);
-                  setTimeout(() => {
-                    this.realTimeFly(`rc 0 0 0 0`);
-                  }, 1000);
-                }}
-              >
-                Forward RC
-              </Button>
-              <Button
-                onClick={() => {
-                  this.realTimeFly(`rc 0 0 0 0`);
-                }}
-              >
-                RC 0
-              </Button>
-              <Button
-                onClick={() => {
-                  this.realTimeFly(`rc 0 20 10 60`);
-                }}
-              >
-                RC Forward Spin Up
-              </Button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                icon={<Icon name="hand paper" />}
+                color="youtube"
+                content="Emergency"
+                onClick={() => this.realTimeFly(`emergency`)}
+              />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </div>
     );
   }
 }

@@ -95,12 +95,14 @@ const renderCenterButton = (
         <Image
           className={`drone${droneOrientation}`}
           src={require('../assets/images/helper-images/top-view-up.png')}
-          size="small"
+          style={{fontSize: 30}}
+          avatar
         />
       );
     case 'U':
       return (
         <Button
+        size="huge"
           disabled={allDisabled}
           onClick={() => addFlightInstruction(getFlightInstruction(type), `Up`)}
         >
@@ -112,6 +114,7 @@ const renderCenterButton = (
     case 'D':
       return (
         <Button
+        size="huge"
           disabled={allDisabled}
           onClick={() =>
             addFlightInstruction(getFlightInstruction(type), `Down`)
@@ -148,7 +151,7 @@ const ButtonPanel = props => {
         </tr>
         <tr>
           <td>
-            <Button
+            <Button size="huge"
               disabled={leftDisabled || forwardDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
@@ -163,6 +166,7 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
+            size="huge"
               disabled={forwardDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
@@ -177,6 +181,7 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
+            size="huge"
               disabled={rightDisabled || forwardDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
@@ -193,6 +198,7 @@ const ButtonPanel = props => {
         <tr>
           <td>
             <Button
+            size="huge"
               disabled={leftDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
@@ -215,6 +221,7 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
+            size="huge"
               disabled={rightDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
@@ -231,6 +238,7 @@ const ButtonPanel = props => {
         <tr>
           <td>
             <Button
+            size="huge"
               disabled={leftDisabled || reverseDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
@@ -245,6 +253,7 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
+            size="huge"
               disabled={reverseDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
@@ -259,6 +268,7 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
+            size="huge"
               disabled={rightDisabled || reverseDisabled || allDisabled}
               onClick={() =>
                 addFlightInstruction(
