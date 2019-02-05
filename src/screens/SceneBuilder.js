@@ -81,7 +81,7 @@ class SceneBuilder extends Component {
     const objEdges = new THREE.EdgesGeometry(objGeometry);
     const objLines = new THREE.LineSegments(
       objEdges,
-      new THREE.LineBasicMaterial({ color: 0x000000 })
+      new THREE.LineBasicMaterial({ color: 0xccff00 })
     );
     const obj = new THREE.Mesh(objGeometry, objMaterial);
     obj.position.set(x, y, z);
@@ -109,6 +109,10 @@ class SceneBuilder extends Component {
     this.props.canvasScene.add(newObj.ref);
     this.props.canvasScene.add(newObj.lineRef);
     this.props.addObjectToScene(newObj);
+    const previouslySelectedObj = this.state.selectedObj;
+    if (previouslySelectedObj.id) {
+      previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
+    }
     this.setState({ selectedObj: newObj });
   };
 
@@ -131,6 +135,7 @@ class SceneBuilder extends Component {
     this.props.updateSceneObj(sceneObj);
     const newObj = this.createCube(sceneObj);
     this.props.canvasScene.add(newObj.ref);
+    newObj.lineRef.material.color = new THREE.Color(0xccff00);
     this.props.canvasScene.add(newObj.lineRef);
     this.setState({ selectedObj: newObj });
   };
@@ -153,10 +158,12 @@ class SceneBuilder extends Component {
   };
 
   handleObjectSelection = evt => {
+    const previouslySelectedObj = this.state.selectedObj;
+    previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
     // const selectedObj = this.props.sceneObjects.find(
     //   sceneObj => sceneObj.id === Number(evt.currentTarget.id)
     // );
-    // console.log(selectedObj);
+
     // this.setState({ selectedObj });
   };
 
@@ -347,26 +354,7 @@ class SceneBuilder extends Component {
                   </Grid>
                 </Grid.Row>
               ) : null}
-              <Grid.Row>
-                <Grid columns={2} padded>
-                  <Grid.Column textAlign="center">
-                    <Button onClick={() => this.addRotationInstruction('ccw')}>
-                      <Button.Content visible>
-                        <Icon name="undo" />
-                        90&deg;
-                      </Button.Content>
-                    </Button>
-                  </Grid.Column>
-                  <Grid.Column textAlign="center">
-                    <Button onClick={() => this.addRotationInstruction('cw')}>
-                      <Button.Content visible>
-                        <Icon name="redo" />
-                        90&deg;
-                      </Button.Content>
-                    </Button>
-                  </Grid.Column>
-                </Grid>
-              </Grid.Row>
+
               <Grid.Row>
                 <Grid columns={2} padded>
                   <Grid.Column textAlign="center">
