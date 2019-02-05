@@ -11,12 +11,12 @@ import {
   Grid,
   Image,
   ListContent,
-  Input
+  Input,
 } from 'semantic-ui-react';
 
 import NumericInput from 'react-numeric-input';
 
-import {getDrawInstruction} from '../utils/buttonPanelUtils'
+import { getDrawInstruction } from '../utils/buttonPanelUtils';
 
 import ButtonPanel from '../components/ButtonPanel';
 import SceneCanvas from '../components/SceneCanvas';
@@ -29,20 +29,21 @@ import {
   updateDroneConnectionStatus,
   rotateDrone,
   addObjectToScene,
-  updateSceneObj
+  updateSceneObj,
 } from '../store/store';
 
 const { ipcRenderer } = window.require('electron');
-
 
 const defaultObj = {
   length: 2,
   width: 2,
   height: 2,
   position: {
-    x: 0, y: 0, z: 0
-  }
-}
+    x: 0,
+    y: 0,
+    z: 0,
+  },
+};
 
 class SceneBuilder extends Component {
   constructor(props) {
@@ -59,7 +60,7 @@ class SceneBuilder extends Component {
         minZ: -scale / 2,
       },
       startingPoint: { x: 0, y: 1, z: 0 },
-      selectedObj: {}
+      selectedObj: {},
     };
   }
 
@@ -68,38 +69,27 @@ class SceneBuilder extends Component {
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       this.props.updateInstructions(flightInstructions);
     });
-    // Listen for request for flight instructions from main process
-    ipcRenderer.on('request-flightInstructions', event => {
-      // Reply back with instructions
-      ipcRenderer.send(
-        'send-flightInstructions',
-        this.props.flightInstructions
-      );
-    });
-    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
-      this.props.updateDroneConnectionStatus(droneConnectionStatus);
-      // Send a command to drone
-      ipcRenderer.send('single-instruction', 'command');
-    });
   }
 
-  createCube = ({id, length, width, height, position }) => {
+  createCube = ({ id, length, width, height, position }) => {
     const { x, y, z } = position;
     const objGeometry = new THREE.CubeGeometry(width, height, length);
     const objMaterial = new THREE.MeshPhongMaterial({
       color: 0x6666ff,
       flatShading: false,
     });
-    // const obstacleEdges = new THREE.EdgesGeometry(objGeometry);
-    // const obstacleLines = new THREE.LineSegments(
-    //   obstacleEdges,
-    //   new THREE.LineBasicMaterial({ color: 0x000000 })
-    // );
+    const objEdges = new THREE.EdgesGeometry(objGeometry);
+    const objLines = new THREE.LineSegments(
+      objEdges,
+      new THREE.LineBasicMaterial({ color: 0x000000 })
+    );
     const obj = new THREE.Mesh(objGeometry, objMaterial);
     obj.position.set(x, y, z);
+    objLines.position.set(x, y, z);
 
     const objId = id || this.objId++;
-    obj.name = `${objId}`
+    obj.name = `${objId}`;
+    objLines.name = `${objId}-lines`;
     const newObj = {
       id: objId,
       name: `obj${objId}`,
@@ -107,53 +97,73 @@ class SceneBuilder extends Component {
       width,
       height,
       position,
-      ref: obj
-    }
+      ref: obj,
+      lineRef: objLines,
+    };
 
     return newObj;
-  }
-
+  };
 
   addAndCreateObj = () => {
     const newObj = this.createCube(defaultObj);
     this.props.canvasScene.add(newObj.ref);
+    this.props.canvasScene.add(newObj.lineRef);
     this.props.addObjectToScene(newObj);
-    this.setState({selectedObj:newObj})
-  }
+    this.setState({ selectedObj: newObj });
+  };
 
   handleObjChange = (valNum, valStr, inputElem) => {
-    const sceneObj = this.props.sceneObjects.find(sceneObj => Number(inputElem.id) === sceneObj.id);
+    const sceneObj = this.props.sceneObjects.find(
+      sceneObj => Number(inputElem.id) === sceneObj.id
+    );
     // propertyName is length/width/height.
-    const propertyName = inputElem.name; 
+    const propertyName = inputElem.name;
     sceneObj[propertyName] = valNum;
     // need to get reference to the object in order to remove it
-    const objToRemove = this.props.canvasScene.getObjectByName(sceneObj.ref.name)
+    const objToRemove = this.props.canvasScene.getObjectByName(
+      sceneObj.ref.name
+    );
+    const lineToRemove = this.props.canvasScene.getObjectByName(
+      sceneObj.lineRef.name
+    );
     this.props.canvasScene.remove(objToRemove);
+    this.props.canvasScene.remove(lineToRemove);
     this.props.updateSceneObj(sceneObj);
     const newObj = this.createCube(sceneObj);
     this.props.canvasScene.add(newObj.ref);
-    this.setState({selectedObj:newObj})
-  }
+    this.props.canvasScene.add(newObj.lineRef);
+    this.setState({ selectedObj: newObj });
+  };
 
-  handleButtonClick = (dirString) => {
-    const drawInstruction = getDrawInstruction(dirString)
-    const selectedObj = this.state.selectedObj
+  handleButtonClick = dirString => {
+    const drawInstruction = getDrawInstruction(dirString);
+    const selectedObj = this.state.selectedObj;
     const [z, x, y] = drawInstruction;
-    selectedObj.ref.translateX(x)
-    selectedObj.ref.translateY(y)
-    selectedObj.ref.translateZ(z)
-    const {x:newX,y:newY,z:newZ} = selectedObj.ref.position
-    const updatedObj = {...selectedObj}
-    updatedObj.position = {x:newX,y:newY,z:newZ}
-    this.props.updateSceneObj(updatedObj)
-  }
+    selectedObj.ref.translateX(x);
+    selectedObj.lineRef.translateX(x);
+    selectedObj.ref.translateY(y);
+    selectedObj.lineRef.translateY(y);
+    selectedObj.ref.translateZ(z);
+    selectedObj.lineRef.translateZ(z);
+
+    const { x: newX, y: newY, z: newZ } = selectedObj.ref.position;
+    const updatedObj = { ...selectedObj };
+    updatedObj.position = { x: newX, y: newY, z: newZ };
+    this.props.updateSceneObj(updatedObj);
+  };
+
+  handleObjectSelection = evt => {
+    // const selectedObj = this.props.sceneObjects.find(
+    //   sceneObj => sceneObj.id === Number(evt.currentTarget.id)
+    // );
+    // console.log(selectedObj);
+    // this.setState({ selectedObj });
+  };
 
   render() {
     const { limits } = this.state;
-    const { flightInstructions, distance, droneOrientation, sceneObjects } = this.props;
+    const { droneOrientation, sceneObjects } = this.props;
 
-    const latestInstructionMessage =
-      flightInstructions[flightInstructions.length - 2].message;
     const currentPoint = { x: 10, y: 10, z: 10 };
     const leftDisabled = currentPoint.x === limits.maxX;
     const rightDisabled = currentPoint.x === limits.minX;
@@ -161,8 +171,6 @@ class SceneBuilder extends Component {
     const reverseDisabled = currentPoint.z === limits.minZ;
     const upDisabled = currentPoint.y === limits.maxY;
     const downDisabled = currentPoint.y === limits.minY;
-
-
 
     return (
       <div id="build-screen">
@@ -184,23 +192,23 @@ class SceneBuilder extends Component {
                 </Button>
               </Grid.Row>
 
-
               <Grid.Row>
                 <Segment inverted>
-                  <List divided inverted animated>
+                  <List divided inverted selection>
                     <List.Header>
                       <i>Your objects</i>
                     </List.Header>
                     {sceneObjects
-                      .sort((a, b) => a.id - b.id).map(sceneObj => {
+                      .sort((a, b) => a.id - b.id)
+                      .map(sceneObj => {
                         return (
                           <List.Item
                             className="flight-message-single"
                             key={sceneObj.id}
+                            onClick={this.handleObjectSelection}
+                            id={sceneObj.id}
                           >
-                            <List.Content>
-                              Name: {sceneObj.name}
-                            </List.Content>
+                            <List.Content>Name: {sceneObj.name}</List.Content>
                             <ListContent>
                               {`Width:   `}
                               <NumericInput
@@ -228,7 +236,7 @@ class SceneBuilder extends Component {
                               {`   m.`}
                             </ListContent>
                             <ListContent>
-                            {`Height:   `}
+                              {`Height:   `}
                               <NumericInput
                                 id={sceneObj.id}
                                 name={'height'}
@@ -246,11 +254,6 @@ class SceneBuilder extends Component {
                   </List>
                 </Segment>
               </Grid.Row>
-
-
-
-
-
             </Grid.Column>
 
             <Grid.Column width={9}>
@@ -269,83 +272,81 @@ class SceneBuilder extends Component {
                   <SceneCanvas />
                 </Grid.Column>
               </Grid.Row>
+              {sceneObjects.length ? (
+                <Grid.Row>
+                  <Grid columns={3} padded centered>
+                    <Grid.Row>
+                      <Grid.Column
+                        as="h1"
+                        textAlign="center"
+                        style={{
+                          color: '#ffffff',
+                          backgroundColor: '#00a651',
+                          borderStyle: 'solid',
+                          borderColor: '#484848',
+                        }}
+                      >
+                        Up + Strafe
+                        <ButtonPanel
+                          leftDisabled={leftDisabled}
+                          rightDisabled={rightDisabled}
+                          forwardDisabled={forwardDisabled}
+                          reverseDisabled={reverseDisabled}
+                          allDisabled={upDisabled}
+                          clickHandler={this.handleButtonClick}
+                          type="U"
+                          droneOrientation={droneOrientation}
+                        />
+                      </Grid.Column>
 
-              <Grid.Row>
-                <Grid columns={3} padded centered>
-                  <Grid.Row>
-                    <Grid.Column
-                      as="h1"
-                      textAlign="center"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00a651',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
-                      Up + Strafe
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={upDisabled}
-                        clickHandler = {this.handleButtonClick}
-                        type="U"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-
-                    <Grid.Column
-                      as="h1"
-                      textAlign="center"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#afafaf',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
-                      Strafe
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={false}
-                        clickHandler = {this.handleButtonClick}
-                        type="C"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-                    <Grid.Column
-                      as="h1"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00aeef',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                      textAlign="center"
-                    >
-                      Down + Strafe
-                      <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={downDisabled}
-                        clickHandler = {this.handleButtonClick}
-                        type="D"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-              </Grid.Row>
+                      <Grid.Column
+                        as="h1"
+                        textAlign="center"
+                        style={{
+                          color: '#ffffff',
+                          backgroundColor: '#afafaf',
+                          borderStyle: 'solid',
+                          borderColor: '#484848',
+                        }}
+                      >
+                        Strafe
+                        <ButtonPanel
+                          leftDisabled={leftDisabled}
+                          rightDisabled={rightDisabled}
+                          forwardDisabled={forwardDisabled}
+                          reverseDisabled={reverseDisabled}
+                          allDisabled={false}
+                          clickHandler={this.handleButtonClick}
+                          type="C"
+                          droneOrientation={droneOrientation}
+                        />
+                      </Grid.Column>
+                      <Grid.Column
+                        as="h1"
+                        style={{
+                          color: '#ffffff',
+                          backgroundColor: '#00aeef',
+                          borderStyle: 'solid',
+                          borderColor: '#484848',
+                        }}
+                        textAlign="center"
+                      >
+                        Down + Strafe
+                        <ButtonPanel
+                          leftDisabled={leftDisabled}
+                          rightDisabled={rightDisabled}
+                          forwardDisabled={forwardDisabled}
+                          reverseDisabled={reverseDisabled}
+                          allDisabled={downDisabled}
+                          clickHandler={this.handleButtonClick}
+                          type="D"
+                          droneOrientation={droneOrientation}
+                        />
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                </Grid.Row>
+              ) : null}
               <Grid.Row>
                 <Grid columns={2} padded>
                   <Grid.Column textAlign="center">
@@ -382,45 +383,13 @@ class SceneBuilder extends Component {
                         Remove Obstacles
                       </Button>
                     ) : (
-                        <Button onClick={this.props.toggleObstacles}>
-                          Insert Obstacles
+                      <Button onClick={this.props.toggleObstacles}>
+                        Insert Obstacles
                       </Button>
-                      )}
+                    )}
                   </Grid.Column>
                 </Grid>
               </Grid.Row>
-            </Grid.Column>
-
-            <Grid.Column width={3}>
-              <Segment inverted>
-                <List divided inverted animated>
-                  <List.Header>
-                    <i>Flight Instructions</i>
-                  </List.Header>
-                  {flightInstructions
-                    .map(instructionObj => instructionObj.message)
-                    .map((message, ind) => {
-                      let icon;
-                      if (message === 'Takeoff') {
-                        icon = 'hand point up';
-                      } else if (message === 'Land') {
-                        icon = 'hand point down';
-                      } else if (message === 'Hold') {
-                        icon = 'hourglass half';
-                      } else {
-                        icon = 'dot circle';
-                      }
-                      return (
-                        <List.Item
-                          className="flight-message-single"
-                          key={ind}
-                          content={message}
-                          icon={icon}
-                        />
-                      );
-                    })}
-                </List>
-              </Segment>
             </Grid.Column>
           </Grid.Row>
         </Grid>
@@ -431,42 +400,26 @@ class SceneBuilder extends Component {
 
 const mapState = state => {
   return {
-    distance: state.distance,
-    speed: state.speed,
     scale: state.scale,
-    flightInstructions: state.flightInstructions,
     droneOrientation: state.droneOrientation,
-    currentDronePosition: state.currentDronePosition,
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
     obstacles: state.obstacles,
-    droneConnectionStatus: state.droneConnectionStatus,
     canvasScene: state.canvasScene,
-    sceneObjects: state.sceneObjects
+    sceneObjects: state.sceneObjects,
   };
 };
 
 const mapDispatch = dispatch => {
   return {
     changeTab: tabName => dispatch(changeTab(tabName)),
-    clearInstructions: () => dispatch(clearInstructions()),
-    updateCDP: newPosition => {
-      dispatch(updateCDP(newPosition));
-    },
     toggleObstacles: () => {
       dispatch(toggleObstacles());
     },
-    updateDroneConnectionStatus: droneStatus =>
-      dispatch(updateDroneConnectionStatus(droneStatus)),
-    rotateDrone: newOrientation => {
-      dispatch(rotateDrone(newOrientation));
-    },
-    updateInstructions: updatedFlightInstructions =>
-      dispatch(updateInstructions(updatedFlightInstructions)),
     addObjectToScene: selectedObj => {
       dispatch(addObjectToScene(selectedObj));
     },
-    updateSceneObj: updatedObj => dispatch(updateSceneObj(updatedObj))
+    updateSceneObj: updatedObj => dispatch(updateSceneObj(updatedObj)),
   };
 };
 
