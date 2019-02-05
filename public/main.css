@@ -118,10 +118,14 @@
   justify-content: center;
 }
 
-.rounded {
-  border-radius: 200;
-}
-
 #status-segment {
   position: fixed;
 }
+
+#video-list {
+  align-items: center;
+  height: 100%;
+  overflow: scroll;
+  width: 50%;
+}
+
