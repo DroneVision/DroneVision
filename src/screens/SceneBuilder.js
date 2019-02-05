@@ -134,8 +134,9 @@ class SceneBuilder extends Component {
     this.props.canvasScene.remove(lineToRemove);
     this.props.updateSceneObj(sceneObj);
     const newObj = this.createCube(sceneObj);
-    this.props.canvasScene.add(newObj.ref);
     newObj.lineRef.material.color = new THREE.Color(0xccff00);
+
+    this.props.canvasScene.add(newObj.ref);
     this.props.canvasScene.add(newObj.lineRef);
     this.setState({ selectedObj: newObj });
   };
@@ -143,6 +144,7 @@ class SceneBuilder extends Component {
   handleButtonClick = dirString => {
     const drawInstruction = getDrawInstruction(dirString);
     const selectedObj = this.state.selectedObj;
+    console.log(selectedObj)
     const [z, x, y] = drawInstruction;
     selectedObj.ref.translateX(x);
     selectedObj.lineRef.translateX(x);
@@ -154,17 +156,19 @@ class SceneBuilder extends Component {
     const { x: newX, y: newY, z: newZ } = selectedObj.ref.position;
     const updatedObj = { ...selectedObj };
     updatedObj.position = { x: newX, y: newY, z: newZ };
+    updatedObj.lineRef.material.color = new THREE.Color(0xccff00);
     this.props.updateSceneObj(updatedObj);
   };
 
   handleObjectSelection = evt => {
     const previouslySelectedObj = this.state.selectedObj;
     previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
-    // const selectedObj = this.props.sceneObjects.find(
-    //   sceneObj => sceneObj.id === Number(evt.currentTarget.id)
-    // );
+    const selectedObj = this.props.sceneObjects.find(
+      sceneObj => sceneObj.id === Number(evt.currentTarget.id)
+    );
+    selectedObj.lineRef.material.color = new THREE.Color(0xccff00);
 
-    // this.setState({ selectedObj });
+    this.setState({ selectedObj });
   };
 
   render() {
