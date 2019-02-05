@@ -138,13 +138,14 @@ class SceneBuilder extends Component {
 
     this.props.canvasScene.add(newObj.ref);
     this.props.canvasScene.add(newObj.lineRef);
+
     this.setState({ selectedObj: newObj });
   };
 
   handleButtonClick = dirString => {
     const drawInstruction = getDrawInstruction(dirString);
     const selectedObj = this.state.selectedObj;
-    console.log(selectedObj)
+    console.log(selectedObj);
     const [z, x, y] = drawInstruction;
     selectedObj.ref.translateX(x);
     selectedObj.lineRef.translateX(x);
@@ -162,13 +163,16 @@ class SceneBuilder extends Component {
 
   handleObjectSelection = evt => {
     const previouslySelectedObj = this.state.selectedObj;
-    previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
     const selectedObj = this.props.sceneObjects.find(
       sceneObj => sceneObj.id === Number(evt.currentTarget.id)
     );
-    selectedObj.lineRef.material.color = new THREE.Color(0xccff00);
+    if (previouslySelectedObj.id !== selectedObj.id) {
+      previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
 
-    this.setState({ selectedObj });
+      selectedObj.lineRef.material.color = new THREE.Color(0xccff00);
+
+      this.setState({ selectedObj });
+    }
   };
 
   render() {
