@@ -5,7 +5,6 @@ import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
 import { Button, Grid, Header, Icon } from 'semantic-ui-react';
 import wait from 'waait';
-import { drawPath } from '../utils/drawPathUtils';
 import { updateCDP } from '../store/store';
 import commandDelays from '../drone/commandDelays';
 
@@ -22,7 +21,7 @@ class Run extends Component {
   }
 
   componentDidMount() {
-    drawPath(this.props.flightInstructions, this.props.distance);
+    
   }
 
   connectToDroneHandler = () => {

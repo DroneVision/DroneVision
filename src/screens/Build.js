@@ -26,6 +26,8 @@ import {
   rotateDrone,
 } from '../store/store';
 
+import { getFlightInstruction} from '../utils/buttonPanelUtils';
+
 const { ipcRenderer } = window.require('electron');
 
 class Build extends Component {
@@ -274,6 +276,10 @@ class Build extends Component {
     this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
   };
 
+  handleButtonClick = (dirString,droneOrientation=0) => {
+    this.addFlightInstruction(getFlightInstruction(dirString,droneOrientation))
+  }
+
   render() {
     const { limits } = this.state;
     const {
@@ -352,7 +358,7 @@ class Build extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={upDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
+                        clickHandler={this.handleButtonClick}
                         type="U"
                         droneOrientation={droneOrientation}
                       />
@@ -374,7 +380,7 @@ class Build extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={false}
-                        addFlightInstruction={this.addFlightInstruction}
+                        clickHandler={this.handleButtonClick}
                         type="C"
                         droneOrientation={droneOrientation}
                       />
@@ -395,7 +401,7 @@ class Build extends Component {
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={downDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
+                        clickHandler={this.handleButtonClick}
                         type="D"
                         droneOrientation={droneOrientation}
                       />

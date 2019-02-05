@@ -35,6 +35,7 @@ const INITIAL_STATE = {
     z: startingPositionCoords.z,
   },
   sceneObjects: [],
+  canvasScene: null
 };
 
 //ACTION CONSTANTS
@@ -64,6 +65,9 @@ const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
 const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
+const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT'
+
+const SEND_SCENE_CANVAS_TO_REDUX = 'SEND_SCENE_CANVAS_TO_REDUX';
 
 const UPDATE_BUILD_DRONE_POSITION = 'UPDATE_BUILD_DRONE_POSITION';
 
@@ -116,6 +120,15 @@ export const addObjectToScene = newObject => ({
   newObject,
 });
 
+export const updateSceneObj = updatedObj => ({
+  type: UPDATE_SCENE_OBJECT,
+  updatedObj
+})
+
+export const sendSceneCanvasToRedux = scene => ({
+  type: SEND_SCENE_CANVAS_TO_REDUX,
+  scene
+})
 export const updateBuildDronePosition = updatedPosition => ({
   type: UPDATE_BUILD_DRONE_POSITION,
   updatedPosition,
@@ -158,6 +171,17 @@ const reducer = (state = INITIAL_STATE, action) => {
         ...state,
         sceneObjects: [...state.sceneObjects, action.newObject],
       };
+    case SEND_SCENE_CANVAS_TO_REDUX:
+      return {
+        ...state,
+        canvasScene: action.scene
+      };
+    case UPDATE_SCENE_OBJECT:
+      const remainingObjs = state.sceneObjects.filter(sceneObj => sceneObj.id !== action.updatedObj.id)
+      return {
+        ...state,
+        sceneObjects: [...remainingObjs, action.updatedObj]
+      }
     case UPDATE_BUILD_DRONE_POSITION:
       return {
         ...state,

@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
-import PubSub from 'pubsub-js';
 import autoPilotCanvasSkybox from '../ThreeJSModules/AutoPilotCanvasSkybox';
-import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
-import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
-import { updateCDP } from '../store/store';
+import { sendSceneCanvasToRedux } from '../store/store';
+
 
 const { ipcRenderer } = window.require('electron');
 
@@ -22,7 +20,7 @@ class SceneCanvas extends Component {
 
     //SCENE
     this.scene = new THREE.Scene();
-
+    this.props.sendSceneCanvasToRedux(this.scene);
     //CAMERA
     this.camera = new THREE.PerspectiveCamera(
       60,
@@ -120,6 +118,7 @@ class SceneCanvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
+
   }
 
   componentDidUpdate = prevProps => {};
@@ -131,6 +130,7 @@ class SceneCanvas extends Component {
     this.renderer.render(this.scene, this.camera);
   };
 
+  
   render() {
     return <div id="canvas" />;
   }
@@ -148,21 +148,13 @@ const mapState = state => {
   };
 };
 
-// const mapDispatch = dispatch => {
-//   return {
-//     changeRoll: newRoll => {
-//       dispatch(changeRoll(newRoll));
-//     },
-//     changePitch: newPitch => {
-//       dispatch(changePitch(newPitch));
-//     },
-//     changeYaw: newYaw => {
-//       dispatch(changeYaw(newYaw));
-//     },
-//   };
-// };
+const mapDispatch = dispatch => {
+  return {
+    sendSceneCanvasToRedux: scene => dispatch(sendSceneCanvasToRedux(scene))
+  };
+};
 
 export default connect(
   mapState,
-  null
+  mapDispatch,
 )(SceneCanvas);
