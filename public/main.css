@@ -129,3 +129,50 @@
   width: 50%;
 }
 
+#up-strafe {
+  background-color:#00a651;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border-color: #484848;
+  border-style: solid;
+}
+
+#down-strafe {
+  background-color:#00aeef;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border-color: #484848;
+  border-style: solid;
+}
+
+#strafe {
+  background-color: #afafaf;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border-color: #484848;
+  border-style: solid;
+}
+
+#flight-instructions {
+  position: absolute;
+  width: 25rem;
+  right: 2rem;
+  top: 8rem;
+  height: 30rem;
+  overflow: auto;
+}
+
+#controls {
+  display: flex;
+  
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#build-help {
+  position: relative;
+  right: 0;
+}
