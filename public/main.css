@@ -187,8 +187,3 @@
   display: flex;
   justify-content: center;
 }
-
-#auto-pilot-canvas {
-  display: flex;
-  flex-wrap: wrap;
-}
