@@ -61,6 +61,7 @@ class SceneBuilder extends Component {
       },
       startingPoint: { x: 0, y: 1, z: 0 },
       selectedObj: {},
+      activeListItemId: null
     };
   }
 
@@ -116,7 +117,7 @@ class SceneBuilder extends Component {
     this.setState({ selectedObj: newObj });
   };
 
-  handleObjChange = (valNum, valStr, inputElem) => {
+  handleObjDimensionChange = (valNum, valStr, inputElem) => {
     const sceneObj = this.props.sceneObjects.find(
       sceneObj => Number(inputElem.id) === sceneObj.id
     );
@@ -132,20 +133,19 @@ class SceneBuilder extends Component {
     );
     this.props.canvasScene.remove(objToRemove);
     this.props.canvasScene.remove(lineToRemove);
-    this.props.updateSceneObj(sceneObj);
     const newObj = this.createCube(sceneObj);
     newObj.lineRef.material.color = new THREE.Color(0xccff00);
-
+    const previouslySelectedObj = this.state.selectedObj;
+    previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
     this.props.canvasScene.add(newObj.ref);
     this.props.canvasScene.add(newObj.lineRef);
-
-    this.setState({ selectedObj: newObj });
+    this.props.updateSceneObj(newObj);
+    this.setState({ selectedObj: newObj, activeListItemId: newObj.id });
   };
 
   handleButtonClick = dirString => {
     const drawInstruction = getDrawInstruction(dirString);
     const selectedObj = this.state.selectedObj;
-    console.log(selectedObj);
     const [z, x, y] = drawInstruction;
     selectedObj.ref.translateX(x);
     selectedObj.lineRef.translateX(x);
@@ -159,9 +159,10 @@ class SceneBuilder extends Component {
     updatedObj.position = { x: newX, y: newY, z: newZ };
     updatedObj.lineRef.material.color = new THREE.Color(0xccff00);
     this.props.updateSceneObj(updatedObj);
+    this.setState({selectedObj: updatedObj});
   };
 
-  handleObjectSelection = evt => {
+  handleObjectSelection = (evt, index) => {
     const previouslySelectedObj = this.state.selectedObj;
     const selectedObj = this.props.sceneObjects.find(
       sceneObj => sceneObj.id === Number(evt.currentTarget.id)
@@ -169,8 +170,10 @@ class SceneBuilder extends Component {
     if (previouslySelectedObj.id !== selectedObj.id) {
       previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
       selectedObj.lineRef.material.color = new THREE.Color(0xccff00);
-      this.setState({ selectedObj });
+      this.setState({ selectedObj, activeListItemId: selectedObj.id});
     }
+    // previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
+   
   };
 
   render() {
@@ -216,7 +219,9 @@ class SceneBuilder extends Component {
                       .map(sceneObj => {
                         return (
                           <List.Item
-                            className="flight-message-single"
+                            // className="flight-message-single"
+                            className='flight-message-single'
+                            active={this.state.activeListItemId === sceneObj.id}
                             key={sceneObj.id}
                             onClick={this.handleObjectSelection}
                             id={sceneObj.id}
@@ -231,7 +236,7 @@ class SceneBuilder extends Component {
                                 min={1}
                                 max={this.props.scale}
                                 value={sceneObj.width}
-                                onChange={this.handleObjChange}
+                                onChange={this.handleObjDimensionChange}
                               />
                               {`   m.`}
                             </ListContent>
@@ -244,7 +249,7 @@ class SceneBuilder extends Component {
                                 min={1}
                                 max={this.props.scale}
                                 value={sceneObj.length}
-                                onChange={this.handleObjChange}
+                                onChange={this.handleObjDimensionChange}
                               />
                               {`   m.`}
                             </ListContent>
@@ -257,7 +262,7 @@ class SceneBuilder extends Component {
                                 min={1}
                                 max={this.props.scale}
                                 value={sceneObj.height}
-                                onChange={this.handleObjChange}
+                                onChange={this.handleObjDimensionChange}
                               />
                               {`   m.`}
                             </ListContent>
