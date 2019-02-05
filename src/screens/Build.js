@@ -26,7 +26,7 @@ import {
   rotateDrone,
 } from '../store/store';
 
-import { getFlightInstruction} from '../utils/buttonPanelUtils';
+import { getFlightInstruction } from '../utils/buttonPanelUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -276,9 +276,11 @@ class Build extends Component {
     this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
   };
 
-  handleButtonClick = (dirString,droneOrientation=0) => {
-    this.addFlightInstruction(getFlightInstruction(dirString,droneOrientation))
-  }
+  handleButtonClick = (dirString, droneOrientation = 0) => {
+    this.addFlightInstruction(
+      getFlightInstruction(dirString, droneOrientation)
+    );
+  };
 
   render() {
     const { limits } = this.state;
@@ -298,207 +300,172 @@ class Build extends Component {
     const downDisabled = buildDronePosition.y === limits.minY;
     return (
       <div id="build-screen">
-        <Grid columns={3} padded>
+        <Grid columns={3} padded centered>
+          <Header as="h1" dividing id="centered-padded-top">
+            <Icon name="settings" />
+            <Header.Content>
+              AutoPilot Builder
+              <Header.Subheader>
+                <i>Visualize your build path</i>
+              </Header.Subheader>
+            </Header.Content>
+          </Header>
+
           <Grid.Row>
-            <Grid.Column width={3}>
-              <Grid.Row>
-                <Image
-                  src={require('../assets/images/helper-images/build-instructions.png')}
-                  size="large"
-                />
-              </Grid.Row>
+            <Grid.Column>
+              <BuildCanvas />
             </Grid.Column>
+          </Grid.Row>
 
-            <Grid.Column width={9}>
-              <Header as="h1" dividing id="centered-padded-top">
-                <Icon name="settings" />
-                <Header.Content>
-                  AutoPilot Builder
-                  <Header.Subheader>
-                    <i>Visualize your build path</i>
-                  </Header.Subheader>
-                </Header.Content>
-              </Header>
-
-              <Grid.Row>
-                <Grid.Column>
-                  <BuildCanvas />
-                </Grid.Column>
-              </Grid.Row>
-
-              <Grid.Row>
-                <Grid padded>
-                  <Grid.Row columns={3} id="centered-padded-top">
-                    <Grid.Column>
-                      <h1>Up + Strafe</h1>
-                    </Grid.Column>
-                    <Grid.Column>
+          <div id="row">
+            <div id="button-panels">
+              <table>
+                <thead align="center">
+                  <tr>
+                    <td>
+                      <h1>Up & Strafe</h1>
+                    </td>
+                    <td>
                       <h1>Strafe</h1>
-                    </Grid.Column>
-                    <Grid.Column>
-                      <h1>Down + Strafe</h1>
-                    </Grid.Column>
-                  </Grid.Row>
-
-                  <Grid.Row columns={3} padded>
-                    <Grid.Column
-                      id="centered-panel"
-                      className="rounded"
-                      style={{
-                        backgroundColor: '#00a651',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                        borderRadius: '500'
-                      }}
-                    >
+                    </td>
+                    <td>
+                      <h1>Down & Strafe</h1>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td id="up-strafe">
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
-                        allDisabled={upDisabled}
                         clickHandler={this.handleButtonClick}
+                        allDisabled={upDisabled}
+                        addFlightInstruction={this.addFlightInstruction}
                         type="U"
                         droneOrientation={droneOrientation}
                       />
-                    </Grid.Column>
-
-                    <Grid.Column
-                      className="rounded"
-                      id="centered-panel"
-                      style={{
-                        backgroundColor: '#afafaf',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
+                    </td>
+                    <td id="strafe">
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
-                        allDisabled={false}
                         clickHandler={this.handleButtonClick}
+                        allDisabled={false}
+                        addFlightInstruction={this.addFlightInstruction}
                         type="C"
                         droneOrientation={droneOrientation}
                       />
-                    </Grid.Column>
-                    <Grid.Column
-                      id="centered-panel"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00aeef',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
+                    </td>
+                    <td id="down-strafe">
                       <ButtonPanel
                         latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
-                        allDisabled={downDisabled}
                         clickHandler={this.handleButtonClick}
+                        allDisabled={downDisabled}
+                        addFlightInstruction={this.addFlightInstruction}
                         type="D"
                         droneOrientation={droneOrientation}
                       />
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-              </Grid.Row>
-            </Grid.Column>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="row">
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <Button onClick={() => this.addRotationInstruction('ccw')}>
+                      <Button.Content visible>
+                        <Icon name="undo" />
+                        90&deg;
+                      </Button.Content>
+                    </Button>
+                  </td>
+                  <td>
+                    <Button onClick={() => this.addRotationInstruction('cw')}>
+                      <Button.Content visible>
+                        <Icon name="redo" />
+                        90&deg;
+                      </Button.Content>
+                    </Button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-            <Grid.Column width={3}>
-              <Segment inverted>
-                <List divided inverted animated>
-                  <List.Header>
-                    <i>Flight Instructions</i>
-                  </List.Header>
-                  {flightInstructions
-                    .map(instructionObj => instructionObj.message)
-                    .map((message, ind) => {
-                      let icon;
-                      if (message === 'Takeoff') {
-                        icon = 'hand point up';
-                      } else if (message === 'Land') {
-                        icon = 'hand point down';
-                      } else if (message === 'Hold') {
-                        icon = 'hourglass half';
-                      } else {
-                        icon = 'dot circle';
-                      }
-                      return (
-                        <List.Item
-                          className="flight-message-single"
-                          key={ind}
-                          content={message}
-                          icon={icon}
-                        />
-                      );
-                    })}
-                </List>
-              </Segment>
-            </Grid.Column>
-          </Grid.Row>
+          <div id="flight-instructions">
+            <Segment inverted>
+              <List divided inverted animated>
+                <List.Header>
+                  <i>Flight Instructions</i>
+                </List.Header>
+                {flightInstructions
+                  .map(instructionObj => instructionObj.message)
+                  .map((message, ind) => {
+                    let icon;
+                    if (message === 'Takeoff') {
+                      icon = 'hand point up';
+                    } else if (message === 'Land') {
+                      icon = 'hand point down';
+                    } else if (message === 'Hold') {
+                      icon = 'hourglass half';
+                    } else {
+                      icon = 'dot circle';
+                    }
+                    return (
+                      <List.Item
+                        className="flight-message-single"
+                        key={ind}
+                        content={message}
+                        icon={icon}
+                      />
+                    );
+                  })}
+              </List>
+            </Segment>
+          </div>
 
-          <Grid.Row columns={2}>
-            <Grid.Column>
-              <Button onClick={() => this.addRotationInstruction('ccw')}>
-                <Button.Content visible>
-                  <Icon name="undo" />
-                  90&deg;
-                </Button.Content>
-              </Button>
-            </Grid.Column>
-            <Grid.Column>
-              <Button onClick={() => this.addRotationInstruction('cw')}>
-                <Button.Content visible>
-                  <Icon name="redo" />
-                  90&deg;
-                </Button.Content>
-              </Button>
-            </Grid.Column>
-          </Grid.Row>
+          <div className="row">
+            <Button
+              disabled={flightInstructions.length <= 2}
+              onClick={() => this.deleteLastInstruction()}
+            >
+              Delete Last Instruction
+            </Button>
+            <Button
+              disabled={flightInstructions.length <= 2}
+              onClick={() => this.clearFlightInstructions()}
+            >
+              Clear All Instructions
+            </Button>
+          </div>
 
-          <Grid.Row columns={2}>
-            <Grid.Column>
-              <Button
-                disabled={flightInstructions.length <= 2}
-                onClick={() => this.deleteLastInstruction()}
-              >
-                Delete Last Instruction
-              </Button>
-            </Grid.Column>
-            <Grid.Column>
-              <Button
-                disabled={flightInstructions.length <= 2}
-                onClick={() => this.clearFlightInstructions()}
-              >
-                Clear All Instructions
-              </Button>
-            </Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row columns={3}>
-            <Grid.Column>
+          <div className="row">
               <Link to={'/autopilot'}>
                 <Button onClick={() => this.props.changeTab('autopilot')}>
                   View On Run Screen!
                 </Button>
               </Link>
-            </Grid.Column>
-            <Grid.Column>
               <Button
                 disabled={this.state.runButtonsDisabled}
                 onClick={this.preVisualizePath}
               >
                 Pre-Visualize Path
               </Button>
-            </Grid.Column>
-            <Grid.Column>
               {this.props.obstacles ? (
                 <Button onClick={this.props.toggleObstacles}>
                   Remove Obstacles
@@ -508,8 +475,7 @@ class Build extends Component {
                   Insert Obstacles
                 </Button>
               )}
-            </Grid.Column>
-          </Grid.Row>
+          </div>
         </Grid>
       </div>
     );
