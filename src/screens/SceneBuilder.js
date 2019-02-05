@@ -11,7 +11,6 @@ import {
   Grid,
   Image,
   ListContent,
-  Input,
 } from 'semantic-ui-react';
 
 import NumericInput from 'react-numeric-input';
@@ -22,12 +21,7 @@ import ButtonPanel from '../components/ButtonPanel';
 import SceneCanvas from '../components/SceneCanvas';
 import {
   changeTab,
-  updateInstructions,
-  clearInstructions,
-  updateCDP,
   toggleObstacles,
-  updateDroneConnectionStatus,
-  rotateDrone,
   addObjectToScene,
   updateSceneObj,
 } from '../store/store';
@@ -40,7 +34,7 @@ const defaultObj = {
   height: 2,
   position: {
     x: 0,
-    y: 0,
+    y: -4, //accounts for plane shifting + height/2
     z: 0,
   },
 };
@@ -49,16 +43,7 @@ class SceneBuilder extends Component {
   constructor(props) {
     super(props);
     this.objId = 1;
-    const { scale } = this.props;
     this.state = {
-      limits: {
-        maxX: scale / 2,
-        maxY: scale,
-        maxZ: scale / 2,
-        minX: -scale / 2,
-        minY: 1,
-        minZ: -scale / 2,
-      },
       startingPoint: { x: 0, y: 1, z: 0 },
       selectedObj: {},
     };
@@ -105,47 +90,48 @@ class SceneBuilder extends Component {
   };
 
   addAndCreateObj = () => {
+    const { canvasScene, addObjectToScene } = this.props;
     const newObj = this.createCube(defaultObj);
-    this.props.canvasScene.add(newObj.ref);
-    this.props.canvasScene.add(newObj.lineRef);
-    this.props.addObjectToScene(newObj);
+    canvasScene.add(newObj.ref);
+    canvasScene.add(newObj.lineRef);
+    addObjectToScene(newObj);
     const previouslySelectedObj = this.state.selectedObj;
     if (previouslySelectedObj.id) {
       previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
     }
-    this.setState({ selectedObj: newObj });
+
+    const limits = this.getNewLimits(newObj);
+    this.setState({ selectedObj: newObj, limits });
   };
 
   handleObjChange = (valNum, valStr, inputElem) => {
-    const sceneObj = this.props.sceneObjects.find(
+    const { sceneObjects, canvasScene, updateSceneObj } = this.props;
+    const sceneObj = sceneObjects.find(
       sceneObj => Number(inputElem.id) === sceneObj.id
     );
     // propertyName is length/width/height.
     const propertyName = inputElem.name;
     sceneObj[propertyName] = valNum;
     // need to get reference to the object in order to remove it
-    const objToRemove = this.props.canvasScene.getObjectByName(
-      sceneObj.ref.name
-    );
-    const lineToRemove = this.props.canvasScene.getObjectByName(
-      sceneObj.lineRef.name
-    );
-    this.props.canvasScene.remove(objToRemove);
-    this.props.canvasScene.remove(lineToRemove);
-    this.props.updateSceneObj(sceneObj);
+    const objToRemove = canvasScene.getObjectByName(sceneObj.ref.name);
+    const lineToRemove = canvasScene.getObjectByName(sceneObj.lineRef.name);
+    canvasScene.remove(objToRemove);
+    canvasScene.remove(lineToRemove);
+
     const newObj = this.createCube(sceneObj);
     newObj.lineRef.material.color = new THREE.Color(0xccff00);
 
-    this.props.canvasScene.add(newObj.ref);
-    this.props.canvasScene.add(newObj.lineRef);
-
-    this.setState({ selectedObj: newObj });
+    canvasScene.add(newObj.ref);
+    canvasScene.add(newObj.lineRef);
+    updateSceneObj(newObj);
+    const limits = this.getNewLimits(newObj);
+    this.setState({ selectedObj: newObj, limits });
   };
 
   handleButtonClick = dirString => {
     const drawInstruction = getDrawInstruction(dirString);
     const selectedObj = this.state.selectedObj;
-    console.log(selectedObj);
+
     const [z, x, y] = drawInstruction;
     selectedObj.ref.translateX(x);
     selectedObj.lineRef.translateX(x);
@@ -158,7 +144,20 @@ class SceneBuilder extends Component {
     const updatedObj = { ...selectedObj };
     updatedObj.position = { x: newX, y: newY, z: newZ };
     updatedObj.lineRef.material.color = new THREE.Color(0xccff00);
+    this.setState({ selectedObj: updatedObj });
     this.props.updateSceneObj(updatedObj);
+  };
+
+  getNewLimits = selectedObj => {
+    const { scale } = this.props;
+    return {
+      maxX: scale / 2 - selectedObj.width / 2,
+      maxY: scale - 5 - selectedObj.height / 2,
+      maxZ: scale / 2 - selectedObj.length / 2,
+      minX: -scale / 2 + selectedObj.width / 2,
+      minY: -5 + selectedObj.height / 2,
+      minZ: -scale / 2 + selectedObj.length / 2,
+    };
   };
 
   handleObjectSelection = evt => {
@@ -169,22 +168,29 @@ class SceneBuilder extends Component {
     if (previouslySelectedObj.id !== selectedObj.id) {
       previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
       selectedObj.lineRef.material.color = new THREE.Color(0xccff00);
-      this.setState({ selectedObj });
+      const limits = this.getNewLimits(selectedObj);
+      this.setState({ selectedObj, limits });
     }
   };
 
   render() {
-    const { limits } = this.state;
+    const { limits, selectedObj } = this.state;
     const { droneOrientation, sceneObjects } = this.props;
+    let leftDisabled,
+      rightDisabled,
+      forwardDisabled,
+      reverseDisabled,
+      upDisabled,
+      downDisabled;
 
-    const currentPoint = { x: 10, y: 10, z: 10 };
-    const leftDisabled = currentPoint.x === limits.maxX;
-    const rightDisabled = currentPoint.x === limits.minX;
-    const forwardDisabled = currentPoint.z === limits.maxZ;
-    const reverseDisabled = currentPoint.z === limits.minZ;
-    const upDisabled = currentPoint.y === limits.maxY;
-    const downDisabled = currentPoint.y === limits.minY;
-
+    if (selectedObj.position) {
+      leftDisabled = selectedObj.position.x >= limits.maxX;
+      rightDisabled = selectedObj.position.x <= limits.minX;
+      forwardDisabled = selectedObj.position.z >= limits.maxZ;
+      reverseDisabled = selectedObj.position.z <= limits.minZ;
+      upDisabled = selectedObj.position.y >= limits.maxY;
+      downDisabled = selectedObj.position.y <= limits.minY;
+    }
     return (
       <div id="build-screen">
         <Grid columns={3} padded>
