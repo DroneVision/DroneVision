@@ -99,10 +99,8 @@ class SceneCanvas extends Component {
 
   componentDidUpdate = prevProps => {
     const { sceneObjects, selectedObjId } = this.props;
-    // console.dir(prevProps.sceneObjects);
-    // console.dir(sceneObjects);
-    // if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
 
+    // if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
     if (this.sceneObjects) {
       this.scene.remove(this.sceneObjects);
     }

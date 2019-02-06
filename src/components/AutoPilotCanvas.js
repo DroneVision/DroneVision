@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import { connect } from 'react-redux';
 import OrbitControls from 'three-orbitcontrols';
-import PubSub from 'pubsub-js';
 import autoPilotCanvasSkybox from '../ThreeJSModules/AutoPilotCanvasSkybox';
 import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
 import { updateCDP } from '../store/store';
+import { createSceneObjs } from '../utils/canvasUtils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -118,19 +118,23 @@ class AutoPilotCanvas extends Component {
   }
 
   componentDidMount() {
+    const { sceneObjects } = this.props;
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
 
-    this.updateEverything();
+    this.redrawLines();
+
+    this.sceneObjects = createSceneObjs(sceneObjects);
+    this.scene.add(this.sceneObjects);
 
     ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
       ipcRenderer.send('get-drone-moves');
 
       if (singleFlightCoord === 'command') {
       } else if (singleFlightCoord === 'takeoff') {
-        updateCDP(this.props.startingPosition);
+        this.props.updateCDP(this.props.startingPosition);
       } else if (singleFlightCoord === 'land') {
-        updateCDP({
+        this.props.updateCDP({
           x: this.props.currentDronePosition.x,
           y: this.props.currentDronePosition.y,
           z: 0,
@@ -150,16 +154,24 @@ class AutoPilotCanvas extends Component {
         newCoords.y = this.props.currentDronePosition.y + y;
         newCoords.z = this.props.currentDronePosition.z + z;
 
-        updateCDP(newCoords);
+        this.props.updateCDP(newCoords);
       }
     });
   }
 
   componentDidUpdate = prevProps => {
-    this.updateEverything(prevProps);
+    this.redrawLines(prevProps);
+    const { sceneObjects } = this.props;
+    if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
+      if (this.sceneObjects) {
+        this.scene.remove(this.sceneObjects);
+      }
+      this.sceneObjects = createSceneObjs(sceneObjects);
+      this.scene.add(this.sceneObjects);
+    }
   };
 
-  updateEverything = (prevProps = null) => {
+  redrawLines = (prevProps = null) => {
     const {
       postTakeoffPosition,
       flightInstructions: newFlightInstructions,
@@ -173,14 +185,10 @@ class AutoPilotCanvas extends Component {
       oldFlightInstructions = null;
     }
 
-    this.drone3DModel.rotation.y = Math.PI;
-
     //OBSTACLES (toggled by redux store)
     if (obstacles) {
       this.scene.add(Obstacles);
-    }
-    //OBSTACLES (toggled by redux store)
-    if (!obstacles) {
+    } else {
       this.scene.remove(Obstacles);
     }
 
@@ -340,24 +348,17 @@ const mapState = state => {
     obstacles: state.obstacles,
     flightInstructions: state.flightInstructions,
     postTakeoffPosition: state.postTakeoffPosition,
+    sceneObjects: state.sceneObjects,
   };
 };
 
-// const mapDispatch = dispatch => {
-//   return {
-//     changeRoll: newRoll => {
-//       dispatch(changeRoll(newRoll));
-//     },
-//     changePitch: newPitch => {
-//       dispatch(changePitch(newPitch));
-//     },
-//     changeYaw: newYaw => {
-//       dispatch(changeYaw(newYaw));
-//     },
-//   };
-// };
+const mapDispatch = dispatch => {
+  return {
+    updateCDP: dronePosition => dispatch(updateCDP(dronePosition)),
+  };
+};
 
 export default connect(
   mapState,
-  null
+  mapDispatch
 )(AutoPilotCanvas);
