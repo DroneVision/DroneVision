@@ -11,6 +11,7 @@ import {
   Image,
   Grid,
   ListContent,
+  Modal,
 } from 'semantic-ui-react';
 
 import NumericInput from 'react-numeric-input';
@@ -60,6 +61,7 @@ class SceneBuilder extends Component {
     this.state = {
       startingPoint: { x: 0, y: 1, z: 0 },
       limits: {},
+      helpOpen: false,
     };
   }
 
@@ -154,6 +156,9 @@ class SceneBuilder extends Component {
     const instructions = document.getElementById('object-list');
     instructions.scrollTop = instructions.scrollHeight;
   };
+
+  buildHelp = () => this.setState({ helpOpen: true });
+  handleClose = () => this.setState({ helpOpen: false });
 
   render() {
     const { limits } = this.state;
@@ -344,6 +349,32 @@ class SceneBuilder extends Component {
                 </Grid>
               </Grid.Row>
             ) : null}
+            <div id="build-help">
+              <Icon
+                name="question circle"
+                size="large"
+                onClick={this.buildHelp}
+              />
+            </div>
+            <Modal
+              open={this.state.helpOpen}
+              onClose={this.handleClose}
+              basic
+              size="mini"
+            >
+              <Header icon="info" content="Build Controls" />
+              <Modal.Content>
+                <Image
+                  src={require('../assets/images/helper-images/build-instructions.png')}
+                  size="large"
+                />
+              </Modal.Content>
+              <Modal.Actions>
+                <Button color="green" onClick={this.handleClose} inverted>
+                  <Icon name="checkmark" /> Got it
+                </Button>
+              </Modal.Actions>
+            </Modal>
           </div>
         </div>
       </div>
