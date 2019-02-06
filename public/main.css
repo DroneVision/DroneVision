@@ -41,6 +41,10 @@
   text-align: center;
 }
 
+#build-help:hover {
+  opacity: 0.5;
+}
+
 #fly-controls {
   display: flex;
   justify-content: center;
@@ -128,4 +132,3 @@
   overflow: scroll;
   width: 50%;
 }
-
