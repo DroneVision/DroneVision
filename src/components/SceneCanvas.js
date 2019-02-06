@@ -5,8 +5,8 @@ import OrbitControls from 'three-orbitcontrols';
 import autoPilotCanvasSkybox from '../ThreeJSModules/AutoPilotCanvasSkybox';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import _ from 'lodash';
-import { sendSceneCanvasToRedux } from '../store/store';
-import { createObjGroup } from '../utils/canvasUtils';
+
+import { createSceneObjs } from '../utils/canvasUtils';
 
 class SceneCanvas extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class SceneCanvas extends Component {
 
     //SCENE
     this.scene = new THREE.Scene();
-    this.props.sendSceneCanvasToRedux(this.scene);
+
     //CAMERA
     this.camera = new THREE.PerspectiveCamera(
       60,
@@ -90,16 +90,26 @@ class SceneCanvas extends Component {
   }
 
   componentDidMount() {
+    const { sceneObjects, selectedObjId } = this.props;
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
-    this.scene.add(createObjGroup(this.props.sceneObjects));
+    this.sceneObjects = createSceneObjs(sceneObjects, selectedObjId);
+    this.scene.add(this.sceneObjects);
   }
 
-  // componentDidUpdate = prevProps => {
-  //   if (!_.isEqual(prevProps.sceneObjects, this.props.sceneObjects)) {
-  //     this.scene.add(createObjGroup(this.props.sceneObjects));
-  //   }
-  // };
+  componentDidUpdate = prevProps => {
+    const { sceneObjects, selectedObjId } = this.props;
+    // console.dir(prevProps.sceneObjects);
+    // console.dir(sceneObjects);
+    // if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
+
+    if (this.sceneObjects) {
+      this.scene.remove(this.sceneObjects);
+    }
+    this.sceneObjects = createSceneObjs(sceneObjects, selectedObjId);
+    this.scene.add(this.sceneObjects);
+    // }
+  };
 
   animate = async () => {
     requestAnimationFrame(this.animate);
@@ -123,13 +133,12 @@ const mapState = state => {
     flightInstructions: state.flightInstructions,
     postTakeoffPosition: state.postTakeoffPosition,
     sceneObjects: state.sceneObjects,
+    selectedObjId: state.selectedObjId,
   };
 };
 
 const mapDispatch = dispatch => {
-  return {
-    sendSceneCanvasToRedux: scene => dispatch(sendSceneCanvasToRedux(scene)),
-  };
+  return {};
 };
 
 export default connect(

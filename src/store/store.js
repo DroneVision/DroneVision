@@ -35,6 +35,7 @@ const INITIAL_STATE = {
     z: startingPositionCoords.z,
   },
   sceneObjects: [],
+  selectedObjId: null,
 };
 
 //ACTION CONSTANTS
@@ -63,8 +64,9 @@ const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
-const ADD_SCENE_OBJ = 'ADD_SCENE_OBJ';
+const ADD_SCENE_OBJECT = 'ADD_SCENE_OBJECT';
 const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT';
+const UPDATE_SELECTED_OBJECT = 'UPDATE_SELECTED_OBJECT';
 
 const UPDATE_BUILD_DRONE_POSITION = 'UPDATE_BUILD_DRONE_POSITION';
 
@@ -113,13 +115,18 @@ export const updateDroneConnectionStatus = droneConnectionStatus => ({
 });
 
 export const addSceneObj = newObject => ({
-  type: ADD_SCENE_OBJ,
+  type: ADD_SCENE_OBJECT,
   newObject,
 });
 
 export const updateSceneObj = updatedObj => ({
   type: UPDATE_SCENE_OBJECT,
   updatedObj,
+});
+
+export const updateSelectedObj = objId => ({
+  type: UPDATE_SELECTED_OBJECT,
+  objId,
 });
 
 export const updateBuildDronePosition = updatedPosition => ({
@@ -159,7 +166,7 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, obstacles: !state.obstacles };
     case UPDATE_DRONE_CONNECTION_STATUS:
       return { ...state, droneConnectionStatus: action.droneConnectionStatus };
-    case ADD_SCENE_OBJ:
+    case ADD_SCENE_OBJECT:
       return {
         ...state,
         sceneObjects: [...state.sceneObjects, action.newObject],
@@ -172,6 +179,11 @@ const reducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         sceneObjects: [...remainingObjs, action.updatedObj],
+      };
+    case UPDATE_SELECTED_OBJECT:
+      return {
+        ...state,
+        selectedObjId: action.objId,
       };
     case UPDATE_BUILD_DRONE_POSITION:
       return {

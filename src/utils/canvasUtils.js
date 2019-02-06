@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 
-export const createAllObjs = (objList, selectedObj = null) => {
+export const createSceneObjs = (objList, selectedObjId) => {
   const allObjs = new THREE.Group();
   objList
     .filter(obj => obj.visible)
     .forEach(obj => {
+      obj.selected = obj.id === selectedObjId;
       const objGroup = createCube(obj);
       allObjs.add(objGroup);
     });
@@ -30,7 +31,14 @@ const createCube = ({ id, length, width, height, position, selected }) => {
   objLines.name = `${id}-lines`;
 
   const objGroup = new THREE.Group();
-  objGroup.add([obj, objLines]);
+  objGroup.add(obj);
+  objGroup.add(objLines);
   objGroup.name = `${id}-group`;
   return objGroup;
 };
+
+// // need to get reference to the object in order to remove it
+// const objToRemove = canvasScene.getObjectByName(sceneObj.ref.name);
+// const lineToRemove = canvasScene.getObjectByName(sceneObj.lineRef.name);
+// canvasScene.remove(objToRemove.name);
+// canvasScene.remove(lineToRemove.name);

@@ -8,7 +8,7 @@ import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
 import { updateBuildDronePosition } from '../store/store';
-import { createObjGroup } from '../utils/canvasUtils';
+import { createSceneObjs } from '../utils/canvasUtils';
 
 class BuildCanvas extends Component {
   constructor(props) {
@@ -115,17 +115,26 @@ class BuildCanvas extends Component {
   }
 
   componentDidMount() {
+    const { sceneObjects } = this.props;
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
     this.redrawLinesAndMoveDrone();
-    this.scene.add(createObjGroup(this.props.sceneObjects));
+    this.sceneObjects = createSceneObjs(sceneObjects);
+    this.scene.add(this.sceneObjects);
 
     // addObjectsToScene(this.props.sceneObjects,this.scene)
   }
 
   componentDidUpdate = prevProps => {
     this.redrawLinesAndMoveDrone(prevProps);
-    this.scene.add(createObjGroup(this.props.sceneObjects));
+    const { sceneObjects } = this.props;
+    if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
+      if (this.sceneObjects) {
+        this.scene.remove(this.sceneObjects);
+      }
+      this.sceneObjects = createSceneObjs(sceneObjects);
+      this.scene.add(this.sceneObjects);
+    }
   };
 
   redrawLinesAndMoveDrone = (prevProps = null) => {
