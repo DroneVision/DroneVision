@@ -7,13 +7,6 @@ module.exports = BrowserWindow => {
     label: 'File',
     submenu: [
       {
-        label: 'Import Flight Path',
-        accelerator: 'CmdOrCtrl+O',
-        click() {
-          loadFile(BrowserWindow, 'flight-instructions');
-        },
-      },
-      {
         label: 'Save Flight Path',
         accelerator: 'CmdOrCtrl+S',
         click() {
@@ -21,15 +14,22 @@ module.exports = BrowserWindow => {
         },
       },
       {
-        label: 'Import Scene Objects',
+        label: 'Import Flight Path',
+        accelerator: 'CmdOrCtrl+O',
         click() {
-          loadFile(BrowserWindow, 'scene-objects');
+          loadFile(BrowserWindow, 'flight-instructions');
         },
       },
       {
         label: 'Save Scene Objects',
         click() {
           saveFile(BrowserWindow, 'scene-objects');
+        },
+      },
+      {
+        label: 'Import Scene Objects',
+        click() {
+          loadFile(BrowserWindow, 'scene-objects');
         },
       },
     ],

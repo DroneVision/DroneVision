@@ -18,28 +18,25 @@ const { ipcRenderer } = window.require('electron');
 
 class Routes extends Component {
   componentDidMount() {
-    const {
-      flightInstructions,
-      sceneObjects,
-      updateInstructions,
-      loadSceneObjsFromFile,
-    } = this.props;
     // Listen for flight-instructions import from main process
     ipcRenderer.on('load-flight-instructions', (event, flightInstructions) => {
-      updateInstructions(flightInstructions);
+      this.props.updateInstructions(flightInstructions);
     });
 
     ipcRenderer.on('load-scene-objects', (event, sceneObjects) => {
-      loadSceneObjsFromFile(sceneObjects);
+      this.props.loadSceneObjsFromFile(sceneObjects);
     });
     // Listen for request for flight instructions save from main process
     ipcRenderer.on('save-flight-instructions', event => {
       // Reply back with instructions
-      ipcRenderer.send('send-flight-instructions', flightInstructions);
+      ipcRenderer.send(
+        'send-flight-instructions',
+        this.props.flightInstructions
+      );
     });
     ipcRenderer.on('save-scene-objects', event => {
       // Reply back with instructions
-      ipcRenderer.send('send-scene-objects', sceneObjects);
+      ipcRenderer.send('send-scene-objects', this.props.sceneObjects);
     });
 
     ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {

@@ -11,7 +11,7 @@ const promisifiedDialog = () => {
   const options = {
     properties: ['openFile'],
     defaultPath: app.getPath('desktop'),
-    filters: [{ name: 'object', extensions: ['json', 'dvz'] }],
+    filters: [{ name: 'object', extensions: ['json', 'dvz', 'dvzo'] }],
   };
   return new Promise((resolve, reject) => {
     dialog.showOpenDialog(null, options, (fileName, err) => {
