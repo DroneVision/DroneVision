@@ -50,7 +50,6 @@ class Build extends Component {
       },
       startingPoint: { x: 0, y: 1, z: 0 },
       preVisButtonsDisabled: false,
-      runButtonsDisabled: false,
       helpOpen: false,
     };
   }
@@ -540,10 +539,16 @@ class Build extends Component {
               </Button>
             </Link>
             <Button
-              disabled={this.state.runButtonsDisabled}
+              disabled={this.state.preVisButtonsDisabled}
               onClick={this.preVisualizePath}
             >
               Pre-Visualize Path
+            </Button>
+            <Button
+              disabled={!this.state.preVisButtonsDisabled}
+              onClick={this.preVisualizePath}
+            >
+              Stop Pre-Visualization
             </Button>
             {this.props.obstacles ? (
               <Button
