@@ -288,11 +288,39 @@ class AutoPilotCanvas extends Component {
     }
   };
 
+  rotateDrone = object => {
+    let difference = this.props.currentDroneRotation - object.rotation.y;
+    let speed = 0.01;
+
+    if (Math.abs(difference) <= Math.PI) {
+      speed = 0.02;
+    } else if (Math.abs(difference) <= Math.PI + Math.PI / 2) {
+      speed = 0.04;
+    } else if (Math.abs(difference) < Math.PI * 2) {
+      speed = 0.06;
+    } else if (Math.abs(difference) >= Math.PI * 2) {
+      speed = 0.08;
+    }
+
+    if (difference < 0) {
+      if (object.rotation.y !== this.props.currentDroneRotation) {
+        object.rotation.y = object.rotation.y - speed;
+      }
+    } else {
+      if (object.rotation.y !== this.props.currentDroneRotation) {
+        object.rotation.y = object.rotation.y + speed;
+      }
+    }
+    if (Math.abs(difference) < speed + 0.01) {
+      object.rotation.y = this.props.currentDroneRotation;
+    }
+  };
+
   animate = async () => {
     requestAnimationFrame(this.animate);
 
     this.moveDrone(this.drone3DModel);
-    // this.moveDrone(this.camera);
+    this.rotateDrone(this.drone3DModel);
 
     this.controls.update();
     this.renderer.render(this.scene, this.camera);

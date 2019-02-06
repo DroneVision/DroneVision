@@ -292,13 +292,7 @@ class Build extends Component {
             rotationAngles[rotationDegreesNumber];
           await this.props.updateCDR(newCCWRotation);
         }
-
-        // console.log('rotation', animateInstruction);
-        // console.log('rotationDirection', rotationDirection);
-        // console.log('rotationDegree', rotationDegrees);
-        // console.log('state rotation', this.props.currentDroneRotation);
         await wait(commandDelays.cw);
-        // console.log('state rotation', this.props.currentDroneRotation);
       }
     }
   };

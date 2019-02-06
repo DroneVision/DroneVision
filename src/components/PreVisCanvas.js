@@ -268,23 +268,20 @@ class PreVisCanvas extends Component {
     }
   };
 
-  rotateDroneClockwise = object => {
+  rotateDrone = object => {
     let difference = this.props.currentDroneRotation - object.rotation.y;
     let speed = 0.01;
 
-    if (Math.abs(difference) < Math.PI) {
-      speed = 0.01;
-    } else if (Math.abs(difference) < Math.PI + Math.PI / 2) {
+    if (Math.abs(difference) <= Math.PI) {
       speed = 0.02;
-    } else if (Math.abs(difference) < Math.PI * 2) {
-      speed = 0.03;
-    } else if (Math.abs(difference) >= Math.PI * 2) {
+    } else if (Math.abs(difference) <= Math.PI + Math.PI / 2) {
       speed = 0.04;
+    } else if (Math.abs(difference) < Math.PI * 2) {
+      speed = 0.06;
+    } else if (Math.abs(difference) >= Math.PI * 2) {
+      speed = 0.08;
     }
 
-    console.log('current', this.props.currentDroneRotation);
-    console.log('difference', difference);
-    console.log('object', object.rotation.y);
     if (difference < 0) {
       if (object.rotation.y !== this.props.currentDroneRotation) {
         object.rotation.y = object.rotation.y - speed;
@@ -303,7 +300,7 @@ class PreVisCanvas extends Component {
     requestAnimationFrame(this.animate);
 
     this.moveDrone(this.drone3DModel);
-    this.rotateDroneClockwise(this.drone3DModel);
+    this.rotateDrone(this.drone3DModel);
 
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
