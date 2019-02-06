@@ -59,14 +59,13 @@ class SceneBuilder extends Component {
       this.setState({ selectedObj: this.props.sceneObjects[0], limits });
     }
   }
-  componentDidUpdate(prevProps) {
-    if (!_.isEqual(prevProps.sceneObjects, this.props.sceneObjects)) {
-      if (this.props.sceneObjects.length) {
-        const limits = this.getNewLimits(this.props.sceneObjects[0]);
-        this.setState({ selectedObj: this.props.sceneObjects[0], limits });
-      }
-    }
-  }
+
+  // componentDidUpdate = prevProps => {
+  // };
+
+
+  // WE don't remove a g //#endregionroup obj properly.
+
 
   createCube = ({ id, length, width, height, position }) => {
     const { x, y, z } = position;
@@ -146,6 +145,10 @@ class SceneBuilder extends Component {
     const drawInstruction = getDrawInstruction(dirString);
     const selectedObj = this.state.selectedObj;
     const [z, x, y] = drawInstruction;
+
+    selectedObj.ref = this.props.canvasScene.getObjectByName(selectedObj.ref.name);
+    selectedObj.lineRef = this.props.canvasScene.getObjectByName(selectedObj.lineRef.name);
+
     selectedObj.ref.translateX(x);
     selectedObj.lineRef.translateX(x);
     selectedObj.ref.translateY(y);
@@ -159,7 +162,6 @@ class SceneBuilder extends Component {
     updatedObj.lineRef.material.color = new THREE.Color(0xccff00);
     this.setState({ selectedObj: updatedObj });
     this.props.updateSceneObj(updatedObj);
-    this.setState({ selectedObj: updatedObj });
   };
 
   getNewLimits = selectedObj => {
