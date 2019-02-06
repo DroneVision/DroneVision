@@ -64,7 +64,7 @@ const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
-const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
+const ADD_SCENE_OBJ = 'ADD_SCENE_OBJ';
 const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT';
 
 const SEND_SCENE_CANVAS_TO_REDUX = 'SEND_SCENE_CANVAS_TO_REDUX';
@@ -115,8 +115,8 @@ export const updateDroneConnectionStatus = droneConnectionStatus => ({
   droneConnectionStatus,
 });
 
-export const addObjectToScene = newObject => ({
-  type: ADD_OBJECT_TO_SCENE,
+export const addSceneObj = newObject => ({
+  type: ADD_SCENE_OBJ,
   newObject,
 });
 
@@ -166,7 +166,7 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, obstacles: !state.obstacles };
     case UPDATE_DRONE_CONNECTION_STATUS:
       return { ...state, droneConnectionStatus: action.droneConnectionStatus };
-    case ADD_OBJECT_TO_SCENE:
+    case ADD_SCENE_OBJ:
       return {
         ...state,
         sceneObjects: [...state.sceneObjects, action.newObject],
