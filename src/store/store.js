@@ -14,9 +14,14 @@ const INITIAL_STATE = {
   navTab: 'path-builder',
   startingPosition: startingPositionCoords,
   currentDronePosition: startingPositionCoords,
+  currentDroneRotation: Math.PI,
   flightInstructions: [
-    { droneInstruction: 'takeoff', message: 'Takeoff', drawInstruction: null },
-    { droneInstruction: 'land', message: 'Land', drawInstruction: null },
+    {
+      droneInstruction: 'takeoff',
+      message: 'Takeoff',
+      drawInstruction: 'takeoff',
+    },
+    { droneInstruction: 'land', message: 'Land', drawInstruction: 'land' },
   ],
   droneOrientation: 0,
   obstacles: false,
@@ -35,7 +40,8 @@ const INITIAL_STATE = {
     z: startingPositionCoords.z,
   },
   sceneObjects: [],
-  canvasScene: null
+  selectedObjId: null,
+  preVisualizeAnimation: false,
 };
 
 //ACTION CONSTANTS
@@ -57,6 +63,7 @@ const UPDATE_INSTRUCTIONS = 'UPDATE_INSTRUCTIONS';
 const CLEAR_INSTRUCTIONS = 'CLEAR_INSTRUCTIONS';
 
 const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
+const UPDATE_CURRENT_DRONE_ROTATION = 'UPDATE_CURRENT_DRONE_ROTATION';
 
 const ROTATE_DRONE = 'ROTATE_DRONE';
 
@@ -64,12 +71,12 @@ const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
-const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
-const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT'
-
-const SEND_SCENE_CANVAS_TO_REDUX = 'SEND_SCENE_CANVAS_TO_REDUX';
+const ADD_SCENE_OBJECT = 'ADD_SCENE_OBJECT';
+const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT';
+const UPDATE_SELECTED_OBJECT = 'UPDATE_SELECTED_OBJECT';
 
 const UPDATE_BUILD_DRONE_POSITION = 'UPDATE_BUILD_DRONE_POSITION';
+const TOGGLE_PREVIZUALIZE_ANIMATION = 'TOGGLE_PREVIZUALIZE_ANIMATION';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -101,6 +108,11 @@ export const updateCDP = newPosition => ({
   newPosition,
 });
 
+export const updateCDR = newRotation => ({
+  type: UPDATE_CURRENT_DRONE_ROTATION,
+  newRotation,
+});
+
 export const rotateDrone = newOrientation => ({
   type: ROTATE_DRONE,
   newOrientation,
@@ -115,23 +127,28 @@ export const updateDroneConnectionStatus = droneConnectionStatus => ({
   droneConnectionStatus,
 });
 
-export const addObjectToScene = newObject => ({
-  type: ADD_OBJECT_TO_SCENE,
+export const addSceneObj = newObject => ({
+  type: ADD_SCENE_OBJECT,
   newObject,
 });
 
 export const updateSceneObj = updatedObj => ({
   type: UPDATE_SCENE_OBJECT,
-  updatedObj
-})
+  updatedObj,
+});
 
-export const sendSceneCanvasToRedux = scene => ({
-  type: SEND_SCENE_CANVAS_TO_REDUX,
-  scene
-})
+export const updateSelectedObj = objId => ({
+  type: UPDATE_SELECTED_OBJECT,
+  objId,
+});
+
 export const updateBuildDronePosition = updatedPosition => ({
   type: UPDATE_BUILD_DRONE_POSITION,
   updatedPosition,
+});
+
+export const togglePreVisualizeAnimation = () => ({
+  type: TOGGLE_PREVIZUALIZE_ANIMATION,
 });
 
 const reducer = (state = INITIAL_STATE, action) => {
@@ -160,32 +177,42 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, flightInstructions: action.flightInstructions };
     case UPDATE_CURRENT_DRONE_POSITION:
       return { ...state, currentDronePosition: action.newPosition };
+    case UPDATE_CURRENT_DRONE_ROTATION:
+      return { ...state, currentDroneRotation: action.newRotation };
     case ROTATE_DRONE:
       return { ...state, droneOrientation: action.newOrientation };
     case TOGGLE_OBSTACLES:
       return { ...state, obstacles: !state.obstacles };
     case UPDATE_DRONE_CONNECTION_STATUS:
       return { ...state, droneConnectionStatus: action.droneConnectionStatus };
-    case ADD_OBJECT_TO_SCENE:
+    case ADD_SCENE_OBJECT:
       return {
         ...state,
         sceneObjects: [...state.sceneObjects, action.newObject],
       };
-    case SEND_SCENE_CANVAS_TO_REDUX:
-      return {
-        ...state,
-        canvasScene: action.scene
-      };
+
     case UPDATE_SCENE_OBJECT:
-      const remainingObjs = state.sceneObjects.filter(sceneObj => sceneObj.id !== action.updatedObj.id)
+      const remainingObjs = state.sceneObjects.filter(
+        sceneObj => sceneObj.id !== action.updatedObj.id
+      );
       return {
         ...state,
-        sceneObjects: [...remainingObjs, action.updatedObj]
-      }
+        sceneObjects: [...remainingObjs, action.updatedObj],
+      };
+    case UPDATE_SELECTED_OBJECT:
+      return {
+        ...state,
+        selectedObjId: action.objId,
+      };
     case UPDATE_BUILD_DRONE_POSITION:
       return {
         ...state,
         buildDronePosition: action.updatedPosition,
+      };
+    case TOGGLE_PREVIZUALIZE_ANIMATION:
+      return {
+        ...state,
+        preVisualizeAnimation: !state.preVisualizeAnimation,
       };
     default:
       return state;
