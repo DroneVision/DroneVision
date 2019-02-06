@@ -210,3 +210,11 @@
   flex-direction: column;
 }
 
+.col-margin {
+  margin: 0 5rem !important;
+}
+
+.obj-list {
+  justify-content: center;
+}
+

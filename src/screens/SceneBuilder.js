@@ -30,10 +30,6 @@ import {
 
 const { webFrame } = window.require('electron');
 
-const columnMargin = {
-	marginLeft: '5rem',
-	marginRight: '5rem'
-}
 
 
 let objIdGlobal = 1;
@@ -160,7 +156,7 @@ class SceneBuilder extends Component {
 		return (
 
 			<div id="scene-builder">
-				<Grid columns={3}>
+				<Grid columns={3} className='col-margin'>
 					<Grid.Row centered>
 						<Header as="h1" dividing id="centered-padded-top">
 							<Icon name="building" />
@@ -255,78 +251,80 @@ class SceneBuilder extends Component {
 							</Grid>
 						) : null}
 						<Grid.Column>
-							<Grid.Row>
-								<Button color="facebook" onClick={this.addAndCreateObj}>
-									<Button.Content visible>
-										<Icon name="plus" />
-										Create New Object
-									</Button.Content>
-								</Button>
-							</Grid.Row>
-							<Grid.Row>
-								<Segment inverted id="object-list">
-									<List divided inverted selection>
-										<List.Header>
-											<i>Your objects</i>
-										</List.Header>
-										{sceneObjects
-											.sort((a, b) => a.id - b.id)
-											.map(sceneObj => {
-												return (
-													<List.Item
-														className="flight-message-single"
-														active={this.state.activeListItemId === sceneObj.id}
-														key={sceneObj.id}
-														onClick={this.handleObjectSelection}
-														id={sceneObj.id}
-													>
-														<List.Content>Name: {sceneObj.name}</List.Content>
-														<ListContent>
-															{`Width:   `}
-															<NumericInput
-																id={sceneObj.id}
-																name={'width'}
-																size={3}
-																min={1}
-																max={this.props.scale}
-																value={sceneObj.width}
-																onChange={this.handleObjDimChange}
-															/>
-															{`   m.`}
-														</ListContent>
-														<ListContent>
-															{`Length:   `}
-															<NumericInput
-																id={sceneObj.id}
-																name={'length'}
-																size={3}
-																min={1}
-																max={this.props.scale}
-																value={sceneObj.length}
-																onChange={this.handleObjDimChange}
-															/>
-															{`   m.`}
-														</ListContent>
-														<ListContent>
-															{`Height:   `}
-															<NumericInput
-																id={sceneObj.id}
-																name={'height'}
-																size={3}
-																min={1}
-																max={this.props.scale}
-																value={sceneObj.height}
-																onChange={this.handleObjDimChange}
-															/>
-															{`   m.`}
-														</ListContent>
-													</List.Item>
-												);
-											})}
-									</List>
-								</Segment>
+							<div className="obj-list">
+								<Grid.Row>
+									<Button color="facebook" onClick={this.addAndCreateObj}>
+										<Button.Content visible>
+											<Icon name="plus" />
+											Create New Object
+										</Button.Content>
+									</Button>
+								</Grid.Row>
+								<Grid.Row>
+									<Segment inverted id="object-list">
+										<List divided inverted selection>
+											<List.Header>
+												<i>Your objects</i>
+											</List.Header>
+											{sceneObjects
+												.sort((a, b) => a.id - b.id)
+												.map(sceneObj => {
+													return (
+														<List.Item
+															className="flight-message-single"
+															active={this.state.activeListItemId === sceneObj.id}
+															key={sceneObj.id}
+															onClick={this.handleObjectSelection}
+															id={sceneObj.id}
+														>
+															<List.Content>Name: {sceneObj.name}</List.Content>
+															<ListContent>
+																{`Width:   `}
+																<NumericInput
+																	id={sceneObj.id}
+																	name={'width'}
+																	size={3}
+																	min={1}
+																	max={this.props.scale}
+																	value={sceneObj.width}
+																	onChange={this.handleObjDimChange}
+																/>
+																{`   m.`}
+															</ListContent>
+															<ListContent>
+																{`Length:   `}
+																<NumericInput
+																	id={sceneObj.id}
+																	name={'length'}
+																	size={3}
+																	min={1}
+																	max={this.props.scale}
+																	value={sceneObj.length}
+																	onChange={this.handleObjDimChange}
+																/>
+																{`   m.`}
+															</ListContent>
+															<ListContent>
+																{`Height:   `}
+																<NumericInput
+																	id={sceneObj.id}
+																	name={'height'}
+																	size={3}
+																	min={1}
+																	max={this.props.scale}
+																	value={sceneObj.height}
+																	onChange={this.handleObjDimChange}
+																/>
+																{`   m.`}
+															</ListContent>
+														</List.Item>
+													);
+												})}
+										</List>
+									</Segment>
 
-							</Grid.Row>
+								</Grid.Row>
+							</div>
 						</Grid.Column>
 					</Grid.Row>
 				</Grid>
