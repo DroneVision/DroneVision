@@ -54,18 +54,18 @@ class Navbar extends Component {
             />
             <Menu.Item
               as={Link}
-              to={'/my-videos'}
-              name="my-videos"
-              active={activeTab === 'my-videos'}
+              to={'/videos'}
+              name="videos"
+              active={activeTab === 'videos'}
               onClick={this.handleTabChange}
             />
-            <Menu.Item
+            {/* <Menu.Item
               as={Link}
               to={'/about'}
               name="about"
               active={activeTab === 'about'}
               onClick={this.handleTabChange}
-            />
+            /> */}
             <Menu.Menu position="right">
               <Dropdown text="Import/Export" pointing className="link item">
                 <Dropdown.Menu>

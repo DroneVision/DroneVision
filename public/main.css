@@ -127,10 +127,15 @@
 }
 
 #video-list {
-  align-items: center;
   height: 100%;
   overflow: scroll;
   width: 50%;
+}
+
+#videos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #up-strafe {
@@ -200,6 +205,7 @@
 
 .numeric-input {
   margin: 3px;
+  width: 43px;
 }
 
 .object-name {
@@ -215,8 +221,8 @@
 #object-list {
   overflow: scroll;
   height: 40rem;
-  width: 300px;
-  z-index: 1;
+  width: 225px;
+  -webkit-scrollbar-button: visible;
 }
 
 .object-removal-button {
@@ -237,4 +243,8 @@
 .object-single {
   position: relative;
   margin: 2px 0px;
+}
+
+.manual-control-logo {
+  height: 360px;
 }

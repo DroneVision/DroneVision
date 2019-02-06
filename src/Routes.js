@@ -3,10 +3,10 @@ import { withRouter, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Build from './screens/Build';
 import SceneBuilder from './screens/SceneBuilder';
-import Run from './screens/Run';
+import Autopilot from './screens/Autopilot';
 import Videos from './screens/Videos';
 import About from './screens/About';
-import FlyScreen from './screens/FlyScreen';
+import ManualControl from './screens/ManualControl';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import {
@@ -57,9 +57,9 @@ class Routes extends Component {
           <Route exact path="/" component={Build} />
           <Route path="/scene-builder" component={SceneBuilder} />
           <Route path="/path-builder" component={Build} />
-          <Route path="/autopilot" component={Run} />
-          <Route path="/manual-flight" component={FlyScreen} />
-          <Route path="/my-videos" component={Videos} />
+          <Route path="/autopilot" component={Autopilot} />
+          <Route path="/manual-flight" component={ManualControl} />
+          <Route path="/videos" component={Videos} />
           <Route path="/about" component={About} />
         </Switch>
         <Footer />

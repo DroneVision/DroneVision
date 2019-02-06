@@ -247,7 +247,7 @@ class SceneBuilder extends Component {
         </div>
         <div className="row">
           <div className="row-item">
-            <Header as="h1" dividing id="centered-padded-top">
+            <Header as="h1" dividing className="centered-padded-top">
               <Icon name="building" />
               <Header.Content>
                 Scene Builder
@@ -266,7 +266,81 @@ class SceneBuilder extends Component {
         <div className="row">
           <div className="row-item">
             {/* Conditionally Render Button Panels */}
+
             {sceneObjects.length ? (
+              <div id="row">
+                <div id="button-panels">
+                  <table>
+                    <thead align="center">
+                      <tr>
+                        <td>
+                          <h1>Up & Strafe</h1>
+                        </td>
+                        <td>
+                          <h1>Strafe</h1>
+                        </td>
+                        <td>
+                          <h1>Down & Strafe</h1>
+                        </td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td id="up-strafe">
+                          <ButtonPanel
+                            leftDisabled={leftDisabled}
+                            rightDisabled={rightDisabled}
+                            forwardDisabled={forwardDisabled}
+                            reverseDisabled={reverseDisabled}
+                            allDisabled={
+                              upDisabled || this.state.preVisButtonsDisabled
+                            }
+                            clickHandler={this.handleButtonClick}
+                            type="U"
+                            droneOrientation={droneOrientation}
+                          />
+                        </td>
+                        <td id="strafe">
+                          <ButtonPanel
+                            leftDisabled={leftDisabled}
+                            rightDisabled={rightDisabled}
+                            forwardDisabled={forwardDisabled}
+                            reverseDisabled={reverseDisabled}
+                            allDisabled={this.state.preVisButtonsDisabled}
+                            clickHandler={this.handleButtonClick}
+                            type="C"
+                            droneOrientation={droneOrientation}
+                          />
+                        </td>
+                        <td id="down-strafe">
+                          <ButtonPanel
+                            leftDisabled={leftDisabled}
+                            rightDisabled={rightDisabled}
+                            forwardDisabled={forwardDisabled}
+                            reverseDisabled={reverseDisabled}
+                            allDisabled={
+                              downDisabled || this.state.preVisButtonsDisabled
+                            }
+                            clickHandler={this.handleButtonClick}
+                            type="D"
+                            droneOrientation={droneOrientation}
+                          />
+                        </td>
+                        <div id="build-help">
+                          <Icon
+                            name="question circle"
+                            size="large"
+                            onClick={this.buildHelp}
+                          />
+                        </div>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : null}
+
+            {/* {sceneObjects.length ? (
               <Grid.Row>
                 <Grid columns={3} padded centered>
                   <Grid.Row>
@@ -340,10 +414,10 @@ class SceneBuilder extends Component {
                   </Grid.Row>
                 </Grid>
               </Grid.Row>
-            ) : null}
+            ) : null} */}
 
             {/* Popup Help Icon */}
-            {sceneObjects.length ? (
+            {/* {sceneObjects.length ? (
               <div id="build-help">
                 <Icon
                   name="question circle"
@@ -351,7 +425,7 @@ class SceneBuilder extends Component {
                   onClick={this.buildHelp}
                 />
               </div>
-            ) : null}
+            ) : null} */}
 
             <Modal
               open={this.state.helpOpen}
