@@ -91,9 +91,6 @@ class BuildCanvas extends Component {
     this.scene.add(gridCubeLines);
 
     //NORTH STAR
-    //EAST STAR
-    //SOUTH STAR
-    //WEST STAR
     this.scene.add(cardinalDirections);
 
     //TAKEOFF LINE
@@ -120,6 +117,7 @@ class BuildCanvas extends Component {
   }
 
   componentDidUpdate = prevProps => {
+    // draw line and keep drone at tip of line
     this.redrawLinesAndMoveDrone(prevProps);
   };
 
@@ -142,9 +140,7 @@ class BuildCanvas extends Component {
     //OBSTACLES (toggled by redux store)
     if (obstacles) {
       this.scene.add(Obstacles);
-    }
-    //OBSTACLES (toggled by redux store)
-    if (!obstacles) {
+    } else {
       this.scene.remove(Obstacles);
     }
 
@@ -236,6 +232,7 @@ const mapState = state => {
     postTakeoffPosition: state.postTakeoffPosition,
     droneOrientation: state.droneOrientation,
     flightInstructions: state.flightInstructions,
+    preVisualizeAnimation: state.preVisualizeAnimation,
   };
 };
 
