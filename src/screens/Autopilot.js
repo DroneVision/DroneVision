@@ -282,7 +282,7 @@ class Run extends Component {
         <div className="row">
           <div className="row-item">
             <Button
-              disabled={this.props.droneConnectionStatus.isConnected}
+              disabled={!this.props.droneConnectionStatus.isConnected}
               color="facebook"
               labelPosition="left"
               icon="military"

@@ -260,7 +260,7 @@ class SceneBuilder extends Component {
         </div>
         <div className="row">
           <div className="row-item">
-            <Header as="h1" dividing id="centered-padded-top">
+            <Header as="h1" dividing className="centered-padded-top">
               <Icon name="building" />
               <Header.Content>
                 Scene Builder
