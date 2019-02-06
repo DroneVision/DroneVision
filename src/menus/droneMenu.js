@@ -147,6 +147,7 @@ module.exports = mainWindow => {
             // console.log('currentSSID: ', currentSSID);
             await wifi.disconnect();
             await wifi.enableAirport();
+            connectButtonCounter--;
             // await wifi.deleteConnection({ ssid: currentSSID });
             const droneConnectionStatus = {
                 droneName: 'Drone Not Connected',

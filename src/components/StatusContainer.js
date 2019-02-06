@@ -47,9 +47,9 @@ class StatusSegment extends Component {
           temph: 'no data',
           time: 'no data',
         });
-        this.props.changeRoll(this.state.roll);
-        this.props.changePitch(this.state.pitch);
-        this.props.changeYaw(this.state.yaw);
+        this.props.changeRoll(0);
+        this.props.changePitch(0);
+        this.props.changeYaw(0);
       }
     });
   }
@@ -61,22 +61,6 @@ class StatusSegment extends Component {
   getDroneState = () => {
     ipcRenderer.send('getDroneState');
   };
-
-  // resetDroneState = () => {
-  //   ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
-  //     this.props.updateDroneConnectionStatus(droneConnectionStatus);
-  //     if (!droneConnectionStatus.isConnected) {
-  //       this.setState({
-  //         battery: 0,
-  //         pitch: 'no data',
-  //         roll: 'no data',
-  //         yaw: 'no data',
-  //         temph: 'no data',
-  //         time: 'no data',
-  //       });
-  //     }
-  //   });
-  // };
 
   render() {
     return (
