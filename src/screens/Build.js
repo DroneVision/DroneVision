@@ -55,7 +55,7 @@ class Build extends Component {
   }
 
   componentDidMount() {
-    webFrame.setZoomFactor(.9);
+    webFrame.setZoomFactor(0.9);
     // Listen for flight import from main process
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       this.props.updateInstructions(flightInstructions);
@@ -254,7 +254,7 @@ class Build extends Component {
           });
           this.props.togglePreVisualizeAnimation();
           this.props.updateCDR(Math.PI);
-        }, 3000);
+        }, 10000);
       } else if (Array.isArray(animateInstruction)) {
         //create new object for new coordinates
         let newCoords = {};
@@ -536,12 +536,12 @@ class Build extends Component {
             >
               Pre-Visualize Path
             </Button>
-            <Button
+            {/* <Button
               disabled={!this.state.preVisButtonsDisabled}
               onClick={this.preVisualizePath}
             >
               Stop Pre-Visualization
-            </Button>
+            </Button> */}
             {this.props.obstacles ? (
               <Button
                 disabled={this.state.preVisButtonsDisabled}
