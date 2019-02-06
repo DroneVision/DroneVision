@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import * as THREE from 'three';
+
 import {
   Button,
   Icon,
@@ -9,7 +9,6 @@ import {
   Segment,
   Header,
   Grid,
-  Image,
   ListContent,
 } from 'semantic-ui-react';
 
@@ -22,8 +21,9 @@ import SceneCanvas from '../components/SceneCanvas';
 import {
   changeTab,
   toggleObstacles,
-  addObjectToScene,
+  addSceneObj,
   updateSceneObj,
+  updateSelectedObj,
 } from '../store/store';
 
 const { ipcRenderer } = window.require('electron');
@@ -37,117 +37,92 @@ const defaultObj = {
     y: -4, //accounts for plane shifting + height/2
     z: 0,
   },
+  visible: true,
 };
 
+// const newObj = {
+//   id,
+//   name: `obj${id}`,
+//   length,
+//   width,
+//   height,
+//   position,
+//   ref: obj,
+//   lineRef: objLines,
+//   visible: true,
+// };
+
+let objIdGlobal = 1;
 class SceneBuilder extends Component {
   constructor(props) {
     super(props);
-    this.objId = 1;
     this.state = {
       startingPoint: { x: 0, y: 1, z: 0 },
-      selectedObj: {},
-      activeListItemId: null,
+      limits: {},
     };
   }
 
   componentDidMount() {
     // Listen for flight import from main process
-    ipcRenderer.on('file-opened', (event, flightInstructions) => {
-      this.props.updateInstructions(flightInstructions);
-    });
+    // ipcRenderer.on('file-opened', (event, flightInstructions) => {
+    //   this.props.updateInstructions(flightInstructions);
+    // });
+    if (this.props.sceneObjects.length) {
+      const limits = this.getNewLimits(this.props.sceneObjects[0]);
+      this.setState({ selectedObj: this.props.sceneObjects[0], limits });
+    }
   }
 
-  createCube = ({ id, length, width, height, position }) => {
-    const { x, y, z } = position;
-    const objGeometry = new THREE.CubeGeometry(width, height, length);
-    const objMaterial = new THREE.MeshPhongMaterial({
-      color: 0x6666ff,
-      flatShading: false,
-    });
-    const objEdges = new THREE.EdgesGeometry(objGeometry);
-    const objLines = new THREE.LineSegments(
-      objEdges,
-      new THREE.LineBasicMaterial({ color: 0xccff00 })
-    );
-    const obj = new THREE.Mesh(objGeometry, objMaterial);
-    obj.position.set(x, y, z);
-    objLines.position.set(x, y, z);
-
-    const objId = id || this.objId++;
-    obj.name = `${objId}`;
-    objLines.name = `${objId}-lines`;
+  createNewObj = () => {
+    const { addSceneObj, updateSelectedObj } = this.props;
+    const id = objIdGlobal++;
     const newObj = {
-      id: objId,
-      name: `obj${objId}`,
-      length,
-      width,
-      height,
-      position,
-      ref: obj,
-      lineRef: objLines,
+      length: 2,
+      width: 2,
+      height: 2,
+      position: {
+        x: 0,
+        y: -4, //accounts for plane shifting + height/2
+        z: 0,
+      },
+      visible: true,
     };
 
-    return newObj;
-  };
-
-  addAndCreateObj = () => {
-    const { canvasScene, addObjectToScene } = this.props;
-    const newObj = this.createCube(defaultObj);
-    canvasScene.add(newObj.ref);
-    canvasScene.add(newObj.lineRef);
-    addObjectToScene(newObj);
-    const previouslySelectedObj = this.state.selectedObj;
-    if (previouslySelectedObj.id) {
-      previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
-    }
-
+    newObj.id = id;
+    newObj.name = `obj${id}`;
+    updateSelectedObj(newObj.id);
+    addSceneObj(newObj);
     const limits = this.getNewLimits(newObj);
-    this.setState({ selectedObj: newObj, limits,activeListItemId: newObj.id });
+    this.setState({ limits });
   };
 
   handleObjDimChange = (valNum, valStr, inputElem) => {
-    const { sceneObjects, canvasScene, updateSceneObj } = this.props;
-    const sceneObj = sceneObjects.find(
+    const { sceneObjects, updateSceneObj, updateSelectedObj } = this.props;
+    const objToUpdate = sceneObjects.find(
       sceneObj => Number(inputElem.id) === sceneObj.id
     );
-    // propertyName is length/width/height.
+    // propertyName is length/width/height
     const propertyName = inputElem.name;
-    sceneObj[propertyName] = valNum;
-    // need to get reference to the object in order to remove it
-    const objToRemove = canvasScene.getObjectByName(sceneObj.ref.name);
-    const lineToRemove = canvasScene.getObjectByName(sceneObj.lineRef.name);
-    canvasScene.remove(objToRemove);
-    canvasScene.remove(lineToRemove);
-
-    const newObj = this.createCube(sceneObj);
-    newObj.lineRef.material.color = new THREE.Color(0xccff00);
-    const previouslySelectedObj = this.state.selectedObj;
-    previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
-    canvasScene.add(newObj.ref);
-    canvasScene.add(newObj.lineRef);
-    updateSceneObj(newObj);
-    const limits = this.getNewLimits(newObj);
-    this.setState({ selectedObj: newObj, activeListItemId: newObj.id, limits });
+    objToUpdate[propertyName] = valNum;
+    updateSelectedObj(objToUpdate.id);
+    updateSceneObj(objToUpdate);
+    const limits = this.getNewLimits(objToUpdate);
+    this.setState({ limits });
   };
 
   handleButtonClick = dirString => {
-    const drawInstruction = getDrawInstruction(dirString);
-    const selectedObj = this.state.selectedObj;
-    const [z, x, y] = drawInstruction;
-    selectedObj.ref.translateX(x);
-    selectedObj.lineRef.translateX(x);
-    selectedObj.ref.translateY(y);
-    selectedObj.lineRef.translateY(y);
-    selectedObj.ref.translateZ(z);
-    selectedObj.lineRef.translateZ(z);
+    const { selectedObjId, sceneObjects, updateSceneObj } = this.props;
 
-    const { x: newX, y: newY, z: newZ } = selectedObj.ref.position;
-    const updatedObj = { ...selectedObj };
-    updatedObj.position = { x: newX, y: newY, z: newZ };
-    updatedObj.lineRef.material.color = new THREE.Color(0xccff00);
-    this.setState({ selectedObj: updatedObj });
-    this.props.updateSceneObj(updatedObj);
-    this.setState({ selectedObj: updatedObj });
+    const drawInstruction = getDrawInstruction(dirString);
+
+    const objToUpdate = sceneObjects.find(obj => obj.id === selectedObjId);
+
+    const [z, x, y] = drawInstruction;
+    objToUpdate.position.x += x;
+    objToUpdate.position.y += y;
+    objToUpdate.position.z += z;
+
+    updateSceneObj(objToUpdate);
   };
 
   getNewLimits = selectedObj => {
@@ -163,29 +138,26 @@ class SceneBuilder extends Component {
   };
 
   handleObjectSelection = evt => {
-    const previouslySelectedObj = this.state.selectedObj;
-    const selectedObj = this.props.sceneObjects.find(
+    const { sceneObjects, updateSelectedObj } = this.props;
+    const selectedObj = sceneObjects.find(
       sceneObj => sceneObj.id === Number(evt.currentTarget.id)
     );
-    if (previouslySelectedObj.id !== selectedObj.id) {
-      previouslySelectedObj.lineRef.material.color = new THREE.Color(0x000000);
-      selectedObj.lineRef.material.color = new THREE.Color(0xccff00);
-      const limits = this.getNewLimits(selectedObj);
-      this.setState({ selectedObj, limits, activeListItemId: selectedObj.id });
-    }
+    updateSelectedObj(selectedObj.id);
+    const limits = this.getNewLimits(selectedObj);
+    this.setState({ limits });
   };
 
   render() {
-    const { limits, selectedObj } = this.state;
-    const { droneOrientation, sceneObjects } = this.props;
+    const { limits } = this.state;
+    const { droneOrientation, sceneObjects, selectedObjId } = this.props;
+    const selectedObj = sceneObjects.find(obj => obj.id === selectedObjId);
     let leftDisabled,
       rightDisabled,
       forwardDisabled,
       reverseDisabled,
       upDisabled,
       downDisabled;
-
-    if (selectedObj.position) {
+    if (selectedObj) {
       leftDisabled = selectedObj.position.x >= limits.maxX;
       rightDisabled = selectedObj.position.x <= limits.minX;
       forwardDisabled = selectedObj.position.z >= limits.maxZ;
@@ -198,87 +170,87 @@ class SceneBuilder extends Component {
         <Grid columns={3} padded>
           <Grid.Row>
             <Grid.Column width={3}>
-              <Grid.Row>
+              {/* <Grid.Row>
                 <Image
                   src={require('../assets/images/helper-images/build-instructions.png')}
                   size="large"
                 />
-              </Grid.Row>
+              </Grid.Row> */}
               <Grid.Row>
-                <Button onClick={this.addAndCreateObj}>
+                <Button onClick={this.createNewObj}>
                   <Button.Content visible>
                     <Icon name="plus" />
                     Create New Object
                   </Button.Content>
                 </Button>
               </Grid.Row>
-
-              <Grid.Row>
-                <Segment inverted>
-                  <List divided inverted selection>
-                    <List.Header>
-                      <i>Your objects</i>
-                    </List.Header>
-                    {sceneObjects
-                      .sort((a, b) => a.id - b.id)
-                      .map(sceneObj => {
-                        return (
-                          <List.Item
-                            // className="flight-message-single"
-                            className="flight-message-single"
-                            active={this.state.activeListItemId === sceneObj.id}
-                            key={sceneObj.id}
-                            onClick={this.handleObjectSelection}
-                            id={sceneObj.id}
-                          >
-                            <List.Content>Name: {sceneObj.name}</List.Content>
-                            <ListContent>
-                              {`Width:   `}
-                              <NumericInput
-                                id={sceneObj.id}
-                                name={'width'}
-                                size={3}
-                                min={1}
-                                max={this.props.scale}
-                                value={sceneObj.width}
-                                onChange={this.handleObjDimChange}
-                              />
-                              {`   m.`}
-                            </ListContent>
-                            <ListContent>
-                              {`Length:   `}
-                              <NumericInput
-                                id={sceneObj.id}
-                                name={'length'}
-                                size={3}
-                                min={1}
-                                max={this.props.scale}
-                                value={sceneObj.length}
-                                onChange={this.handleObjDimChange}
-                              />
-                              {`   m.`}
-                            </ListContent>
-                            <ListContent>
-                              {`Height:   `}
-                              <NumericInput
-                                id={sceneObj.id}
-                                name={'height'}
-                                size={3}
-                                min={1}
-                                max={this.props.scale}
-                                value={sceneObj.height}
-                                onChange={this.handleObjDimChange}
-                              />
-                              {`   m.`}
-                            </ListContent>
-                          </List.Item>
-                        );
-                      })}
-                  </List>
-                </Segment>
-              </Grid.Row>
+              <div id="object-list">
+                <Grid.Row>
+                  <Segment inverted>
+                    <List divided inverted selection>
+                      <List.Header>
+                        <i>Your Objects</i>
+                      </List.Header>
+                      {sceneObjects
+                        .sort((a, b) => a.id - b.id)
+                        .map(sceneObj => {
+                          return (
+                            <List.Item
+                              // className="flight-message-single"
+                              className="flight-message-single"
+                              active={selectedObjId === sceneObj.id}
+                              key={sceneObj.id}
+                              onClick={this.handleObjectSelection}
+                              id={sceneObj.id}
+                            >
+                              <List.Content>Name: {sceneObj.name}</List.Content>
+                              <ListContent>
+                                {`Width:   `}
+                                <NumericInput
+                                  id={sceneObj.id}
+                                  name={'width'}
+                                  size={3}
+                                  min={1}
+                                  max={this.props.scale}
+                                  value={sceneObj.width}
+                                  onChange={this.handleObjDimChange}
+                                />
+                                {`   m.`}
+                              </ListContent>
+                              <ListContent>
+                                {`Length:   `}
+                                <NumericInput
+                                  id={sceneObj.id}
+                                  name={'length'}
+                                  size={3}
+                                  min={1}
+                                  max={this.props.scale}
+                                  value={sceneObj.length}
+                                  onChange={this.handleObjDimChange}
+                                />
+                                {`   m.`}
+                              </ListContent>
+                              <ListContent>
+                                {`Height:   `}
+                                <NumericInput
+                                  id={sceneObj.id}
+                                  name={'height'}
+                                  size={3}
+                                  min={1}
+                                  max={this.props.scale}
+                                  value={sceneObj.height}
+                                  onChange={this.handleObjDimChange}
+                                />
+                                {`   m.`}
+                              </ListContent>
+                            </List.Item>
+                          );
+                        })}
+                    </List>
+                  </Segment>
+                </Grid.Row>
+              </div>
             </Grid.Column>
-
             <Grid.Column width={9}>
               <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="building" />
@@ -321,7 +293,6 @@ class SceneBuilder extends Component {
                           droneOrientation={droneOrientation}
                         />
                       </Grid.Column>
-
                       <Grid.Column
                         as="h1"
                         textAlign="center"
@@ -408,9 +379,8 @@ const mapState = state => {
     droneOrientation: state.droneOrientation,
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
-    obstacles: state.obstacles,
-    canvasScene: state.canvasScene,
     sceneObjects: state.sceneObjects,
+    selectedObjId: state.selectedObjId,
   };
 };
 
@@ -420,10 +390,11 @@ const mapDispatch = dispatch => {
     toggleObstacles: () => {
       dispatch(toggleObstacles());
     },
-    addObjectToScene: selectedObj => {
-      dispatch(addObjectToScene(selectedObj));
+    addSceneObj: newObj => {
+      dispatch(addSceneObj(newObj));
     },
     updateSceneObj: updatedObj => dispatch(updateSceneObj(updatedObj)),
+    updateSelectedObj: objId => dispatch(updateSelectedObj(objId)),
   };
 };
 

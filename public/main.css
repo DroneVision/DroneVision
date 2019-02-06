@@ -180,6 +180,11 @@
   right: 0;
 }
 
+#object-list {
+  overflow: auto;
+  height: 30rem;
+  width: 15rem;
+}
 #run-screen {
 }
 

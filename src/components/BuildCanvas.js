@@ -8,6 +8,7 @@ import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
 import { updateBuildDronePosition } from '../store/store';
+import { createSceneObjs } from '../utils/canvasUtils';
 
 class BuildCanvas extends Component {
   constructor(props) {
@@ -111,14 +112,27 @@ class BuildCanvas extends Component {
   }
 
   componentDidMount() {
+    const { sceneObjects } = this.props;
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
     this.redrawLinesAndMoveDrone();
+    this.sceneObjects = createSceneObjs(sceneObjects);
+    this.scene.add(this.sceneObjects);
+
+    // addObjectsToScene(this.props.sceneObjects,this.scene)
   }
 
   componentDidUpdate = prevProps => {
     // draw line and keep drone at tip of line
     this.redrawLinesAndMoveDrone(prevProps);
+    const { sceneObjects } = this.props;
+    if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
+      if (this.sceneObjects) {
+        this.scene.remove(this.sceneObjects);
+      }
+      this.sceneObjects = createSceneObjs(sceneObjects);
+      this.scene.add(this.sceneObjects);
+    }
   };
 
   redrawLinesAndMoveDrone = (prevProps = null) => {
@@ -232,6 +246,7 @@ const mapState = state => {
     postTakeoffPosition: state.postTakeoffPosition,
     droneOrientation: state.droneOrientation,
     flightInstructions: state.flightInstructions,
+    sceneObjects: state.sceneObjects,
     preVisualizeAnimation: state.preVisualizeAnimation,
   };
 };
