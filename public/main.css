@@ -41,6 +41,10 @@
   text-align: center;
 }
 
+#build-help:hover {
+  opacity: 0.5;
+}
+
 #fly-controls {
   display: flex;
   justify-content: center;
@@ -180,6 +184,8 @@
   overflow: auto;
   height: 30rem;
   width: 15rem;
+}
+#run-screen {
 }
 
 .row > .row-item {

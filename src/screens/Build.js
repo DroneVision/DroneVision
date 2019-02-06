@@ -17,14 +17,18 @@ import {
 
 import ButtonPanel from '../components/ButtonPanel';
 import BuildCanvas from '../components/BuildCanvas';
+import PreVisCanvas from '../components/PreVisCanvas';
+
 import {
   changeTab,
   updateInstructions,
   clearInstructions,
   updateCDP,
+  updateCDR,
   toggleObstacles,
   updateDroneConnectionStatus,
   rotateDrone,
+  togglePreVisualizeAnimation,
 } from '../store/store';
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
@@ -45,7 +49,7 @@ class Build extends Component {
         minZ: -scale / 2,
       },
       startingPoint: { x: 0, y: 1, z: 0 },
-      runButtonsDisabled: false,
+      preVisButtonsDisabled: false,
       helpOpen: false,
     };
   }
@@ -167,11 +171,13 @@ class Build extends Component {
       const resultDegs = degs + Number(oldDegs);
       flightInstructionObj.droneInstruction = `${direction} ${resultDegs}`;
       flightInstructionObj.message = `${newMessage} --> ${resultDegs} degrees`;
+      flightInstructionObj.drawInstruction = `${direction} ${resultDegs}`;
       //Overwrite the existing flight instruction object
       updatedFlightInstructions.splice(-2, 1, flightInstructionObj);
     } else {
       flightInstructionObj.droneInstruction = `${direction} ${degs}`;
       flightInstructionObj.message = `${newMessage} --> ${degs} degrees`;
+      flightInstructionObj.drawInstruction = `${direction} ${degs}`;
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
@@ -218,37 +224,22 @@ class Build extends Component {
   flightCommandsIteratorReduxUpdater = async flightInstructions => {
     //Iterate over all flightInstructions
     for (let i = 0; i < flightInstructions.length; i++) {
-      let flightInstruction = flightInstructions[i];
-      let instructionName = flightInstruction.droneInstruction.split(' ')[0];
-      //create new object for new coordinates
-      let newCoords = {};
-      let flightInstructionArray = flightInstruction.droneInstruction
-        .split(' ')
-        .slice(1, 4)
-        .map(numStr => Number(numStr) / this.props.distance);
-
-      const [z, x, y] = flightInstructionArray;
-      // x -> z
-      // y -> x
-      // z -> y
-      newCoords.x = this.props.currentDronePosition.x + x;
-      newCoords.y = this.props.currentDronePosition.y + y;
-      newCoords.z = this.props.currentDronePosition.z + z;
-      console.log('instruction: ', instructionName);
-      if (instructionName === 'command') {
-      } else if (instructionName === 'takeoff') {
+      let animateInstruction = flightInstructions[i].drawInstruction;
+      if (animateInstruction === 'takeoff') {
         this.props.updateCDP({
           x: this.props.startingPosition.x,
           y: this.props.startingPosition.y + 1,
           z: this.props.startingPosition.z,
         });
-      } else if (instructionName === 'land') {
+        await wait(commandDelays.takeoff);
+        console.log('takeoff', animateInstruction);
+      } else if (animateInstruction === 'land') {
         this.props.updateCDP({
           x: this.props.currentDronePosition.x,
           y: 0 + this.props.voxelSize * -0.5,
           z: this.props.currentDronePosition.z,
         });
-
+        console.log('land', animateInstruction);
         setTimeout(() => {
           //After flight completes wait 10 seconds
           //Send drone model back to starting position
@@ -257,25 +248,70 @@ class Build extends Component {
             y: this.props.startingPosition.y,
             z: this.props.startingPosition.z,
           });
-          //Give the 'Send drone model back to starting
-          //position 4.5 seconds to animate before re-enabling buttons
-          setTimeout(() => {
-            this.setState({ runButtonsDisabled: false });
-          }, 4500);
-        }, 10000);
-      } else {
+          this.setState({
+            preVisButtonsDisabled: false,
+          });
+          this.props.togglePreVisualizeAnimation();
+          this.props.updateCDR(Math.PI);
+        }, 3000);
+      } else if (Array.isArray(animateInstruction)) {
+        //create new object for new coordinates
+        let newCoords = {};
+        const [z, x, y] = animateInstruction;
+        // x -> z
+        // y -> x
+        // z -> y
+        newCoords.x = this.props.currentDronePosition.x + x;
+        newCoords.y = this.props.currentDronePosition.y + y;
+        newCoords.z = this.props.currentDronePosition.z + z;
+
         this.props.updateCDP(newCoords);
+        console.log('other', animateInstruction);
+
+        //Wait for Command Delay
+        await wait(commandDelays.go);
+      } else {
+        //Handle Rotation
+        const [rotationDirection, rotationDegrees] = animateInstruction.split(
+          ' '
+        );
+
+        const rotationDegreesNumber = Number(rotationDegrees);
+        const rotationAngles = {
+          90: Math.PI / 2,
+          180: Math.PI,
+          270: Math.PI + Math.PI / 2,
+        };
+
+        if (rotationDirection === 'cw') {
+          const newCWRotation =
+            this.props.currentDroneRotation -
+            rotationAngles[rotationDegreesNumber];
+          await this.props.updateCDR(newCWRotation);
+        } else {
+          const newCCWRotation =
+            this.props.currentDroneRotation +
+            rotationAngles[rotationDegreesNumber];
+          await this.props.updateCDR(newCCWRotation);
+        }
+        await wait(commandDelays.cw);
       }
-      //Wait for Command Delay
-      await wait(commandDelays[instructionName]);
     }
   };
 
-  preVisualizePath = () => {
-    //Diable Buttons
-    this.setState({ runButtonsDisabled: true });
-    //Prepare variables for flight
+  preVisualizePath = async () => {
+    // Disable Buttons
+    this.setState({ preVisButtonsDisabled: true });
+    await this.props.togglePreVisualizeAnimation();
     this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
+  };
+
+  stopPreVisualization = () => {
+    this.setState({
+      preVisButtonsDisabled: false,
+    });
+    this.props.togglePreVisualizeAnimation();
+    this.props.updateCDR(Math.PI);
   };
 
   handleButtonClick = (dirString, droneOrientation = 0) => {
@@ -322,7 +358,11 @@ class Build extends Component {
 
           <Grid.Row>
             <Grid.Column>
-              <BuildCanvas />
+              {this.props.preVisualizeAnimation ? (
+                <PreVisCanvas />
+              ) : (
+                <BuildCanvas />
+              )}
             </Grid.Column>
           </Grid.Row>
 
@@ -350,8 +390,10 @@ class Build extends Component {
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
+                        allDisabled={
+                          upDisabled || this.state.preVisButtonsDisabled
+                        }
                         clickHandler={this.handleButtonClick}
-                        allDisabled={upDisabled}
                         type="U"
                         droneOrientation={droneOrientation}
                       />
@@ -362,8 +404,8 @@ class Build extends Component {
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
+                        allDisabled={this.state.preVisButtonsDisabled}
                         clickHandler={this.handleButtonClick}
-                        allDisabled={false}
                         type="C"
                         droneOrientation={droneOrientation}
                       />
@@ -374,8 +416,10 @@ class Build extends Component {
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
+                        allDisabled={
+                          downDisabled || this.state.preVisButtonsDisabled
+                        }
                         clickHandler={this.handleButtonClick}
-                        allDisabled={downDisabled}
                         type="D"
                         droneOrientation={droneOrientation}
                       />
@@ -397,7 +441,10 @@ class Build extends Component {
               <tbody>
                 <tr>
                   <td>
-                    <Button onClick={() => this.addRotationInstruction('ccw')}>
+                    <Button
+                      disabled={this.state.preVisButtonsDisabled}
+                      onClick={() => this.addRotationInstruction('ccw')}
+                    >
                       <Button.Content visible>
                         <Icon name="undo" />
                         90&deg;
@@ -405,7 +452,10 @@ class Build extends Component {
                     </Button>
                   </td>
                   <td>
-                    <Button onClick={() => this.addRotationInstruction('cw')}>
+                    <Button
+                      disabled={this.state.preVisButtonsDisabled}
+                      onClick={() => this.addRotationInstruction('cw')}
+                    >
                       <Button.Content visible>
                         <Icon name="redo" />
                         90&deg;
@@ -451,13 +501,19 @@ class Build extends Component {
 
           <div className="row">
             <Button
-              disabled={flightInstructions.length <= 2}
+              disabled={
+                flightInstructions.length <= 2 ||
+                this.state.preVisButtonsDisabled
+              }
               onClick={() => this.deleteLastInstruction()}
             >
               Delete Last Instruction
             </Button>
             <Button
-              disabled={flightInstructions.length <= 2}
+              disabled={
+                flightInstructions.length <= 2 ||
+                this.state.preVisButtonsDisabled
+              }
               onClick={() => this.clearFlightInstructions()}
             >
               Clear All Instructions
@@ -466,22 +522,37 @@ class Build extends Component {
 
           <div className="row">
             <Link to={'/autopilot'}>
-              <Button onClick={() => this.props.changeTab('autopilot')}>
-                View On Run Screen!
+              <Button
+                disabled={this.state.preVisButtonsDisabled}
+                onClick={() => this.props.changeTab('autopilot')}
+              >
+                Run Autopilot/Record Video
               </Button>
             </Link>
             <Button
-              disabled={this.state.runButtonsDisabled}
+              disabled={this.state.preVisButtonsDisabled}
               onClick={this.preVisualizePath}
             >
               Pre-Visualize Path
             </Button>
+            <Button
+              disabled={!this.state.preVisButtonsDisabled}
+              onClick={this.preVisualizePath}
+            >
+              Stop Pre-Visualization
+            </Button>
             {this.props.obstacles ? (
-              <Button onClick={this.props.toggleObstacles}>
+              <Button
+                disabled={this.state.preVisButtonsDisabled}
+                onClick={this.props.toggleObstacles}
+              >
                 Remove Obstacles
               </Button>
             ) : (
-              <Button onClick={this.props.toggleObstacles}>
+              <Button
+                disabled={this.state.preVisButtonsDisabled}
+                onClick={this.props.toggleObstacles}
+              >
                 Insert Obstacles
               </Button>
             )}
@@ -519,11 +590,13 @@ const mapState = state => {
     flightInstructions: state.flightInstructions,
     droneOrientation: state.droneOrientation,
     currentDronePosition: state.currentDronePosition,
+    currentDroneRotation: state.currentDroneRotation,
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
     obstacles: state.obstacles,
     droneConnectionStatus: state.droneConnectionStatus,
     buildDronePosition: state.buildDronePosition,
+    preVisualizeAnimation: state.preVisualizeAnimation,
   };
 };
 
@@ -533,6 +606,9 @@ const mapDispatch = dispatch => {
     clearInstructions: () => dispatch(clearInstructions()),
     updateCDP: newPosition => {
       dispatch(updateCDP(newPosition));
+    },
+    updateCDR: newRotation => {
+      dispatch(updateCDR(newRotation));
     },
     toggleObstacles: () => {
       dispatch(toggleObstacles());
@@ -544,6 +620,7 @@ const mapDispatch = dispatch => {
     },
     updateInstructions: updatedFlightInstructions =>
       dispatch(updateInstructions(updatedFlightInstructions)),
+    togglePreVisualizeAnimation: () => dispatch(togglePreVisualizeAnimation()),
   };
 };
 

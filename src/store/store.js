@@ -14,9 +14,14 @@ const INITIAL_STATE = {
   navTab: 'path-builder',
   startingPosition: startingPositionCoords,
   currentDronePosition: startingPositionCoords,
+  currentDroneRotation: Math.PI,
   flightInstructions: [
-    { droneInstruction: 'takeoff', message: 'Takeoff', drawInstruction: null },
-    { droneInstruction: 'land', message: 'Land', drawInstruction: null },
+    {
+      droneInstruction: 'takeoff',
+      message: 'Takeoff',
+      drawInstruction: 'takeoff',
+    },
+    { droneInstruction: 'land', message: 'Land', drawInstruction: 'land' },
   ],
   droneOrientation: 0,
   obstacles: false,
@@ -36,6 +41,7 @@ const INITIAL_STATE = {
   },
   sceneObjects: [],
   selectedObjId: null,
+  preVisualizeAnimation: false,
 };
 
 //ACTION CONSTANTS
@@ -57,6 +63,7 @@ const UPDATE_INSTRUCTIONS = 'UPDATE_INSTRUCTIONS';
 const CLEAR_INSTRUCTIONS = 'CLEAR_INSTRUCTIONS';
 
 const UPDATE_CURRENT_DRONE_POSITION = 'UPDATE_CURRENT_DRONE_POSITION';
+const UPDATE_CURRENT_DRONE_ROTATION = 'UPDATE_CURRENT_DRONE_ROTATION';
 
 const ROTATE_DRONE = 'ROTATE_DRONE';
 
@@ -69,6 +76,7 @@ const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT';
 const UPDATE_SELECTED_OBJECT = 'UPDATE_SELECTED_OBJECT';
 
 const UPDATE_BUILD_DRONE_POSITION = 'UPDATE_BUILD_DRONE_POSITION';
+const TOGGLE_PREVIZUALIZE_ANIMATION = 'TOGGLE_PREVIZUALIZE_ANIMATION';
 
 //ACTION CREATORS
 export const increaseDistance = () => ({ type: INCREASE_DISTANCE });
@@ -98,6 +106,11 @@ export const clearInstructions = () => ({
 export const updateCDP = newPosition => ({
   type: UPDATE_CURRENT_DRONE_POSITION,
   newPosition,
+});
+
+export const updateCDR = newRotation => ({
+  type: UPDATE_CURRENT_DRONE_ROTATION,
+  newRotation,
 });
 
 export const rotateDrone = newOrientation => ({
@@ -134,6 +147,10 @@ export const updateBuildDronePosition = updatedPosition => ({
   updatedPosition,
 });
 
+export const togglePreVisualizeAnimation = () => ({
+  type: TOGGLE_PREVIZUALIZE_ANIMATION,
+});
+
 const reducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case INCREASE_DISTANCE:
@@ -160,6 +177,8 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, flightInstructions: action.flightInstructions };
     case UPDATE_CURRENT_DRONE_POSITION:
       return { ...state, currentDronePosition: action.newPosition };
+    case UPDATE_CURRENT_DRONE_ROTATION:
+      return { ...state, currentDroneRotation: action.newRotation };
     case ROTATE_DRONE:
       return { ...state, droneOrientation: action.newOrientation };
     case TOGGLE_OBSTACLES:
@@ -189,6 +208,11 @@ const reducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         buildDronePosition: action.updatedPosition,
+      };
+    case TOGGLE_PREVIZUALIZE_ANIMATION:
+      return {
+        ...state,
+        preVisualizeAnimation: !state.preVisualizeAnimation,
       };
     default:
       return state;
