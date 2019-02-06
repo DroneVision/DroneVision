@@ -3,14 +3,15 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import {
-  Button,
-  Icon,
-  List,
-  Segment,
-  Header,
-  Grid,
-  ListContent,
-  Image
+	Button,
+	Icon,
+	List,
+	Segment,
+	Header,
+	Grid,
+	ListContent,
+	Image,
+	GridColumn
 } from 'semantic-ui-react';
 
 import NumericInput from 'react-numeric-input';
@@ -20,163 +21,319 @@ import { getDrawInstruction } from '../utils/buttonPanelUtils';
 import ButtonPanel from '../components/ButtonPanel';
 import SceneCanvas from '../components/SceneCanvas';
 import {
-  changeTab,
-  toggleObstacles,
-  addSceneObj,
-  updateSceneObj,
-  updateSelectedObj,
+	changeTab,
+	toggleObstacles,
+	addSceneObj,
+	updateSceneObj,
+	updateSelectedObj,
 } from '../store/store';
 
-const { ipcRenderer } = window.require('electron');
+const { webFrame } = window.require('electron');
 
-const defaultObj = {
-  length: 2,
-  width: 2,
-  height: 2,
-  position: {
-    x: 0,
-    y: -4, //accounts for plane shifting + height/2
-    z: 0,
-  },
-  visible: true,
-};
+const columnMargin = {
+	marginLeft: '5rem',
+	marginRight: '5rem'
+}
 
-// const newObj = {
-//   id,
-//   name: `obj${id}`,
-//   length,
-//   width,
-//   height,
-//   position,
-//   ref: obj,
-//   lineRef: objLines,
-//   visible: true,
-// };
 
 let objIdGlobal = 1;
 class SceneBuilder extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      startingPoint: { x: 0, y: 1, z: 0 },
-      limits: {},
-    };
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			startingPoint: { x: 0, y: 1, z: 0 },
+			limits: {},
+		};
+	}
 
-  componentDidMount() {
-    // Listen for flight import from main process
-    // ipcRenderer.on('file-opened', (event, flightInstructions) => {
-    //   this.props.updateInstructions(flightInstructions);
-    // });
-    if (this.props.sceneObjects.length) {
-      const limits = this.getNewLimits(this.props.sceneObjects[0]);
-      this.setState({ selectedObj: this.props.sceneObjects[0], limits });
-    }
-  }
+	componentDidMount() {
+		// Listen for flight import from main process
+		// ipcRenderer.on('file-opened', (event, flightInstructions) => {
+		//   this.props.updateInstructions(flightInstructions);
+		// });
+		if (this.props.sceneObjects.length) {
+			const limits = this.getNewLimits(this.props.sceneObjects[0]);
+			this.setState({ selectedObj: this.props.sceneObjects[0], limits });
+		}
+		webFrame.setZoomFactor(1);
+	}
 
-  createNewObj = () => {
-    const { addSceneObj, updateSelectedObj } = this.props;
-    const id = objIdGlobal++;
-    const newObj = {
-      length: 2,
-      width: 2,
-      height: 2,
-      position: {
-        x: 0,
-        y: -4, //accounts for plane shifting + height/2
-        z: 0,
-      },
-      visible: true,
-    };
+	createNewObj = () => {
+		const { addSceneObj, updateSelectedObj } = this.props;
+		const id = objIdGlobal++;
+		const newObj = {
+			length: 2,
+			width: 2,
+			height: 2,
+			position: {
+				x: 0,
+				y: -4, //accounts for plane shifting + height/2
+				z: 0,
+			},
+			visible: true,
+		};
 
-    newObj.id = id;
-    newObj.name = `obj${id}`;
-    updateSelectedObj(newObj.id);
-    addSceneObj(newObj);
-    const limits = this.getNewLimits(newObj);
-    this.setState({ selectedObj: newObj, limits, activeListItemId: newObj.id });
-    this.updateScroll();
-    this.setState({ limits });
-  };
+		newObj.id = id;
+		newObj.name = `obj${id}`;
+		updateSelectedObj(newObj.id);
+		addSceneObj(newObj);
+		const limits = this.getNewLimits(newObj);
+		this.setState({ selectedObj: newObj, limits, activeListItemId: newObj.id });
+		this.updateScroll();
+		this.setState({ limits });
+	};
 
-  handleObjDimChange = (valNum, valStr, inputElem) => {
-    const { sceneObjects, updateSceneObj, updateSelectedObj } = this.props;
-    const objToUpdate = sceneObjects.find(
-      sceneObj => Number(inputElem.id) === sceneObj.id
-    );
-    // propertyName is length/width/height
-    const propertyName = inputElem.name;
-    objToUpdate[propertyName] = valNum;
-    updateSelectedObj(objToUpdate.id);
-    updateSceneObj(objToUpdate);
-    const limits = this.getNewLimits(objToUpdate);
-    this.setState({ limits });
-  };
+	handleObjDimChange = (valNum, valStr, inputElem) => {
+		const { sceneObjects, updateSceneObj, updateSelectedObj } = this.props;
+		const objToUpdate = sceneObjects.find(
+			sceneObj => Number(inputElem.id) === sceneObj.id
+		);
+		// propertyName is length/width/height
+		const propertyName = inputElem.name;
+		objToUpdate[propertyName] = valNum;
+		updateSelectedObj(objToUpdate.id);
+		updateSceneObj(objToUpdate);
+		const limits = this.getNewLimits(objToUpdate);
+		this.setState({ limits });
+	};
 
-  handleButtonClick = dirString => {
-    const { selectedObjId, sceneObjects, updateSceneObj } = this.props;
+	handleButtonClick = dirString => {
+		const { selectedObjId, sceneObjects, updateSceneObj } = this.props;
 
-    const drawInstruction = getDrawInstruction(dirString);
+		const drawInstruction = getDrawInstruction(dirString);
 
-    const objToUpdate = sceneObjects.find(obj => obj.id === selectedObjId);
+		const objToUpdate = sceneObjects.find(obj => obj.id === selectedObjId);
 
-    const [z, x, y] = drawInstruction;
-    objToUpdate.position.x += x;
-    objToUpdate.position.y += y;
-    objToUpdate.position.z += z;
+		const [z, x, y] = drawInstruction;
+		objToUpdate.position.x += x;
+		objToUpdate.position.y += y;
+		objToUpdate.position.z += z;
 
-    updateSceneObj(objToUpdate);
-  };
+		updateSceneObj(objToUpdate);
+	};
 
-  getNewLimits = selectedObj => {
-    const { scale } = this.props;
-    return {
-      maxX: scale / 2 - selectedObj.width / 2,
-      maxY: scale - 5 - selectedObj.height / 2,
-      maxZ: scale / 2 - selectedObj.length / 2,
-      minX: -scale / 2 + selectedObj.width / 2,
-      minY: -5 + selectedObj.height / 2,
-      minZ: -scale / 2 + selectedObj.length / 2,
-    };
-  };
+	getNewLimits = selectedObj => {
+		const { scale } = this.props;
+		return {
+			maxX: scale / 2 - selectedObj.width / 2,
+			maxY: scale - 5 - selectedObj.height / 2,
+			maxZ: scale / 2 - selectedObj.length / 2,
+			minX: -scale / 2 + selectedObj.width / 2,
+			minY: -5 + selectedObj.height / 2,
+			minZ: -scale / 2 + selectedObj.length / 2,
+		};
+	};
 
-  handleObjectSelection = evt => {
-    const { sceneObjects, updateSelectedObj } = this.props;
-    const selectedObj = sceneObjects.find(
-      sceneObj => sceneObj.id === Number(evt.currentTarget.id)
-    );
-    updateSelectedObj(selectedObj.id);
-    const limits = this.getNewLimits(selectedObj);
-    this.setState({ limits });
-  };
+	handleObjectSelection = evt => {
+		const { sceneObjects, updateSelectedObj } = this.props;
+		const selectedObj = sceneObjects.find(
+			sceneObj => sceneObj.id === Number(evt.currentTarget.id)
+		);
+		updateSelectedObj(selectedObj.id);
+		const limits = this.getNewLimits(selectedObj);
+		this.setState({ limits });
+	};
 
-  updateScroll = () => {
-    const instructions = document.getElementById('object-list');
-    instructions.scrollTop = instructions.scrollHeight;
-  };
+	updateScroll = () => {
+		const instructions = document.getElementById('object-list');
+		instructions.scrollTop = instructions.scrollHeight;
+	};
 
-  render() {
-    const { limits } = this.state;
-    const { droneOrientation, sceneObjects, selectedObjId } = this.props;
-    const selectedObj = sceneObjects.find(obj => obj.id === selectedObjId);
-    let leftDisabled,
-      rightDisabled,
-      forwardDisabled,
-      reverseDisabled,
-      upDisabled,
-      downDisabled;
-    if (selectedObj) {
-      leftDisabled = selectedObj.position.x >= limits.maxX;
-      rightDisabled = selectedObj.position.x <= limits.minX;
-      forwardDisabled = selectedObj.position.z >= limits.maxZ;
-      reverseDisabled = selectedObj.position.z <= limits.minZ;
-      upDisabled = selectedObj.position.y >= limits.maxY;
-      downDisabled = selectedObj.position.y <= limits.minY;
-    }
-    return (
+	render() {
+		const { limits } = this.state;
+		const { droneOrientation, sceneObjects, selectedObjId } = this.props;
+		const selectedObj = sceneObjects.find(obj => obj.id === selectedObjId);
+		let leftDisabled,
+			rightDisabled,
+			forwardDisabled,
+			reverseDisabled,
+			upDisabled,
+			downDisabled;
+		if (selectedObj) {
+			leftDisabled = selectedObj.position.x >= limits.maxX;
+			rightDisabled = selectedObj.position.x <= limits.minX;
+			forwardDisabled = selectedObj.position.z >= limits.maxZ;
+			reverseDisabled = selectedObj.position.z <= limits.minZ;
+			upDisabled = selectedObj.position.y >= limits.maxY;
+			downDisabled = selectedObj.position.y <= limits.minY;
+		}
+		return (
 
-      <div id="scene-builder">
-        <div id="scene-help">
+			<div id="scene-builder">
+				<Grid columns={3}>
+					<Grid.Row centered>
+						<Header as="h1" dividing id="centered-padded-top">
+							<Icon name="building" />
+							<Header.Content>
+								Scene Builder
+                				<Header.Subheader>
+									<i>Add objects to your scene</i>
+								</Header.Subheader>
+							</Header.Content>
+						</Header>
+					</Grid.Row>
+					<Grid.Row>
+						<Grid.Column>
+							<Image
+								src={require('../assets/images/helper-images/build-instructions.png')}
+								size="medium"
+							/>
+						</Grid.Column>
+						<Grid.Column>
+							<SceneCanvas />
+						</Grid.Column>
+						{sceneObjects.length ? (
+							<Grid columns={3} padded centered>
+								<Grid.Row>
+									<Grid.Column
+										as="h1"
+										textAlign="center"
+										style={{
+											color: '#ffffff',
+											backgroundColor: '#00a651',
+											borderStyle: 'solid',
+											borderColor: '#484848',
+										}}
+									>
+										Up + Strafe
+										<ButtonPanel
+											leftDisabled={leftDisabled}
+											rightDisabled={rightDisabled}
+											forwardDisabled={forwardDisabled}
+											reverseDisabled={reverseDisabled}
+											allDisabled={upDisabled}
+											clickHandler={this.handleButtonClick}
+											type="U"
+											droneOrientation={droneOrientation}
+										/>
+									</Grid.Column>
+									<Grid.Column
+										as="h1"
+										textAlign="center"
+										style={{
+											color: '#ffffff',
+											backgroundColor: '#afafaf',
+											borderStyle: 'solid',
+											borderColor: '#484848',
+										}}
+									>
+										Strafe
+										<ButtonPanel
+											leftDisabled={leftDisabled}
+											rightDisabled={rightDisabled}
+											forwardDisabled={forwardDisabled}
+											reverseDisabled={reverseDisabled}
+											allDisabled={false}
+											clickHandler={this.handleButtonClick}
+											type="C"
+											droneOrientation={droneOrientation}
+										/>
+									</Grid.Column>
+									<Grid.Column
+										as="h1"
+										style={{
+											color: '#ffffff',
+											backgroundColor: '#00aeef',
+											borderStyle: 'solid',
+											borderColor: '#484848',
+										}}
+										textAlign="center"
+									>
+										Down + Strafe
+										<ButtonPanel
+											leftDisabled={leftDisabled}
+											rightDisabled={rightDisabled}
+											forwardDisabled={forwardDisabled}
+											reverseDisabled={reverseDisabled}
+											allDisabled={downDisabled}
+											clickHandler={this.handleButtonClick}
+											type="D"
+											droneOrientation={droneOrientation}
+										/>
+									</Grid.Column>
+								</Grid.Row>
+							</Grid>
+						) : null}
+						<Grid.Column>
+							<Grid.Row>
+								<Button color="facebook" onClick={this.addAndCreateObj}>
+									<Button.Content visible>
+										<Icon name="plus" />
+										Create New Object
+									</Button.Content>
+								</Button>
+							</Grid.Row>
+							<Grid.Row>
+								<Segment inverted id="object-list">
+									<List divided inverted selection>
+										<List.Header>
+											<i>Your objects</i>
+										</List.Header>
+										{sceneObjects
+											.sort((a, b) => a.id - b.id)
+											.map(sceneObj => {
+												return (
+													<List.Item
+														className="flight-message-single"
+														active={this.state.activeListItemId === sceneObj.id}
+														key={sceneObj.id}
+														onClick={this.handleObjectSelection}
+														id={sceneObj.id}
+													>
+														<List.Content>Name: {sceneObj.name}</List.Content>
+														<ListContent>
+															{`Width:   `}
+															<NumericInput
+																id={sceneObj.id}
+																name={'width'}
+																size={3}
+																min={1}
+																max={this.props.scale}
+																value={sceneObj.width}
+																onChange={this.handleObjDimChange}
+															/>
+															{`   m.`}
+														</ListContent>
+														<ListContent>
+															{`Length:   `}
+															<NumericInput
+																id={sceneObj.id}
+																name={'length'}
+																size={3}
+																min={1}
+																max={this.props.scale}
+																value={sceneObj.length}
+																onChange={this.handleObjDimChange}
+															/>
+															{`   m.`}
+														</ListContent>
+														<ListContent>
+															{`Height:   `}
+															<NumericInput
+																id={sceneObj.id}
+																name={'height'}
+																size={3}
+																min={1}
+																max={this.props.scale}
+																value={sceneObj.height}
+																onChange={this.handleObjDimChange}
+															/>
+															{`   m.`}
+														</ListContent>
+													</List.Item>
+												);
+											})}
+									</List>
+								</Segment>
+
+							</Grid.Row>
+						</Grid.Column>
+					</Grid.Row>
+				</Grid>
+
+
+
+				{/* <div id="scene-help">
           <Image
             src={require('../assets/images/helper-images/build-instructions.png')}
             size="medium"
@@ -249,8 +406,8 @@ class SceneBuilder extends Component {
                 })}
             </List>
           </Segment>
-        </div>
-        <div className="row">
+        </div> */}
+				{/* <div className="row">
           <div className="row-item">
             <Header as="h1" dividing id="centered-padded-top">
               <Icon name="building" />
@@ -262,122 +419,122 @@ class SceneBuilder extends Component {
               </Header.Content>
             </Header>
           </div>
-        </div>
-        <div className="row">
-          <div className="row-item">
-            <SceneCanvas />
-          </div>
-        </div>
-        <div className="row">
-          <div className="row-item">
-            {sceneObjects.length ? (
-              <Grid.Row>
-                <Grid columns={3} padded centered>
-                  <Grid.Row>
-                    <Grid.Column
-                      as="h1"
-                      textAlign="center"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00a651',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
-                      Up + Strafe
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={upDisabled}
-                        clickHandler={this.handleButtonClick}
-                        type="U"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
+        </div> */}
+				{/* <div className="row">
+					<div className="row-item">
+						<SceneCanvas />
+					</div>
+				</div> */}
+				{/* <div className="row">
+					<div className="row-item">
+						{sceneObjects.length ? (
+							<Grid.Row>
+								<Grid columns={3} padded centered>
+									<Grid.Row>
+										<Grid.Column
+											as="h1"
+											textAlign="center"
+											style={{
+												color: '#ffffff',
+												backgroundColor: '#00a651',
+												borderStyle: 'solid',
+												borderColor: '#484848',
+											}}
+										>
+											Up + Strafe
+                      				<ButtonPanel
+												leftDisabled={leftDisabled}
+												rightDisabled={rightDisabled}
+												forwardDisabled={forwardDisabled}
+												reverseDisabled={reverseDisabled}
+												allDisabled={upDisabled}
+												clickHandler={this.handleButtonClick}
+												type="U"
+												droneOrientation={droneOrientation}
+											/>
+										</Grid.Column>
 
-                    <Grid.Column
-                      as="h1"
-                      textAlign="center"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#afafaf',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
-                      Strafe
+										<Grid.Column
+											as="h1"
+											textAlign="center"
+											style={{
+												color: '#ffffff',
+												backgroundColor: '#afafaf',
+												borderStyle: 'solid',
+												borderColor: '#484848',
+											}}
+										>
+											Strafe
                       <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={false}
-                        clickHandler={this.handleButtonClick}
-                        type="C"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-                    <Grid.Column
-                      as="h1"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00aeef',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                      textAlign="center"
-                    >
-                      Down + Strafe
+												leftDisabled={leftDisabled}
+												rightDisabled={rightDisabled}
+												forwardDisabled={forwardDisabled}
+												reverseDisabled={reverseDisabled}
+												allDisabled={false}
+												clickHandler={this.handleButtonClick}
+												type="C"
+												droneOrientation={droneOrientation}
+											/>
+										</Grid.Column>
+										<Grid.Column
+											as="h1"
+											style={{
+												color: '#ffffff',
+												backgroundColor: '#00aeef',
+												borderStyle: 'solid',
+												borderColor: '#484848',
+											}}
+											textAlign="center"
+										>
+											Down + Strafe
                       <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={downDisabled}
-                        clickHandler={this.handleButtonClick}
-                        type="D"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-              </Grid.Row>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    );
-  }
+												leftDisabled={leftDisabled}
+												rightDisabled={rightDisabled}
+												forwardDisabled={forwardDisabled}
+												reverseDisabled={reverseDisabled}
+												allDisabled={downDisabled}
+												clickHandler={this.handleButtonClick}
+												type="D"
+												droneOrientation={droneOrientation}
+											/>
+										</Grid.Column>
+									</Grid.Row>
+								</Grid>
+							</Grid.Row>
+						) : null}
+					</div>
+				</div> */}
+			</div>
+		);
+	}
 }
 
 const mapState = state => {
-  return {
-    scale: state.scale,
-    droneOrientation: state.droneOrientation,
-    startingPosition: state.startingPosition,
-    voxelSize: state.voxelSize,
-    sceneObjects: state.sceneObjects,
-    selectedObjId: state.selectedObjId,
-  };
+	return {
+		scale: state.scale,
+		droneOrientation: state.droneOrientation,
+		startingPosition: state.startingPosition,
+		voxelSize: state.voxelSize,
+		sceneObjects: state.sceneObjects,
+		selectedObjId: state.selectedObjId,
+	};
 };
 
 const mapDispatch = dispatch => {
-  return {
-    changeTab: tabName => dispatch(changeTab(tabName)),
-    toggleObstacles: () => {
-      dispatch(toggleObstacles());
-    },
-    addSceneObj: newObj => {
-      dispatch(addSceneObj(newObj));
-    },
-    updateSceneObj: updatedObj => dispatch(updateSceneObj(updatedObj)),
-    updateSelectedObj: objId => dispatch(updateSelectedObj(objId)),
-  };
+	return {
+		changeTab: tabName => dispatch(changeTab(tabName)),
+		toggleObstacles: () => {
+			dispatch(toggleObstacles());
+		},
+		addSceneObj: newObj => {
+			dispatch(addSceneObj(newObj));
+		},
+		updateSceneObj: updatedObj => dispatch(updateSceneObj(updatedObj)),
+		updateSelectedObj: objId => dispatch(updateSelectedObj(objId)),
+	};
 };
 
 export default connect(
-  mapState,
-  mapDispatch
+	mapState,
+	mapDispatch
 )(SceneBuilder);

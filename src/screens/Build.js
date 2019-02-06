@@ -33,7 +33,7 @@ import {
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
 
-const { ipcRenderer } = window.require('electron');
+const { ipcRenderer, webFrame } = window.require('electron');
 
 class Build extends Component {
   constructor(props) {
@@ -55,6 +55,7 @@ class Build extends Component {
   }
 
   componentDidMount() {
+    webFrame.setZoomFactor(.9);
     // Listen for flight import from main process
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       this.props.updateInstructions(flightInstructions);

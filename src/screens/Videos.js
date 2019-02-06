@@ -31,7 +31,7 @@ class Videos extends Component {
               <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="video" />
                 <Header.Content>
-                  My Video Library
+                  Video Library
                   <Header.Subheader>
                     <i>Watch your recorded videos</i>
                   </Header.Subheader>
