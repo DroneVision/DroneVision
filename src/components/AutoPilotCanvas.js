@@ -121,7 +121,7 @@ class AutoPilotCanvas extends Component {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
 
-    this.updateEverything();
+    this.drawLineForAutopilot(this.props.flightInstructions);
 
     ipcRenderer.on('next-drone-move', (msg, singleFlightCoord) => {
       ipcRenderer.send('get-drone-moves');
@@ -156,82 +156,96 @@ class AutoPilotCanvas extends Component {
   }
 
   componentDidUpdate = prevProps => {
-    this.updateEverything(prevProps);
+    this.drawLineForAutopilot(this.props.flightInstructions);
   };
 
-  updateEverything = (prevProps = null) => {
-    const {
-      postTakeoffPosition,
-      flightInstructions: newFlightInstructions,
-      obstacles,
-    } = this.props;
-    let oldFlightInstructions;
-    if (prevProps) {
-      const { flightInstructions } = prevProps;
-      oldFlightInstructions = flightInstructions;
-    } else {
-      oldFlightInstructions = null;
-    }
+  drawLineForAutopilot = flightInstructions => {
+    this.scene.remove(this.takeoffLine);
+    this.scene.remove(this.flightLine);
+    this.scene.remove(this.landLine);
 
-    this.drone3DModel.rotation.y = Math.PI;
+    //TAKEOFF LINE
+    const takeoffLineMaterial = new THREE.LineBasicMaterial({
+      color: 'yellow',
+    });
+    const takeoffLineGeometry = new THREE.Geometry();
+    takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
 
-    //OBSTACLES (toggled by redux store)
-    if (obstacles) {
-      this.scene.add(Obstacles);
-    }
-    //OBSTACLES (toggled by redux store)
-    if (!obstacles) {
-      this.scene.remove(Obstacles);
-    }
+    this.takeoffLine = new THREE.Line(takeoffLineGeometry, takeoffLineMaterial);
+    this.takeoffLine.position.set(0, this.gridEdgeLength * -0.5, 0);
+    this.scene.add(this.takeoffLine);
 
-    //REMOVE OLD LINE AND LAND LINE
-    if (this.line) {
-      this.scene.remove(this.line);
-      this.scene.remove(this.landLine);
-    }
-
-    //DRAW NEW FLIGHT PATH
-    const material = new THREE.LineBasicMaterial({
+    //RED FLIGHT LINE
+    const flightLineMaterial = new THREE.LineBasicMaterial({
       color: 0xff0000,
     });
-    const geometry = new THREE.Geometry();
+    const flightLineGeometry = new THREE.Geometry();
+    const takeoffPoint = { ...this.props.startingPosition };
+    const pointAboveTakeoff = { ...takeoffPoint, y: takeoffPoint.y + 1 };
+    flightLineGeometry.vertices.push(
+      new THREE.Vector3(
+        pointAboveTakeoff.x,
+        pointAboveTakeoff.y,
+        pointAboveTakeoff.z
+      )
+    );
 
-    const point = { ...postTakeoffPosition };
-    geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+    let point = { ...pointAboveTakeoff };
+    //draw red lines by iterating over all flight instructions
+    flightInstructions.forEach(instruction => {
+      const command = instruction.droneInstruction.split(' ')[0];
+      const drawInstruction = instruction.drawInstruction;
+      //just checking to see if the command is a rotation
+      if ((command === 'takeoff') | (command === 'land')) {
+        //do nothing
+      } else if (command === 'cw') {
+        // this.drone3DModel.rotation.y =
+        // Math.PI - (Math.PI / 2) * this.props.droneOrientation;
+      } else if (command === 'ccw') {
+        // this.drone3DModel.rotation.y =
+        // -Math.PI - (Math.PI / 2) * this.props.droneOrientation;
+      } else {
+        const [z, x, y] = drawInstruction;
+        point.x = point.x + x;
+        point.y = point.y + y;
+        point.z = point.z + z;
+        // x -> z
+        // y -> x
+        // z -> y
+        flightLineGeometry.vertices.push(
+          new THREE.Vector3(point.x, point.y, point.z)
+        );
+      }
+    });
+    this.flightLine = new THREE.Line(flightLineGeometry, flightLineMaterial);
+    this.scene.add(this.flightLine);
 
-    if (!_.isEqual(oldFlightInstructions, newFlightInstructions)) {
-      newFlightInstructions.slice(1, -1).forEach(instructionObj => {
-        const { droneInstruction, drawInstruction } = instructionObj;
+    const takeOffEqualsLanding =
+      point.x === pointAboveTakeoff.x &&
+      point.y === pointAboveTakeoff.y &&
+      point.z === pointAboveTakeoff.z;
 
-        //just checking to see if the command is a rotation
-        const [command] = droneInstruction.split(' ');
-        if (command !== 'cw' && command !== 'ccw') {
-          const [z, x, y] = drawInstruction;
-          point.x += x;
-          point.y += y;
-          point.z += z;
-          // x -> z
-          // y -> x
-          // z -> y
-          geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
-        }
-      });
-
-      this.line = new THREE.Line(geometry, material);
-
-      this.scene.add(this.line);
-    }
-    if (!_.isEqual(point, postTakeoffPosition)) {
+    // BLUE LANDING LINE
+    if (!takeOffEqualsLanding) {
       //add land line if drone is not still at the starting position
       const landLineGeometry = new THREE.Geometry();
-      landLineGeometry.vertices.push(new THREE.Vector3(point.x, -5, point.z));
-      const landLineMaterial = new THREE.LineBasicMaterial({ color: 'blue' });
-
       landLineGeometry.vertices.push(
         new THREE.Vector3(point.x, point.y, point.z)
       );
+      const landLineMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff });
+      landLineGeometry.vertices.push(
+        new THREE.Vector3(point.x, this.props.scale * -0.5, point.z)
+      );
       this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
       this.scene.add(this.landLine);
+    }
+
+    //OBSTACLES (toggled by redux store)
+    if (this.props.obstacles) {
+      this.scene.add(Obstacles);
+    } else {
+      this.scene.remove(Obstacles);
     }
   };
 
@@ -336,6 +350,7 @@ const mapState = state => {
     scale: state.scale,
     voxelSize: state.voxelSize,
     currentDronePosition: state.currentDronePosition,
+    currentDroneRotation: state.currentDroneRotation,
     startingPosition: state.startingPosition,
     obstacles: state.obstacles,
     flightInstructions: state.flightInstructions,
