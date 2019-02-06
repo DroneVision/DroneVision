@@ -40,7 +40,7 @@ const INITIAL_STATE = {
     z: startingPositionCoords.z,
   },
   sceneObjects: [],
-  canvasScene: null,
+  selectedObjId: null,
   preVisualizeAnimation: false,
 };
 
@@ -71,10 +71,9 @@ const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
-const ADD_OBJECT_TO_SCENE = 'ADD_OBJECT_TO_SCENE';
+const ADD_SCENE_OBJECT = 'ADD_SCENE_OBJECT';
 const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT';
-
-const SEND_SCENE_CANVAS_TO_REDUX = 'SEND_SCENE_CANVAS_TO_REDUX';
+const UPDATE_SELECTED_OBJECT = 'UPDATE_SELECTED_OBJECT';
 
 const UPDATE_BUILD_DRONE_POSITION = 'UPDATE_BUILD_DRONE_POSITION';
 const TOGGLE_PREVIZUALIZE_ANIMATION = 'TOGGLE_PREVIZUALIZE_ANIMATION';
@@ -128,8 +127,8 @@ export const updateDroneConnectionStatus = droneConnectionStatus => ({
   droneConnectionStatus,
 });
 
-export const addObjectToScene = newObject => ({
-  type: ADD_OBJECT_TO_SCENE,
+export const addSceneObj = newObject => ({
+  type: ADD_SCENE_OBJECT,
   newObject,
 });
 
@@ -138,9 +137,9 @@ export const updateSceneObj = updatedObj => ({
   updatedObj,
 });
 
-export const sendSceneCanvasToRedux = scene => ({
-  type: SEND_SCENE_CANVAS_TO_REDUX,
-  scene,
+export const updateSelectedObj = objId => ({
+  type: UPDATE_SELECTED_OBJECT,
+  objId,
 });
 
 export const updateBuildDronePosition = updatedPosition => ({
@@ -186,16 +185,12 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, obstacles: !state.obstacles };
     case UPDATE_DRONE_CONNECTION_STATUS:
       return { ...state, droneConnectionStatus: action.droneConnectionStatus };
-    case ADD_OBJECT_TO_SCENE:
+    case ADD_SCENE_OBJECT:
       return {
         ...state,
         sceneObjects: [...state.sceneObjects, action.newObject],
       };
-    case SEND_SCENE_CANVAS_TO_REDUX:
-      return {
-        ...state,
-        canvasScene: action.scene,
-      };
+
     case UPDATE_SCENE_OBJECT:
       const remainingObjs = state.sceneObjects.filter(
         sceneObj => sceneObj.id !== action.updatedObj.id
@@ -203,6 +198,11 @@ const reducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         sceneObjects: [...remainingObjs, action.updatedObj],
+      };
+    case UPDATE_SELECTED_OBJECT:
+      return {
+        ...state,
+        selectedObjId: action.objId,
       };
     case UPDATE_BUILD_DRONE_POSITION:
       return {

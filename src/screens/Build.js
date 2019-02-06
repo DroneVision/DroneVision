@@ -337,8 +337,6 @@ class Build extends Component {
       buildDronePosition,
     } = this.props;
 
-    const latestInstructionMessage =
-      flightInstructions[flightInstructions.length - 2].message;
     const leftDisabled = buildDronePosition.x === limits.maxX;
     const rightDisabled = buildDronePosition.x === limits.minX;
     const forwardDisabled = buildDronePosition.z === limits.maxZ;
@@ -388,7 +386,6 @@ class Build extends Component {
                   <tr>
                     <td id="up-strafe">
                       <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
@@ -397,29 +394,24 @@ class Build extends Component {
                           upDisabled || this.state.preVisButtonsDisabled
                         }
                         clickHandler={this.handleButtonClick}
-                        addFlightInstruction={this.addFlightInstruction}
                         type="U"
                         droneOrientation={droneOrientation}
                       />
                     </td>
                     <td id="strafe">
                       <ButtonPanel
-                        disabled={this.state.preVisButtonsDisabled}
-                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={this.state.preVisButtonsDisabled}
                         clickHandler={this.handleButtonClick}
-                        addFlightInstruction={this.addFlightInstruction}
                         type="C"
                         droneOrientation={droneOrientation}
                       />
                     </td>
                     <td id="down-strafe">
                       <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
@@ -428,7 +420,6 @@ class Build extends Component {
                           downDisabled || this.state.preVisButtonsDisabled
                         }
                         clickHandler={this.handleButtonClick}
-                        addFlightInstruction={this.addFlightInstruction}
                         type="D"
                         droneOrientation={droneOrientation}
                       />
@@ -544,12 +535,12 @@ class Build extends Component {
             >
               Pre-Visualize Path
             </Button>
-            <Button
+            {/* <Button
               disabled={!this.state.preVisButtonsDisabled}
               onClick={this.preVisualizePath}
             >
               Stop Pre-Visualization
-            </Button>
+            </Button> */}
             {this.props.obstacles ? (
               <Button
                 disabled={this.state.preVisButtonsDisabled}

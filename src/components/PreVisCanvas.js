@@ -7,7 +7,7 @@ import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
-import { updateBuildDronePosition } from '../store/store';
+import { createSceneObjs } from '../utils/canvasUtils';
 
 class PreVisCanvas extends Component {
   constructor(props) {
@@ -102,6 +102,7 @@ class PreVisCanvas extends Component {
   }
 
   componentDidMount() {
+    const { sceneObjects } = this.props;
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
 
@@ -113,6 +114,9 @@ class PreVisCanvas extends Component {
       this.props.startingPosition.z
     );
 
+    this.sceneObjects = createSceneObjs(sceneObjects);
+    this.scene.add(this.sceneObjects);
+
     //OBSTACLES (toggled by redux store)
     if (this.props.obstacles) {
       this.scene.add(Obstacles);
@@ -121,8 +125,16 @@ class PreVisCanvas extends Component {
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    const { sceneObjects } = this.props;
     this.drawLineForPreVis(this.props.flightInstructions);
+    if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
+      if (this.sceneObjects) {
+        this.scene.remove(this.sceneObjects);
+      }
+      this.sceneObjects = createSceneObjs(sceneObjects);
+      this.scene.add(this.sceneObjects);
+    }
   }
 
   drawLineForPreVis = flightInstructions => {
@@ -382,15 +394,12 @@ const mapState = state => {
     droneOrientation: state.droneOrientation,
     flightInstructions: state.flightInstructions,
     preVisualizeAnimation: state.preVisualizeAnimation,
+    sceneObjects: state.sceneObjects,
   };
 };
 
 const mapDispatch = dispatch => {
-  return {
-    updateBuildDronePosition: updatedPosition => {
-      dispatch(updateBuildDronePosition(updatedPosition));
-    },
-  };
+  return {};
 };
 
 export default connect(
