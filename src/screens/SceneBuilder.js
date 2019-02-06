@@ -27,33 +27,6 @@ import {
   updateSelectedObj,
 } from '../store/store';
 
-const { ipcRenderer } = window.require('electron');
-
-const defaultObj = {
-  length: 2,
-  width: 2,
-  height: 2,
-  position: {
-    x: 0,
-    y: -4, //accounts for plane shifting + height/2
-    z: 0,
-  },
-  visible: true,
-};
-
-// const newObj = {
-//   id,
-//   name: `obj${id}`,
-//   length,
-//   width,
-//   height,
-//   position,
-//   ref: obj,
-//   lineRef: objLines,
-//   visible: true,
-// };
-
-let objIdGlobal = 1;
 class SceneBuilder extends Component {
   constructor(props) {
     super(props);
@@ -64,19 +37,17 @@ class SceneBuilder extends Component {
   }
 
   componentDidMount() {
-    // Listen for flight import from main process
-    // ipcRenderer.on('file-opened', (event, flightInstructions) => {
-    //   this.props.updateInstructions(flightInstructions);
-    // });
-    if (this.props.sceneObjects.length) {
-      const limits = this.getNewLimits(this.props.sceneObjects[0]);
-      this.setState({ selectedObj: this.props.sceneObjects[0], limits });
+    const { sceneObjects, updateSelectedObj } = this.props;
+    if (sceneObjects.length) {
+      const limits = this.getNewLimits(sceneObjects[0]);
+      updateSelectedObj(sceneObjects[0].id);
+      this.setState({ limits });
     }
   }
 
   createNewObj = () => {
-    const { addSceneObj, updateSelectedObj } = this.props;
-    const id = objIdGlobal++;
+    const { addSceneObj, updateSelectedObj, sceneObjects } = this.props;
+    const id = sceneObjects.length + 1;
     const newObj = {
       length: 2,
       width: 2,
@@ -196,9 +167,8 @@ class SceneBuilder extends Component {
                 .map(sceneObj => {
                   return (
                     <List.Item
-                      // className="flight-message-single"
                       className="flight-message-single"
-                      active={this.state.activeListItemId === sceneObj.id}
+                      active={selectedObjId === sceneObj.id}
                       key={sceneObj.id}
                       onClick={this.handleObjectSelection}
                       id={sceneObj.id}

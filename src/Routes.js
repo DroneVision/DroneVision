@@ -13,6 +13,7 @@ import {
   updateInstructions,
   updateDroneConnectionStatus,
   loadSceneObjsFromFile,
+  updateSelectedObj,
 } from './store/store';
 const { ipcRenderer } = window.require('electron');
 
@@ -25,6 +26,7 @@ class Routes extends Component {
 
     ipcRenderer.on('load-scene-objects', (event, sceneObjects) => {
       this.props.loadSceneObjsFromFile(sceneObjects);
+      this.props.updateSelectedObj(sceneObjects[0].id);
     });
     // Listen for request for flight instructions save from main process
     ipcRenderer.on('save-flight-instructions', event => {
@@ -81,6 +83,8 @@ const mapDispatch = dispatch => {
       dispatch(updateInstructions(updatedFlightInstructions)),
     loadSceneObjsFromFile: sceneObjects =>
       dispatch(loadSceneObjsFromFile(sceneObjects)),
+    updateSelectedObj: selectedObjId =>
+      dispatch(updateSelectedObj(selectedObjId)),
   };
 };
 

@@ -28,7 +28,7 @@ class BuildCanvas extends Component {
       1,
       1000
     );
-  
+
     this.camera.position.set(-2.8, 5.4, -14.8);
 
     //ORBITAL CONTROLS
@@ -127,13 +127,13 @@ class BuildCanvas extends Component {
     // draw line and keep drone at tip of line
     this.redrawLinesAndMoveDrone(prevProps);
     const { sceneObjects } = this.props;
-    if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
+    // if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
       if (this.sceneObjects) {
         this.scene.remove(this.sceneObjects);
       }
       this.sceneObjects = createSceneObjs(sceneObjects);
       this.scene.add(this.sceneObjects);
-    }
+    // }
   };
 
   redrawLinesAndMoveDrone = (prevProps = null) => {

@@ -22,12 +22,14 @@ module.exports = BrowserWindow => {
       },
       {
         label: 'Save Scene Objects',
+        accelerator: 'CmdOrCtrl+Shift+S',
         click() {
           saveFile(BrowserWindow, 'scene-objects');
         },
       },
       {
         label: 'Import Scene Objects',
+        accelerator: 'CmdOrCtrl+Shift+O',
         click() {
           loadFile(BrowserWindow, 'scene-objects');
         },
