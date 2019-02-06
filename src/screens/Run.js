@@ -5,7 +5,7 @@ import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
 import { Button, Grid, Header, Icon } from 'semantic-ui-react';
 import wait from 'waait';
-import { updateCDP } from '../store/store';
+import { updateCDP, updateDroneConnectionStatus } from '../store/store';
 import commandDelays from '../drone/commandDelays';
 
 const { ipcRenderer } = window.require('electron');
@@ -20,7 +20,13 @@ class Run extends Component {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      // Send a command to drone
+      ipcRenderer.send('single-instruction', 'command');
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+    });
+  }
 
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');
@@ -217,6 +223,11 @@ class Run extends Component {
             />
           </div>
         </div>
+        <div className="row">
+          <div className="row-item">
+            <StatusContainer/>
+          </div>
+        </div>
       </div>
     );
   }
@@ -238,6 +249,8 @@ const mapDispatch = dispatch => {
     updateCDP: newPosition => {
       dispatch(updateCDP(newPosition));
     },
+    updateDroneConnectionStatus: droneStatus =>
+    dispatch(updateDroneConnectionStatus(droneStatus))
   };
 };
 

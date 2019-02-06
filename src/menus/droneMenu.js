@@ -2,6 +2,7 @@
 // Drone init import
 const wifi = require('node-wifi');
 const { dialog } = require('electron');
+// const droneInit = require('../drone/droneInit');
 
 module.exports = mainWindow => {
     // Create a drone menu on the menu bar called "Drone"
@@ -104,7 +105,13 @@ module.exports = mainWindow => {
                                     isConnected: true
                                 }
                                 let currentSSID = droneAP.ssid;
+
+                                // const { runSingleInstruction } = droneInit();
+                                // setTimeout(()=> {
+                                //     runSingleInstruction('command');
+                                // }, 5000);
                                 mainWindow.webContents.send('drone-connection', droneConnectionStatus)
+                                
                             });
                         } else {
                             dialog.showMessageBox(mainWindow, {
