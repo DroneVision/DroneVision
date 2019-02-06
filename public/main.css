@@ -216,6 +216,7 @@
   overflow: scroll;
   height: 40rem;
   width: 300px;
+  z-index: 1;
 }
 
 .object-removal-button {
@@ -226,6 +227,7 @@
   font-size: 36px;
   transform: rotate(45deg);
   cursor: pointer;
+  z-index: 5;
 }
 
 .object-removal-button:hover {
