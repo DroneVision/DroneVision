@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Header, Icon, Button } from 'semantic-ui-react';
+import { Grid, Header, Icon, Button, Image } from 'semantic-ui-react';
 import FlyControls from '../components/FlyControls';
 import Stream from '../components/Stream';
 import DroneTelemetry from '../components/DroneTelemetry';
@@ -48,21 +48,23 @@ class FlyScreen extends Component {
 
           <Grid.Row columns={2}>
             <Grid.Column id="centered">
-              <Stream />
+              {/* <Stream /> */}
+              <Image
+                className="manual-control-logo"
+                src={require('../assets/iconset/icons.iconset/icon_DroneVision-Icon512.png')}
+              />
             </Grid.Column>
             <Grid.Column id="centered">
               <DroneTelemetry />
             </Grid.Column>
           </Grid.Row>
- 
-           <Grid.Row>
-             <FlyControls
-               distance={this.props.distance}
-               speed={this.props.speed}
-             />
-           </Grid.Row>
 
-          
+          <Grid.Row>
+            <FlyControls
+              distance={this.props.distance}
+              speed={this.props.speed}
+            />
+          </Grid.Row>
         </Grid>
       </div>
     );
