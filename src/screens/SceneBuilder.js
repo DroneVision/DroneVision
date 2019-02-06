@@ -9,10 +9,9 @@ import {
   Segment,
   Header,
   Grid,
-  Image,
   ListContent,
 } from 'semantic-ui-react';
-
+import _ from 'lodash';
 import NumericInput from 'react-numeric-input';
 
 import { getDrawInstruction } from '../utils/buttonPanelUtils';
@@ -55,6 +54,18 @@ class SceneBuilder extends Component {
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       this.props.updateInstructions(flightInstructions);
     });
+    if (this.props.sceneObjects.length) {
+      const limits = this.getNewLimits(this.props.sceneObjects[0]);
+      this.setState({ selectedObj: this.props.sceneObjects[0], limits });
+    }
+  }
+  componentDidUpdate(prevProps) {
+    if (!_.isEqual(prevProps.sceneObjects, this.props.sceneObjects)) {
+      if (this.props.sceneObjects.length) {
+        const limits = this.getNewLimits(this.props.sceneObjects[0]);
+        this.setState({ selectedObj: this.props.sceneObjects[0], limits });
+      }
+    }
   }
 
   createCube = ({ id, length, width, height, position }) => {
@@ -85,6 +96,7 @@ class SceneBuilder extends Component {
       position,
       ref: obj,
       lineRef: objLines,
+      visible: true,
     };
 
     return newObj;
@@ -102,7 +114,7 @@ class SceneBuilder extends Component {
     }
 
     const limits = this.getNewLimits(newObj);
-    this.setState({ selectedObj: newObj, limits,activeListItemId: newObj.id });
+    this.setState({ selectedObj: newObj, limits, activeListItemId: newObj.id });
   };
 
   handleObjDimChange = (valNum, valStr, inputElem) => {
@@ -198,12 +210,12 @@ class SceneBuilder extends Component {
         <Grid columns={3} padded>
           <Grid.Row>
             <Grid.Column width={3}>
-              <Grid.Row>
+              {/* <Grid.Row>
                 <Image
                   src={require('../assets/images/helper-images/build-instructions.png')}
                   size="large"
                 />
-              </Grid.Row>
+              </Grid.Row> */}
               <Grid.Row>
                 <Button onClick={this.addAndCreateObj}>
                   <Button.Content visible>
@@ -212,73 +224,75 @@ class SceneBuilder extends Component {
                   </Button.Content>
                 </Button>
               </Grid.Row>
-
-              <Grid.Row>
-                <Segment inverted>
-                  <List divided inverted selection>
-                    <List.Header>
-                      <i>Your objects</i>
-                    </List.Header>
-                    {sceneObjects
-                      .sort((a, b) => a.id - b.id)
-                      .map(sceneObj => {
-                        return (
-                          <List.Item
-                            // className="flight-message-single"
-                            className="flight-message-single"
-                            active={this.state.activeListItemId === sceneObj.id}
-                            key={sceneObj.id}
-                            onClick={this.handleObjectSelection}
-                            id={sceneObj.id}
-                          >
-                            <List.Content>Name: {sceneObj.name}</List.Content>
-                            <ListContent>
-                              {`Width:   `}
-                              <NumericInput
-                                id={sceneObj.id}
-                                name={'width'}
-                                size={3}
-                                min={1}
-                                max={this.props.scale}
-                                value={sceneObj.width}
-                                onChange={this.handleObjDimChange}
-                              />
-                              {`   m.`}
-                            </ListContent>
-                            <ListContent>
-                              {`Length:   `}
-                              <NumericInput
-                                id={sceneObj.id}
-                                name={'length'}
-                                size={3}
-                                min={1}
-                                max={this.props.scale}
-                                value={sceneObj.length}
-                                onChange={this.handleObjDimChange}
-                              />
-                              {`   m.`}
-                            </ListContent>
-                            <ListContent>
-                              {`Height:   `}
-                              <NumericInput
-                                id={sceneObj.id}
-                                name={'height'}
-                                size={3}
-                                min={1}
-                                max={this.props.scale}
-                                value={sceneObj.height}
-                                onChange={this.handleObjDimChange}
-                              />
-                              {`   m.`}
-                            </ListContent>
-                          </List.Item>
-                        );
-                      })}
-                  </List>
-                </Segment>
-              </Grid.Row>
+              <div id="object-list">
+                <Grid.Row>
+                  <Segment inverted>
+                    <List divided inverted selection>
+                      <List.Header>
+                        <i>Your Objects</i>
+                      </List.Header>
+                      {sceneObjects
+                        .sort((a, b) => a.id - b.id)
+                        .map(sceneObj => {
+                          return (
+                            <List.Item
+                              // className="flight-message-single"
+                              className="flight-message-single"
+                              active={
+                                this.state.activeListItemId === sceneObj.id
+                              }
+                              key={sceneObj.id}
+                              onClick={this.handleObjectSelection}
+                              id={sceneObj.id}
+                            >
+                              <List.Content>Name: {sceneObj.name}</List.Content>
+                              <ListContent>
+                                {`Width:   `}
+                                <NumericInput
+                                  id={sceneObj.id}
+                                  name={'width'}
+                                  size={3}
+                                  min={1}
+                                  max={this.props.scale}
+                                  value={sceneObj.width}
+                                  onChange={this.handleObjDimChange}
+                                />
+                                {`   m.`}
+                              </ListContent>
+                              <ListContent>
+                                {`Length:   `}
+                                <NumericInput
+                                  id={sceneObj.id}
+                                  name={'length'}
+                                  size={3}
+                                  min={1}
+                                  max={this.props.scale}
+                                  value={sceneObj.length}
+                                  onChange={this.handleObjDimChange}
+                                />
+                                {`   m.`}
+                              </ListContent>
+                              <ListContent>
+                                {`Height:   `}
+                                <NumericInput
+                                  id={sceneObj.id}
+                                  name={'height'}
+                                  size={3}
+                                  min={1}
+                                  max={this.props.scale}
+                                  value={sceneObj.height}
+                                  onChange={this.handleObjDimChange}
+                                />
+                                {`   m.`}
+                              </ListContent>
+                            </List.Item>
+                          );
+                        })}
+                    </List>
+                  </Segment>
+                </Grid.Row>
+              </div>
             </Grid.Column>
-
             <Grid.Column width={9}>
               <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="building" />
@@ -321,7 +335,6 @@ class SceneBuilder extends Component {
                           droneOrientation={droneOrientation}
                         />
                       </Grid.Column>
-
                       <Grid.Column
                         as="h1"
                         textAlign="center"

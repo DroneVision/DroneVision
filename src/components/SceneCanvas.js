@@ -6,9 +6,7 @@ import autoPilotCanvasSkybox from '../ThreeJSModules/AutoPilotCanvasSkybox';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import _ from 'lodash';
 import { sendSceneCanvasToRedux } from '../store/store';
-
-
-const { ipcRenderer } = window.require('electron');
+import { createObjGroup } from '../utils/canvasUtils';
 
 class SceneCanvas extends Component {
   constructor(props) {
@@ -48,27 +46,6 @@ class SceneCanvas extends Component {
     const sceneCanvasSkybox = autoPilotCanvasSkybox.clone();
     this.scene.add(sceneCanvasSkybox);
 
-    //LOADING AN EXTERNAL OBJECT
-    // this.loader = new THREE.ObjectLoader();
-    // this.loader.load('../ThreeJSModules/robot.json', function(object) {
-    //   var material = new THREE.MeshToonMaterial({
-    //     color: 0x3f3f3f,
-    //     alphaTest: 0.5,
-    //   });
-    //   object.traverse(function(child) {
-    //     if (child instanceof THREE.Mesh) {
-    //       child.material = material;
-    //       child.drawMode = THREE.TrianglesDrawMode;
-    //     }
-    //   });
-    //   object.scale.set(0.1, 0.1, 0.1);
-    //   object.position.x = 1;
-    //   object.position.y = 1;
-    //   object.position.z = 1;
-    //   object.rotation.set(25, 25, 25);
-    //   this.scene.add(object);
-    // });
-
     //GRID
     this.gridEdgeLength = this.props.voxelSize;
     // this.props.scale / (this.props.scale / this.props.voxelSize);
@@ -105,9 +82,6 @@ class SceneCanvas extends Component {
     this.scene.add(gridCubeLines);
 
     //NORTH STAR
-    //EAST STAR
-    //SOUTH STAR
-    //WEST STAR
     this.scene.add(cardinalDirections);
 
     //AMBIENT LIGHT
@@ -118,10 +92,14 @@ class SceneCanvas extends Component {
   componentDidMount() {
     document.getElementById('canvas').appendChild(this.renderer.domElement);
     this.animate();
-
+    this.scene.add(createObjGroup(this.props.sceneObjects));
   }
 
-  componentDidUpdate = prevProps => {};
+  // componentDidUpdate = prevProps => {
+  //   if (!_.isEqual(prevProps.sceneObjects, this.props.sceneObjects)) {
+  //     this.scene.add(createObjGroup(this.props.sceneObjects));
+  //   }
+  // };
 
   animate = async () => {
     requestAnimationFrame(this.animate);
@@ -130,7 +108,6 @@ class SceneCanvas extends Component {
     this.renderer.render(this.scene, this.camera);
   };
 
-  
   render() {
     return <div id="canvas" />;
   }
@@ -145,16 +122,17 @@ const mapState = state => {
     obstacles: state.obstacles,
     flightInstructions: state.flightInstructions,
     postTakeoffPosition: state.postTakeoffPosition,
+    sceneObjects: state.sceneObjects,
   };
 };
 
 const mapDispatch = dispatch => {
   return {
-    sendSceneCanvasToRedux: scene => dispatch(sendSceneCanvasToRedux(scene))
+    sendSceneCanvasToRedux: scene => dispatch(sendSceneCanvasToRedux(scene)),
   };
 };
 
 export default connect(
   mapState,
-  mapDispatch,
+  mapDispatch
 )(SceneCanvas);

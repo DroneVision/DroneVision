@@ -176,9 +176,10 @@
   right: 0;
 }
 
-#run-screen {
-  
-  
+#object-list {
+  overflow: auto;
+  height: 30rem;
+  width: 15rem;
 }
 
 .row > .row-item {

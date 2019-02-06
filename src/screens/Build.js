@@ -301,8 +301,6 @@ class Build extends Component {
       buildDronePosition,
     } = this.props;
 
-    const latestInstructionMessage =
-      flightInstructions[flightInstructions.length - 2].message;
     const leftDisabled = buildDronePosition.x === limits.maxX;
     const rightDisabled = buildDronePosition.x === limits.minX;
     const forwardDisabled = buildDronePosition.z === limits.maxZ;
@@ -348,42 +346,36 @@ class Build extends Component {
                   <tr>
                     <td id="up-strafe">
                       <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         clickHandler={this.handleButtonClick}
                         allDisabled={upDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
                         type="U"
                         droneOrientation={droneOrientation}
                       />
                     </td>
                     <td id="strafe">
                       <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         clickHandler={this.handleButtonClick}
                         allDisabled={false}
-                        addFlightInstruction={this.addFlightInstruction}
                         type="C"
                         droneOrientation={droneOrientation}
                       />
                     </td>
                     <td id="down-strafe">
                       <ButtonPanel
-                        latestInstructionMessage={latestInstructionMessage}
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         clickHandler={this.handleButtonClick}
                         allDisabled={downDisabled}
-                        addFlightInstruction={this.addFlightInstruction}
                         type="D"
                         droneOrientation={droneOrientation}
                       />
