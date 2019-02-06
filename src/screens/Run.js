@@ -5,7 +5,7 @@ import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
 import { Button, Grid, Header, Icon } from 'semantic-ui-react';
 import wait from 'waait';
-import { updateCDP } from '../store/store';
+import { updateCDP, updateCDR } from '../store/store';
 import commandDelays from '../drone/commandDelays';
 
 const { ipcRenderer } = window.require('electron');
@@ -37,37 +37,22 @@ class Run extends Component {
   flightCommandsIteratorReduxUpdater = async flightInstructions => {
     //Iterate over all flightInstructions
     for (let i = 0; i < flightInstructions.length; i++) {
-      let flightInstruction = flightInstructions[i];
-      let instructionName = flightInstruction.droneInstruction.split(' ')[0];
-      //create new object for new coordinates
-      let newCoords = {};
-      let flightInstructionArray = flightInstruction.droneInstruction
-        .split(' ')
-        .slice(1, 4)
-        .map(numStr => Number(numStr) / this.props.distance);
-
-      const [z, x, y] = flightInstructionArray;
-      // x -> z
-      // y -> x
-      // z -> y
-      newCoords.x = this.props.currentDronePosition.x + x;
-      newCoords.y = this.props.currentDronePosition.y + y;
-      newCoords.z = this.props.currentDronePosition.z + z;
-
-      if (instructionName === 'command') {
-      } else if (instructionName === 'takeoff') {
+      let animateInstruction = flightInstructions[i].drawInstruction;
+      if (animateInstruction === 'takeoff') {
         this.props.updateCDP({
           x: this.props.startingPosition.x,
           y: this.props.startingPosition.y + 1,
           z: this.props.startingPosition.z,
         });
-      } else if (instructionName === 'land') {
+        await wait(commandDelays.takeoff);
+        console.log('takeoff', animateInstruction);
+      } else if (animateInstruction === 'land') {
         this.props.updateCDP({
           x: this.props.currentDronePosition.x,
           y: 0 + this.props.voxelSize * -0.5,
           z: this.props.currentDronePosition.z,
         });
-
+        console.log('land', animateInstruction);
         setTimeout(() => {
           //After flight completes wait 10 seconds
           //Send drone model back to starting position
@@ -76,23 +61,122 @@ class Run extends Component {
             y: this.props.startingPosition.y,
             z: this.props.startingPosition.z,
           });
-          //If user was recording, stop video encoding and stop streaming
+          // this.setState({
+          //   preVisButtonsDisabled: false,
+          // });
+          //  If user was recording, stop video encoding and stop streaming
           if (this.state.isRecording) {
             this.stopRecordingVideo();
           }
           //Give the 'Send drone model back to starting
-          //position 4.5 seconds to animate before re-enabling buttons
-          setTimeout(() => {
-            this.setState({ runButtonsDisabled: false, isRecording: false });
-          }, 4500);
+
+          // this.props.togglePreVisualizeAnimation();
+          this.props.updateCDR(Math.PI);
         }, 10000);
-      } else {
+      } else if (Array.isArray(animateInstruction)) {
+        //create new object for new coordinates
+        let newCoords = {};
+        const [z, x, y] = animateInstruction;
+        // x -> z
+        // y -> x
+        // z -> y
+        newCoords.x = this.props.currentDronePosition.x + x;
+        newCoords.y = this.props.currentDronePosition.y + y;
+        newCoords.z = this.props.currentDronePosition.z + z;
+
         this.props.updateCDP(newCoords);
+        console.log('other', animateInstruction);
+
+        //Wait for Command Delay
+        await wait(commandDelays.go);
+      } else {
+        //Handle Rotation
+        const [rotationDirection, rotationDegrees] = animateInstruction.split(
+          ' '
+        );
+
+        const rotationDegreesNumber = Number(rotationDegrees);
+        const rotationAngles = {
+          90: Math.PI / 2,
+          180: Math.PI,
+          270: Math.PI + Math.PI / 2,
+        };
+
+        if (rotationDirection === 'cw') {
+          const newCWRotation =
+            this.props.currentDroneRotation -
+            rotationAngles[rotationDegreesNumber];
+          await this.props.updateCDR(newCWRotation);
+        } else {
+          const newCCWRotation =
+            this.props.currentDroneRotation +
+            rotationAngles[rotationDegreesNumber];
+          await this.props.updateCDR(newCCWRotation);
+        }
+        await wait(commandDelays.cw);
       }
-      //Wait for Command Delay
-      await wait(commandDelays[instructionName]);
     }
   };
+
+  // flightCommandsIteratorReduxUpdater = async flightInstructions => {
+  //   //Iterate over all flightInstructions
+  //   for (let i = 0; i < flightInstructions.length; i++) {
+  //     let flightInstruction = flightInstructions[i];
+  //     let instructionName = flightInstruction.droneInstruction.split(' ')[0];
+  //     //create new object for new coordinates
+  //     let newCoords = {};
+  //     let flightInstructionArray = flightInstruction.droneInstruction
+  //       .split(' ')
+  //       .slice(1, 4)
+  //       .map(numStr => Number(numStr) / this.props.distance);
+
+  //     const [z, x, y] = flightInstructionArray;
+  //     // x -> z
+  //     // y -> x
+  //     // z -> y
+  //     newCoords.x = this.props.currentDronePosition.x + x;
+  //     newCoords.y = this.props.currentDronePosition.y + y;
+  //     newCoords.z = this.props.currentDronePosition.z + z;
+
+  //     if (instructionName === 'command') {
+  //     } else if (instructionName === 'takeoff') {
+  //       this.props.updateCDP({
+  //         x: this.props.startingPosition.x,
+  //         y: this.props.startingPosition.y + 1,
+  //         z: this.props.startingPosition.z,
+  //       });
+  //     } else if (instructionName === 'land') {
+  //       this.props.updateCDP({
+  //         x: this.props.currentDronePosition.x,
+  //         y: 0 + this.props.voxelSize * -0.5,
+  //         z: this.props.currentDronePosition.z,
+  //       });
+
+  //       setTimeout(() => {
+  //         //After flight completes wait 10 seconds
+  //         //Send drone model back to starting position
+  //         this.props.updateCDP({
+  //           x: this.props.startingPosition.x,
+  //           y: this.props.startingPosition.y,
+  //           z: this.props.startingPosition.z,
+  //         });
+  //         //If user was recording, stop video encoding and stop streaming
+  //         if (this.state.isRecording) {
+  //           this.stopRecordingVideo();
+  //         }
+  //         //Give the 'Send drone model back to starting
+  //         //position 4.5 seconds to animate before re-enabling buttons
+  //         setTimeout(() => {
+  //           this.setState({ runButtonsDisabled: false, isRecording: false });
+  //         }, 4500);
+  //       }, 10000);
+  //     } else {
+  //       this.props.updateCDP(newCoords);
+  //     }
+  //     //Wait for Command Delay
+  //     await wait(commandDelays[instructionName]);
+  //   }
+  // };
 
   runFlightInstructions = () => {
     //Diable Buttons
@@ -198,7 +282,7 @@ class Run extends Component {
         <div className="row">
           <div className="row-item">
             <Button
-              disabled={!this.props.droneConnectionStatus.isConnected}
+              disabled={this.props.droneConnectionStatus.isConnected}
               color="facebook"
               labelPosition="left"
               icon="military"
@@ -227,6 +311,7 @@ const mapState = state => {
     distance: state.distance,
     flightInstructions: state.flightInstructions,
     currentDronePosition: state.currentDronePosition,
+    currentDroneRotation: state.currentDroneRotation,
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
     droneConnectionStatus: state.droneConnectionStatus,
@@ -237,6 +322,9 @@ const mapDispatch = dispatch => {
   return {
     updateCDP: newPosition => {
       dispatch(updateCDP(newPosition));
+    },
+    updateCDR: newRotation => {
+      dispatch(updateCDR(newRotation));
     },
   };
 };

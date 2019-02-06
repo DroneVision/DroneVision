@@ -166,6 +166,11 @@
   overflow: auto;
 }
 
+#object-list {
+  height: 30rem;
+  overflow: auto;
+}
+
 #controls {
   display: flex;
 }
@@ -180,12 +185,11 @@
   right: 0;
 }
 
+
 #object-list {
   overflow: auto;
   height: 30rem;
   width: 15rem;
-}
-#run-screen {
 }
 
 .row > .row-item {
@@ -194,3 +198,15 @@
   display: flex;
   justify-content: center;
 }
+
+#scene-help {
+  position: absolute;
+  padding: 2rem;
+  text-align: center;
+}
+
+#scene-builder {
+  display: flex;
+  flex-direction: column;
+}
+

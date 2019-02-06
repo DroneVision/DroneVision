@@ -28,6 +28,7 @@ class BuildCanvas extends Component {
       1,
       1000
     );
+  
     this.camera.position.set(-2.8, 5.4, -14.8);
 
     //ORBITAL CONTROLS
