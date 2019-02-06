@@ -176,11 +176,11 @@ class SceneBuilder extends Component {
     return (
       <div id="scene-builder">
         <div id="scene-help">
-          <Image
+          {/* <Image
             src={require('../assets/images/helper-images/build-instructions.png')}
             size="medium"
-          />
-          <Button color="facebook" onClick={this.addAndCreateObj}>
+          /> */}
+          <Button color="facebook" onClick={this.createNewObj}>
             <Button.Content visible>
               <Icon name="plus" />
               Create New Object
