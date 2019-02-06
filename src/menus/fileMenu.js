@@ -1,33 +1,46 @@
 // const loadFlightInstructions = require('../utils/fileSystemUtils');
-const { openFile, saveFile } = require('../../electronUtils/fileSystem');
+const { loadFile, saveFile } = require('../../electronUtils/fileSystem');
 module.exports = BrowserWindow => {
+  // Create a file menu on the menu bar called "File"
 
-    // Create a file menu on the menu bar called "File"
+  const fileMenu = {
+    label: 'File',
+    submenu: [
+      {
+        label: 'Import Flight Path',
+        accelerator: 'CmdOrCtrl+O',
+        click() {
+          loadFile(BrowserWindow, 'flight-instructions');
+        },
+      },
+      {
+        label: 'Save Flight Path',
+        accelerator: 'CmdOrCtrl+S',
+        click() {
+          saveFile(BrowserWindow, 'flight-instructions');
+        },
+      },
+      {
+        label: 'Import Scene Objects',
+        click() {
+          loadFile(BrowserWindow, 'scene-objects');
+        },
+      },
+      {
+        label: 'Save Scene Objects',
+        click() {
+          saveFile(BrowserWindow, 'scene-objects');
+        },
+      },
+    ],
+  };
 
-    const fileMenu = {
-        label: 'File',
-        submenu: [
-            {
-                label: 'Import Flight Path',
-                accelerator: 'CmdOrCtrl+O',
-                click() { openFile(BrowserWindow) }
-            },
-            {
-                label: 'Save Flight Path',
-                accelerator: 'CmdOrCtrl+S',
-                click() {
-                    saveFile(BrowserWindow)
-                }
-            }
-        ]
-    };
+  if (process.platform === 'darwin') {
+    fileMenu.submenu.push(
+      { type: 'separator' },
+      { label: 'Exit', role: 'quit', accelerator: 'CmdOrCtrl+Q' }
+    );
+  }
 
-    if (process.platform === 'darwin') {
-        fileMenu.submenu.push(
-            { type: 'separator' },
-            { label: 'Exit', role: 'quit', accelerator: 'CmdOrCtrl+Q' }
-        );
-    }
-
-    return fileMenu;
-}
+  return fileMenu;
+};

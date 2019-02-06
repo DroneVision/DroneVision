@@ -36,9 +36,3 @@ const createCube = ({ id, length, width, height, position, selected }) => {
   objGroup.name = `${id}-group`;
   return objGroup;
 };
-
-// // need to get reference to the object in order to remove it
-// const objToRemove = canvasScene.getObjectByName(sceneObj.ref.name);
-// const lineToRemove = canvasScene.getObjectByName(sceneObj.lineRef.name);
-// canvasScene.remove(objToRemove.name);
-// canvasScene.remove(lineToRemove.name);

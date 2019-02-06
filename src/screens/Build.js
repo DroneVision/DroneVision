@@ -33,8 +33,6 @@ import {
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
 
-const { ipcRenderer } = window.require('electron');
-
 class Build extends Component {
   constructor(props) {
     super(props);
@@ -52,26 +50,6 @@ class Build extends Component {
       preVisButtonsDisabled: false,
       helpOpen: false,
     };
-  }
-
-  componentDidMount() {
-    // Listen for flight import from main process
-    ipcRenderer.on('file-opened', (event, flightInstructions) => {
-      this.props.updateInstructions(flightInstructions);
-    });
-    // Listen for request for flight instructions from main process
-    ipcRenderer.on('request-flightInstructions', event => {
-      // Reply back with instructions
-      ipcRenderer.send(
-        'send-flightInstructions',
-        this.props.flightInstructions
-      );
-    });
-    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
-      this.props.updateDroneConnectionStatus(droneConnectionStatus);
-      // Send a command to drone
-      ipcRenderer.send('single-instruction', 'command');
-    });
   }
 
   addFlightInstruction = instructionObj => {
