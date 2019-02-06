@@ -85,7 +85,6 @@ class Run extends Component {
         newCoords.z = this.props.currentDronePosition.z + z;
 
         this.props.updateCDP(newCoords);
-        console.log('other', animateInstruction);
 
         //Wait for Command Delay
         await wait(commandDelays.go);
@@ -282,7 +281,7 @@ class Run extends Component {
         <div className="row">
           <div className="row-item">
             <Button
-              disabled={this.props.droneConnectionStatus.isConnected}
+              disabled={!this.props.droneConnectionStatus.isConnected}
               color="facebook"
               labelPosition="left"
               icon="military"
@@ -299,6 +298,11 @@ class Run extends Component {
               content="Record Flight"
               onClick={this.runFlightInstructionsAndRecord}
             />
+          </div>
+        </div>
+        <div className="row">
+          <div className="row-item">
+            <StatusContainer />
           </div>
         </div>
       </div>

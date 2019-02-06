@@ -185,7 +185,6 @@
   right: 0;
 }
 
-
 #object-list {
   overflow: auto;
   height: 30rem;
@@ -210,3 +209,9 @@
   flex-direction: column;
 }
 
+#streaming-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

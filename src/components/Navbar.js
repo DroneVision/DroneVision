@@ -8,7 +8,6 @@ import {
   loadFlightInstructions,
 } from '../utils/fileSystemUtils';
 
-
 const { ipcRenderer } = window.require('electron');
 
 class Navbar extends Component {
@@ -17,13 +16,11 @@ class Navbar extends Component {
   handleLoadFlightInstructions = async () => {
     const flightInstructions = await loadFlightInstructions();
     this.props.updateInstructions(flightInstructions);
-    
   };
 
   componentDidMount() {
     ipcRenderer.on('file-opened', (event, flightInstructions) => {
       this.props.updateInstructions(flightInstructions);
-      
     });
   }
 
@@ -75,6 +72,13 @@ class Navbar extends Component {
               to={'/about'}
               name="about"
               active={activeTab === 'about'}
+              onClick={this.handleTabChange}
+            />
+            <Menu.Item
+              as={Link}
+              to={'/stream'}
+              name="stream"
+              active={activeTab === 'stream'}
               onClick={this.handleTabChange}
             />
             <Menu.Menu position="right">

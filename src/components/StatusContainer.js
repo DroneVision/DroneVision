@@ -24,7 +24,16 @@ class StatusSegment extends Component {
     interval = setInterval(async () => {
       await this.getDroneState();
     }, 100);
+  }
+
+  componentWillUnmount() {
+    clearInterval(interval);
+  }
+
+  getDroneState = () => {
+    ipcRenderer.send('getDroneState');
     ipcRenderer.on('updatedDroneState', (event, arg) => {
+      // console.log('arg: ', arg);
       if (arg) {
         this.setState({
           battery: arg.bat,
@@ -40,14 +49,6 @@ class StatusSegment extends Component {
         this.props.changeYaw(arg.yaw);
       }
     });
-  }
-
-  componentWillUnmount() {
-    clearInterval(interval);
-  }
-
-  getDroneState = () => {
-    ipcRenderer.send('getDroneState');
   };
 
   resetDroneState = () => {
