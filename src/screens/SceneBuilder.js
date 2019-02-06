@@ -42,18 +42,6 @@ const defaultObj = {
   visible: true,
 };
 
-// const newObj = {
-//   id,
-//   name: `obj${id}`,
-//   length,
-//   width,
-//   height,
-//   position,
-//   ref: obj,
-//   lineRef: objLines,
-//   visible: true,
-// };
-
 let objIdGlobal = 1;
 class SceneBuilder extends Component {
   constructor(props) {
@@ -92,7 +80,7 @@ class SceneBuilder extends Component {
     };
 
     newObj.id = id;
-    newObj.name = `obj${id}`;
+    newObj.name = `Object ${id}`;
     updateSelectedObj(newObj.id);
     addSceneObj(newObj);
     const limits = this.getNewLimits(newObj);
@@ -142,6 +130,10 @@ class SceneBuilder extends Component {
     };
   };
 
+  deleteObject = event => {
+    console.log('deleted', event.target);
+  };
+
   handleObjectSelection = evt => {
     const { sceneObjects, updateSelectedObj } = this.props;
     const selectedObj = sceneObjects.find(
@@ -185,46 +177,37 @@ class SceneBuilder extends Component {
             src={require('../assets/images/helper-images/build-instructions.png')}
             size="medium"
           /> */}
-          <Button color="facebook" onClick={this.createNewObj}>
-            <Button.Content visible>
-              <Icon name="plus" />
-              Create New Object
-            </Button.Content>
-          </Button>
           <Segment inverted id="object-list">
             <List divided inverted selection>
-              <List.Header>
-                <i>Your objects</i>
-              </List.Header>
+              <List.Header className="object-header">YOUR OBJECTS:</List.Header>
               {sceneObjects
                 .sort((a, b) => a.id - b.id)
                 .map(sceneObj => {
                   return (
                     <List.Item
-                      // className="flight-message-single"
-                      className="flight-message-single"
+                      className="object-single"
                       active={this.state.activeListItemId === sceneObj.id}
                       key={sceneObj.id}
                       onClick={this.handleObjectSelection}
                       id={sceneObj.id}
                     >
-                      <List.Content>Name: {sceneObj.name}</List.Content>
-                      <ListContent>
-                        {`Width:   `}
-                        <NumericInput
-                          id={sceneObj.id}
-                          name={'width'}
-                          size={3}
-                          min={1}
-                          max={this.props.scale}
-                          value={sceneObj.width}
-                          onChange={this.handleObjDimChange}
-                        />
-                        {`   m.`}
-                      </ListContent>
+                      {/* BEGIN remove button */}
+                      <div
+                        className="object-removal-button"
+                        onClick={() => {
+                          this.deleteObject();
+                        }}
+                      >
+                        +
+                      </div>
+                      {/* END remove button */}
+                      <List.Content className="object-name">
+                        {sceneObj.name}
+                      </List.Content>
                       <ListContent>
                         {`Length:   `}
                         <NumericInput
+                          className="numeric-input"
                           id={sceneObj.id}
                           name={'length'}
                           size={3}
@@ -233,11 +216,26 @@ class SceneBuilder extends Component {
                           value={sceneObj.length}
                           onChange={this.handleObjDimChange}
                         />
-                        {`   m.`}
+                        {`   m`}
+                      </ListContent>
+                      <ListContent>
+                        {`Width:   `}
+                        <NumericInput
+                          className="numeric-input"
+                          id={sceneObj.id}
+                          name={'width'}
+                          size={3}
+                          min={1}
+                          max={this.props.scale}
+                          value={sceneObj.width}
+                          onChange={this.handleObjDimChange}
+                        />
+                        {`   m`}
                       </ListContent>
                       <ListContent>
                         {`Height:   `}
                         <NumericInput
+                          className="numeric-input"
                           id={sceneObj.id}
                           name={'height'}
                           size={3}
@@ -246,13 +244,19 @@ class SceneBuilder extends Component {
                           value={sceneObj.height}
                           onChange={this.handleObjDimChange}
                         />
-                        {`   m.`}
+                        {`   m`}
                       </ListContent>
                     </List.Item>
                   );
                 })}
             </List>
           </Segment>
+          <Button color="facebook" onClick={this.createNewObj}>
+            <Button.Content visible>
+              <Icon name="plus" />
+              Create New Object
+            </Button.Content>
+          </Button>
         </div>
         <div className="row">
           <div className="row-item">
@@ -274,6 +278,7 @@ class SceneBuilder extends Component {
         </div>
         <div className="row">
           <div className="row-item">
+            {/* Conditionally Render Button Panels */}
             {sceneObjects.length ? (
               <Grid.Row>
                 <Grid columns={3} padded centered>
@@ -349,13 +354,18 @@ class SceneBuilder extends Component {
                 </Grid>
               </Grid.Row>
             ) : null}
-            <div id="build-help">
-              <Icon
-                name="question circle"
-                size="large"
-                onClick={this.buildHelp}
-              />
-            </div>
+
+            {/* Popup Help Icon */}
+            {sceneObjects.length ? (
+              <div id="build-help">
+                <Icon
+                  name="question circle"
+                  size="large"
+                  onClick={this.buildHelp}
+                />
+              </div>
+            ) : null}
+
             <Modal
               open={this.state.helpOpen}
               onClose={this.handleClose}
