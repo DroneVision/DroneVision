@@ -71,6 +71,7 @@ const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
 
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
+const LOAD_SCENE_OBJECTS_FROM_FILE = 'LOAD_SCENE_OBJECTS_FROM_FILE';
 const ADD_SCENE_OBJECT = 'ADD_SCENE_OBJECT';
 const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT';
 const UPDATE_SELECTED_OBJECT = 'UPDATE_SELECTED_OBJECT';
@@ -125,6 +126,11 @@ export const toggleObstacles = () => ({
 export const updateDroneConnectionStatus = droneConnectionStatus => ({
   type: UPDATE_DRONE_CONNECTION_STATUS,
   droneConnectionStatus,
+});
+
+export const loadSceneObjsFromFile = sceneObjects => ({
+  type: LOAD_SCENE_OBJECTS_FROM_FILE,
+  sceneObjects,
 });
 
 export const addSceneObj = newObject => ({
@@ -185,12 +191,16 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, obstacles: !state.obstacles };
     case UPDATE_DRONE_CONNECTION_STATUS:
       return { ...state, droneConnectionStatus: action.droneConnectionStatus };
+    case LOAD_SCENE_OBJECTS_FROM_FILE:
+      return {
+        ...state,
+        sceneObjects: action.sceneObjects,
+      };
     case ADD_SCENE_OBJECT:
       return {
         ...state,
         sceneObjects: [...state.sceneObjects, action.newObject],
       };
-
     case UPDATE_SCENE_OBJECT:
       const remainingObjs = state.sceneObjects.filter(
         sceneObj => sceneObj.id !== action.updatedObj.id
