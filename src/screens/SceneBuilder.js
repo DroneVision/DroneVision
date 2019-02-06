@@ -10,6 +10,7 @@ import {
   Header,
   Grid,
   ListContent,
+  Image
 } from 'semantic-ui-react';
 
 import NumericInput from 'react-numeric-input';
