@@ -250,7 +250,7 @@ class Build extends Component {
             preVisButtonsDisabled: false,
           });
           this.props.togglePreVisualizeAnimation();
-          this.props.updateCDR(0);
+          this.props.updateCDR(Math.PI);
         }, 3000);
       } else if (Array.isArray(animateInstruction)) {
         //create new object for new coordinates
@@ -286,10 +286,10 @@ class Build extends Component {
             this.props.currentDroneRotation -
             rotationAngles[rotationDegreesNumber];
           await this.props.updateCDR(newCWRotation);
-          console.log('its working');
         } else {
           const newCCWRotation =
-            this.props.currentDroneRotation + Number(rotationDegrees);
+            this.props.currentDroneRotation +
+            rotationAngles[rotationDegreesNumber];
           await this.props.updateCDR(newCCWRotation);
         }
 
@@ -308,6 +308,14 @@ class Build extends Component {
     this.setState({ preVisButtonsDisabled: true });
     await this.props.togglePreVisualizeAnimation();
     this.flightCommandsIteratorReduxUpdater(this.props.flightInstructions);
+  };
+
+  stopPreVisualization = () => {
+    this.setState({
+      preVisButtonsDisabled: false,
+    });
+    this.props.togglePreVisualizeAnimation();
+    this.props.updateCDR(Math.PI);
   };
 
   handleButtonClick = (dirString, droneOrientation = 0) => {
@@ -556,6 +564,12 @@ class Build extends Component {
                 onClick={this.preVisualizePath}
               >
                 Pre-Visualize Path
+              </Button>
+              <Button
+                disabled={!this.state.preVisButtonsDisabled}
+                onClick={this.stopPreVisualization}
+              >
+                Stop Pre-Visualization
               </Button>
             </Grid.Column>
             <Grid.Column>
