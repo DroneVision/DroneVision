@@ -8,6 +8,7 @@ import {
   List,
   Segment,
   Header,
+  Image,
   Grid,
   ListContent,
 } from 'semantic-ui-react';
@@ -173,7 +174,6 @@ class SceneBuilder extends Component {
       downDisabled = selectedObj.position.y <= limits.minY;
     }
     return (
-
       <div id="scene-builder">
         <div id="scene-help">
           <Image
