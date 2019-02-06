@@ -27,8 +27,8 @@ class PreVisCanvas extends Component {
       1,
       1000
     );
-    this.camera.position.set(-2.8, 5.4, -14.8);
-
+    // this.camera.position.set(-2.8, 5.4, -14.8);
+    this.camera.position.set(0, -3.8, -1.8);
     //ORBITAL CONTROLS
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableKeys = false;
@@ -268,6 +268,63 @@ class PreVisCanvas extends Component {
     }
   };
 
+  moveCamera = object => {
+    const cameraX = this.props.currentDronePosition.x;
+    const cameraY = this.props.currentDronePosition.y + 1.2;
+    const cameraZ = this.props.currentDronePosition.z - 1.8;
+
+    let differenceX = cameraX - object.position.x;
+    let differenceY = cameraY - object.position.y;
+    let differenceZ = cameraZ - object.position.z;
+    let speed;
+
+    if (differenceX > 8 || differenceY > 8 || differenceZ > 8) {
+      speed = 0.05;
+    } else if (differenceX > 6 || differenceY > 6 || differenceZ > 6) {
+      speed = 0.04;
+    } else if (differenceX > 4 || differenceY > 4 || differenceZ > 4) {
+      speed = 0.03;
+    } else if (differenceX > 2 || differenceY > 2 || differenceZ > 2) {
+      speed = 0.02;
+    } else {
+      speed = 0.01;
+    }
+
+    if (object.position.x !== cameraX) {
+      if (differenceX > 0) {
+        object.position.x = object.position.x + speed;
+      }
+      if (differenceX < 0) {
+        object.position.x = object.position.x - speed;
+      }
+      if (Math.abs(differenceX) < speed + 0.01) {
+        object.position.x = cameraX;
+      }
+    }
+    if (object.position.y !== cameraY) {
+      if (differenceY > 0) {
+        object.position.y = object.position.y + speed;
+      }
+      if (differenceY < 0) {
+        object.position.y = object.position.y - speed;
+      }
+      if (Math.abs(differenceY) < speed + 0.01) {
+        object.position.y = cameraY;
+      }
+    }
+    if (object.position.z !== cameraZ) {
+      if (differenceZ > 0) {
+        object.position.z = object.position.z + speed;
+      }
+      if (differenceZ < 0) {
+        object.position.z = object.position.z - speed;
+      }
+      if (Math.abs(differenceZ) < speed + 0.01) {
+        object.position.z = cameraZ;
+      }
+    }
+  };
+
   rotateDrone = object => {
     let difference = this.props.currentDroneRotation - object.rotation.y;
     let speed = 0.01;
@@ -296,12 +353,14 @@ class PreVisCanvas extends Component {
     }
   };
 
-  animate = async () => {
+  animate = () => {
     requestAnimationFrame(this.animate);
 
     this.moveDrone(this.drone3DModel);
     this.rotateDrone(this.drone3DModel);
-
+    this.moveCamera(this.camera);
+    // this.rotateDrone(this.camera);
+    console.log(this.camera.position);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };

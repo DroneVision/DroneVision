@@ -253,7 +253,7 @@ class Build extends Component {
           });
           this.props.togglePreVisualizeAnimation();
           this.props.updateCDR(Math.PI);
-        }, 3000);
+        }, 10000);
       } else if (Array.isArray(animateInstruction)) {
         //create new object for new coordinates
         let newCoords = {};
