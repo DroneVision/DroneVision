@@ -220,12 +220,23 @@
 }
 
 .object-removal-button {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
   transform: rotate(45deg);
   position: absolute;
   top: 5px;
   right: 5px;
   font-size: 36px;
-  transform: rotate(45deg);
+  cursor: pointer;
+  z-index: 5;
+}
+.object-visibility-checkbox {
+  position: absolute;
+
+  font-size: 36px;
   cursor: pointer;
   z-index: 5;
 }
@@ -243,7 +254,7 @@
   height: 360px;
 }
 
-.canvas{
+.canvas {
   position: relative;
 }
 

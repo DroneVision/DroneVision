@@ -119,28 +119,24 @@ class BuildCanvas extends Component {
     this.redrawLinesAndMoveDrone();
     this.sceneObjects = createSceneObjs(sceneObjects);
     this.scene.add(this.sceneObjects);
-
-    // addObjectsToScene(this.props.sceneObjects,this.scene)
   }
 
   componentDidUpdate = prevProps => {
     // draw line and keep drone at tip of line
     this.redrawLinesAndMoveDrone(prevProps);
     const { sceneObjects } = this.props;
-    // if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
+
     if (this.sceneObjects) {
       this.scene.remove(this.sceneObjects);
     }
     this.sceneObjects = createSceneObjs(sceneObjects);
     this.scene.add(this.sceneObjects);
-    // }
   };
 
   redrawLinesAndMoveDrone = (prevProps = null) => {
     const {
       postTakeoffPosition,
       flightInstructions: newFlightInstructions,
-      obstacles,
       droneOrientation,
     } = this.props;
     let oldFlightInstructions;
@@ -152,13 +148,6 @@ class BuildCanvas extends Component {
     }
 
     this.drone3DModel.rotation.y = Math.PI;
-
-    //OBSTACLES (toggled by redux store)
-    if (obstacles) {
-      this.scene.add(Obstacles);
-    } else {
-      this.scene.remove(Obstacles);
-    }
 
     //REMOVE OLD LINE AND LAND LINE
     if (this.line) {
@@ -231,7 +220,7 @@ class BuildCanvas extends Component {
   };
 
   followDroneWithCamera = (point, followDistance = 5) => {
-    //this works because the camera's target is set to be the drone3D model (in the constructor), so it will always turn to face the drone we move it
+    //this works because the camera's target is set to be the drone3D model (in the constructor), so it will always turn to face the drone when we move it
 
     //we always want the camera to be slightly behind and above the drone, looking in the same direction that it is facing
     const { droneOrientation } = this.props;

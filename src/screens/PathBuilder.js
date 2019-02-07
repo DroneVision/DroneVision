@@ -25,11 +25,11 @@ import {
   clearInstructions,
   updateCDP,
   updateCDR,
-  toggleObstacles,
   updateDroneConnectionStatus,
   rotateDrone,
   togglePreVisualizeAnimation,
-
+  updateSceneObjs,
+  toggleSceneObjsVisibility,
 } from '../store';
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
@@ -55,7 +55,6 @@ class PathBuilder extends Component {
     };
   }
   componentDidMount() {
-    webFrame.setZoomFactor(.9);
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
     ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
@@ -340,12 +339,30 @@ class PathBuilder extends Component {
   buildHelp = () => this.setState({ helpOpen: true });
   handleClose = () => this.setState({ helpOpen: false });
 
+  toggleObjVisibility = () => {
+    const {
+      sceneObjects,
+      sceneObjectsVisible,
+      updateSceneObjs,
+      toggleSceneObjsVisibility,
+    } = this.props;
+    const updatedSceneObjects = sceneObjects.map(obj => {
+      const updatedObj = { ...obj };
+      updatedObj.visible = !sceneObjectsVisible;
+      return updatedObj;
+    });
+    toggleSceneObjsVisibility();
+    updateSceneObjs(updatedSceneObjects);
+  };
+  toggleSingleObjVisibility = evt => {};
+
   render() {
     const { limits, buttonPlane } = this.state;
     const {
       flightInstructions,
       droneOrientation,
       buildDronePosition,
+      sceneObjectsVisible,
     } = this.props;
     let leftDisabled, rightDisabled, forwardDisabled, reverseDisabled;
     if (droneOrientation === 0) {
@@ -388,29 +405,26 @@ class PathBuilder extends Component {
           </Header>
 
           <Grid.Row>
-
-           
-
-              {this.props.preVisualizeAnimation ? (
-                 <div className="canvas">
+            {this.props.preVisualizeAnimation ? (
+              <div className="canvas">
                 <PreVisCanvas />
-                <div className="legend" >
-              <Image src={require('../assets/images/helper-images/legend.png')}/>
+                <div className="legend">
+                  <Image
+                    src={require('../assets/images/helper-images/legend.png')}
+                  />
+                </div>
               </div>
-              </div>
-              ) : (
+            ) : (
               <div className="canvas">
                 <BuildCanvas />
 
-                <div className="legend" >
-
-              <Image src={require('../assets/images/helper-images/legend.png')}/>
+                <div className="legend">
+                  <Image
+                    src={require('../assets/images/helper-images/legend.png')}
+                  />
+                </div>
               </div>
-              </div>
-              )}
-
-           
-
+            )}
           </Grid.Row>
 
           <div id="row">
@@ -420,7 +434,10 @@ class PathBuilder extends Component {
                   <tr>
                     <td>
                       <h1>
-                        {buttonPlane === 'Current' ? null : `${buttonPlane} +`}
+                        {buttonPlane === 'Current'
+                          ? `Horizontal`
+                          : `${buttonPlane}`}{' '}
+                        Movement
                       </h1>
                     </td>
                   </tr>
@@ -445,13 +462,13 @@ class PathBuilder extends Component {
                       />
                     </td>
 
-                    <div id="build-help">
+                    <td id="build-help">
                       <Icon
                         name="question circle"
                         size="large"
                         onClick={this.buildHelp}
                       />
-                    </div>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -562,17 +579,17 @@ class PathBuilder extends Component {
             >
               Stop Pre-Visualization
             </Button> */}
-            {this.props.obstacles ? (
+            {sceneObjectsVisible ? (
               <Button
                 disabled={this.state.preVisButtonsDisabled}
-                onClick={this.props.toggleObstacles}
+                onClick={this.toggleObjVisibility}
               >
                 Remove Obstacles
               </Button>
             ) : (
               <Button
                 disabled={this.state.preVisButtonsDisabled}
-                onClick={this.props.toggleObstacles}
+                onClick={this.toggleObjVisibility}
               >
                 Insert Obstacles
               </Button>
@@ -618,6 +635,8 @@ const mapState = state => {
     droneConnectionStatus: state.droneConnectionStatus,
     buildDronePosition: state.buildDronePosition,
     preVisualizeAnimation: state.preVisualizeAnimation,
+    sceneObjects: state.sceneObjects,
+    sceneObjectsVisible: state.sceneObjectsVisible,
   };
 };
 
@@ -631,9 +650,7 @@ const mapDispatch = dispatch => {
     updateCDR: newRotation => {
       dispatch(updateCDR(newRotation));
     },
-    toggleObstacles: () => {
-      dispatch(toggleObstacles());
-    },
+
     updateDroneConnectionStatus: droneStatus =>
       dispatch(updateDroneConnectionStatus(droneStatus)),
     rotateDrone: newOrientation => {
@@ -642,6 +659,9 @@ const mapDispatch = dispatch => {
     updateInstructions: updatedFlightInstructions =>
       dispatch(updateInstructions(updatedFlightInstructions)),
     togglePreVisualizeAnimation: () => dispatch(togglePreVisualizeAnimation()),
+    updateSceneObjs: updatedSceneObjs =>
+      dispatch(updateSceneObjs(updatedSceneObjs)),
+    toggleSceneObjsVisibility: () => dispatch(toggleSceneObjsVisibility()),
   };
 };
 
@@ -649,4 +669,3 @@ export default connect(
   mapState,
   mapDispatch
 )(PathBuilder);
-

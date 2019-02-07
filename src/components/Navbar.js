@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Menu, Segment, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { changeTab, updateInstructions, loadSceneObjsFromFile } from '../store';
+import { changeTab, updateInstructions, updateSceneObjs } from '../store';
 import { saveFile, loadFile } from '../utils/fileSystemUtils';
 
 class Navbar extends Component {
@@ -14,7 +14,7 @@ class Navbar extends Component {
   };
   handleLoadSceneObjects = async () => {
     const sceneObjects = await loadFile('scene-objects');
-    this.props.loadSceneObjsFromFile(sceneObjects);
+    this.props.updateSceneObjs(sceneObjects);
   };
 
   render() {
@@ -24,6 +24,13 @@ class Navbar extends Component {
       <div id="navbar">
         <Segment inverted>
           <Menu inverted pointing secondary>
+            <Menu.Item
+              as={Link}
+              to={'/home'}
+              name="home"
+              active={activeTab === 'home'}
+              onClick={this.handleTabChange}
+            />
             <Menu.Item
               as={Link}
               to={'/scene-builder'}
@@ -110,8 +117,8 @@ const mapDispatch = dispatch => {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
       dispatch(updateInstructions(flightInstructions)),
-    loadSceneObjsFromFile: sceneObjects =>
-      dispatch(loadSceneObjsFromFile(sceneObjects)),
+    updateSceneObjs: sceneObjects =>
+      dispatch(updateSceneObjs(sceneObjects)),
   };
 };
 
