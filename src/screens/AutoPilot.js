@@ -5,12 +5,12 @@ import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
 import { Button, Grid, Header, Icon, Image } from 'semantic-ui-react';
 import wait from 'waait';
-import { updateCDP, updateCDR } from '../store';
+import { updateCDP, updateCDR, updateDroneConnectionStatus } from '../store';
 import commandDelays from '../drone/commandDelays';
 
 const { ipcRenderer } = window.require('electron');
 
-class Run extends Component {
+class AutoPilot extends Component {
   constructor() {
     super();
 
@@ -20,7 +20,13 @@ class Run extends Component {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      // Send a command to drone
+      ipcRenderer.send('single-instruction', 'command');
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+    });
+  }
 
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');
@@ -245,11 +251,13 @@ class Run extends Component {
         <div className="row">
           <div className="row-item">
             <div className="canvas">
-                <AutoPilotCanvas />
-                <div className="legend" >
-              <Image src={require('../assets/images/helper-images/legend.png')}/>
+              <AutoPilotCanvas />
+              <div className="legend">
+                <Image
+                  src={require('../assets/images/helper-images/legend.png')}
+                />
               </div>
-              </div>
+            </div>
           </div>
           <div className="row-item">
             <DroneTelemetry />
@@ -287,7 +295,7 @@ class Run extends Component {
         <div className="row">
           <div className="row-item">
             <Button
-              disabled={this.props.droneConnectionStatus.isConnected}
+              disabled={!this.props.droneConnectionStatus.isConnected}
               color="facebook"
               labelPosition="left"
               icon="military"
@@ -304,8 +312,13 @@ class Run extends Component {
               content="Record Flight"
               onClick={this.runFlightInstructionsAndRecord}
             />
-            </div>
           </div>
+        </div>
+        <div className="row">
+          <div className="row-item">
+            <StatusContainer />
+          </div>
+        </div>
       </div>
     );
   }
@@ -331,10 +344,12 @@ const mapDispatch = dispatch => {
     updateCDR: newRotation => {
       dispatch(updateCDR(newRotation));
     },
+    updateDroneConnectionStatus: droneStatus =>
+      dispatch(updateDroneConnectionStatus(droneStatus)),
   };
 };
 
 export default connect(
   mapState,
   mapDispatch
-)(Run);
+)(AutoPilot);
