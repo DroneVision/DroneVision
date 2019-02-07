@@ -32,6 +32,7 @@ import {
 } from '../store';
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
+const { webFrame, ipcRenderer } = window.require('electron');
 
 class PathBuilder extends Component {
   constructor(props) {
@@ -53,8 +54,14 @@ class PathBuilder extends Component {
     };
   }
   componentDidMount() {
+    webFrame.setZoomFactor(.9);
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      // Send a command to drone
+      ipcRenderer.send('single-instruction', 'command');
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+    });
   }
   handleKeyDown = evt => {
     if (evt.keyCode === 90 || evt.keyCode === 190) {
