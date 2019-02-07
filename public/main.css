@@ -227,23 +227,29 @@
   user-select: none;
   transform: rotate(45deg);
   position: absolute;
-  top: 5px;
+  top: 10px;
   right: 5px;
   font-size: 36px;
   cursor: pointer;
   z-index: 5;
 }
+.object-removal-button:hover {
+  color: rgb(30, 120, 255);
+}
+
+.object-name-input{
+  width: 150px;
+  margin-bottom: 3px;
+}
 .object-visibility-checkbox {
   position: absolute;
-
+margin-top: 2px;
+margin-bottom: 10px;
   font-size: 36px;
   cursor: pointer;
   z-index: 5;
 }
 
-.object-removal-button:hover {
-  color: rgb(30, 120, 255);
-}
 
 .object-single {
   position: relative;
@@ -256,13 +262,6 @@
 
 .canvas {
   position: relative;
-}
-
-.legend-path-builder {
-  position: absolute;
-  bottom: 10px;
-  right: -45px;
-  width: 70px;
 }
 
 .legend {
