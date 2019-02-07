@@ -6,5 +6,5 @@ const middlewares = applyMiddleware(loggingMiddleware);
 
 const store = createStore(reducer, middlewares);
 
-export default store;
 export * from './reducer';
+export default store;
