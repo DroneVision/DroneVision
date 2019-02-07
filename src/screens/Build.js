@@ -58,11 +58,11 @@ class Build extends Component {
   }
   handleKeyDown = evt => {
     if (evt.keyCode === 90 || evt.keyCode === 190) {
-      //'z' and '.' key -> Activate Down Plane
-      this.setState({ buttonPlane: 'Down' });
-    } else if (evt.keyCode === 88 || evt.keyCode === 191) {
-      //'x' and '/' key -> Activate Up Plane
+      //'z' and '.' key -> Activate Up Plane
       this.setState({ buttonPlane: 'Up' });
+    } else if (evt.keyCode === 88 || evt.keyCode === 191) {
+      //'x' and '/' key -> Activate Down Plane
+      this.setState({ buttonPlane: 'Down' });
     }
     // else if (evt.keyCode === 68 || evt.keyCode === 74) {
     //   //'d' and 'j' key -> Rotate counter-clockwise
