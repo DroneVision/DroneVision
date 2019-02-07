@@ -255,6 +255,7 @@ class SceneBuilder extends Component {
                       >
                         <List.Content className="object-name">
                           <Input
+                          className="object-name-input"
                             id={sceneObj.id}
                             value={sceneObj.name}
                             onChange={this.handleNameChange}
