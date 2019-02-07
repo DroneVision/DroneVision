@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import Build from './screens/Build';
+import PathBuilder from './screens/PathBuilder';
 import SceneBuilder from './screens/SceneBuilder';
 import Autopilot from './screens/Autopilot';
 import Videos from './screens/Videos';
@@ -14,7 +14,7 @@ import {
   updateDroneConnectionStatus,
   loadSceneObjsFromFile,
   updateSelectedObj,
-} from './store/store';
+} from './store';
 const { ipcRenderer } = window.require('electron');
 
 class Routes extends Component {
@@ -54,9 +54,9 @@ class Routes extends Component {
         <div id="right-column" />
         <Navbar />
         <Switch>
-          <Route exact path="/" component={Build} />
+          <Route exact path="/" component={PathBuilder} />
           <Route path="/scene-builder" component={SceneBuilder} />
-          <Route path="/path-builder" component={Build} />
+          <Route path="/path-builder" component={PathBuilder} />
           <Route path="/autopilot" component={Autopilot} />
           <Route path="/manual-flight" component={ManualControl} />
           <Route path="/videos" component={Videos} />

@@ -5,7 +5,7 @@ import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
 import { Button, Grid, Header, Icon, Image } from 'semantic-ui-react';
 import wait from 'waait';
-import { updateCDP, updateCDR } from '../store/store';
+import { updateCDP, updateCDR } from '../store';
 import commandDelays from '../drone/commandDelays';
 
 const { ipcRenderer } = window.require('electron');

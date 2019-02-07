@@ -28,7 +28,7 @@ import {
   updateSelectedObj,
   deleteSelectedObj,
   clearObjects,
-} from '../store/store';
+} from '../store';
 
 class SceneBuilder extends Component {
   constructor(props) {
