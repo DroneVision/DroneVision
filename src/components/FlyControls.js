@@ -13,7 +13,9 @@ class FlyControls extends Component {
     ipcRenderer.send('takeoff');
   };
   render() {
-    const { distance } = this.props;
+    const { distance: meters } = this.props;
+    const distance = meters * 100;
+
     return (
       <div id="manual-screen">
         <Grid centered>
