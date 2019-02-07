@@ -1,20 +1,20 @@
 //Default Commands for North (N), West (W), South (S), East (E) assuming the drone is facing forward towards the north star
 const dirs = [
   [1, 0, 0], // North
-  [0, 1, 0], // West
-  [-1, 0, 0], // South
   [0, -1, 0], // East
+  [-1, 0, 0], // South
+  [0, 1, 0], // West
   [0, 0, 0], // Null
   [0, 0, 1], // Up
   [0, 0, -1], // Down
 ];
-const dirStrs = ['Forward', 'Left', 'Reverse', 'Right', null, 'Up', 'Down'];
+const dirStrs = ['Forward', 'Right', 'Reverse', 'Left', null, 'Up', 'Down'];
 
 const dirMap = {
   N: 0,
-  W: 1,
+  E: 1,
   S: 2,
-  E: 3,
+  W: 3,
   C: 4,
   U: 5,
   D: 6,
@@ -40,18 +40,18 @@ function combineArrays() {
 }
 
 export const getFlightInstruction = (dirString, droneOrientation = 0) => {
-  const droneInstruction = getDroneInstruction(dirString, droneOrientation);
-  const drawInstruction = getDrawInstruction(dirString);
+  const droneInstruction = getDroneInstruction(dirString);
+  const drawInstruction = getDrawInstruction(dirString, droneOrientation);
   const message = getMessage(dirString, droneOrientation);
 
   return { droneInstruction, drawInstruction, message };
 };
 
-export const getDrawInstruction = dirString => {
+export const getDroneInstruction = dirString => {
   return combineArrays(...dirString.split('').map(dir => dirs[dirMap[dir]]));
 };
 
-const getDroneInstruction = (dirString, droneOrientation) => {
+export const getDrawInstruction = (dirString, droneOrientation = 0) => {
   return combineArrays(
     ...dirString.split('').map(dir => {
       if (dirMap[dir] >= 4) {
@@ -70,12 +70,13 @@ const getMessage = (dirString, droneOrientation) => {
     .split('')
     .filter(dir => dir !== 'C')
     .map(dir => {
-      if (dirMap[dir] >= 4) {
-        //Up (U) or Down (D)
-        return dirStrs[dirMap[dir]];
-      } else {
-        return dirStrs[(dirMap[dir] + droneOrientation) % 4];
-      }
+      // if (dirMap[dir] >= 4) {
+      //   //Up (U) or Down (D)
+      //   return dirStrs[dirMap[dir]];
+      // } else {
+      //   return dirStrs[(dirMap[dir] + droneOrientation) % 4];
+      // }
+      return dirStrs[dirMap[dir]];
     })
     .join(' + ');
 };

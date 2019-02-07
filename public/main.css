@@ -233,6 +233,7 @@
   font-size: 36px;
   transform: rotate(45deg);
   cursor: pointer;
+  z-index: 5;
 }
 
 .object-removal-button:hover {

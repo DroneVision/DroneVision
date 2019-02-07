@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Icon, Image } from 'semantic-ui-react';
 
-
 const renderCenterButton = (
   type,
   clickHandler,
@@ -12,16 +11,15 @@ const renderCenterButton = (
     case 'C':
       return (
         <Image
-          className={`drone${droneOrientation}`}
           src={require('../assets/images/helper-images/top-view-up.png')}
-          style={{fontSize: 30}}
+          style={{ fontSize: 30 }}
           avatar
         />
       );
     case 'U':
       return (
         <Button
-        size="huge"
+          size="huge"
           disabled={allDisabled}
           onClick={() => clickHandler(type)}
         >
@@ -33,11 +31,9 @@ const renderCenterButton = (
     case 'D':
       return (
         <Button
-        size="huge"
+          size="huge"
           disabled={allDisabled}
-          onClick={() =>
-            clickHandler(type)
-          }
+          onClick={() => clickHandler(type)}
         >
           <Button.Content visible>
             <Icon className="straight-down" name="arrow circle down" />
@@ -58,7 +54,7 @@ const ButtonPanel = props => {
     reverseDisabled,
     allDisabled,
     droneOrientation,
-    clickHandler
+    clickHandler,
   } = props;
 
   return (
@@ -70,9 +66,10 @@ const ButtonPanel = props => {
         </tr>
         <tr>
           <td>
-            <Button size="huge"
+            <Button
+              size="huge"
               disabled={leftDisabled || forwardDisabled || allDisabled}
-              onClick={()=> clickHandler(`${type}NW`, droneOrientation)}  
+              onClick={() => clickHandler(`${type}NW`, droneOrientation)}
             >
               <Button.Content visible>
                 <Icon className="f-left" name="arrow up" />
@@ -81,12 +78,9 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
-            size="huge"
+              size="huge"
               disabled={forwardDisabled || allDisabled}
-              onClick={() =>
-                clickHandler(`${type}N`, droneOrientation)
-                
-              }
+              onClick={() => clickHandler(`${type}N`, droneOrientation)}
             >
               <Button.Content visible>
                 <Icon className="forward" name="arrow up" />
@@ -95,12 +89,9 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
-            size="huge"
+              size="huge"
               disabled={rightDisabled || forwardDisabled || allDisabled}
-              onClick={() =>
-                clickHandler(`${type}NE`, droneOrientation)
-                
-              }
+              onClick={() => clickHandler(`${type}NE`, droneOrientation)}
             >
               <Button.Content visible>
                 <Icon className="f-right" name="arrow up" />
@@ -111,12 +102,9 @@ const ButtonPanel = props => {
         <tr>
           <td>
             <Button
-            size="huge"
+              size="huge"
               disabled={leftDisabled || allDisabled}
-              onClick={() =>
-                clickHandler(`${type}W`, droneOrientation)
-                
-              }
+              onClick={() => clickHandler(`${type}W`, droneOrientation)}
             >
               <Button.Content visible>
                 <Icon className="left" name="arrow left" />
@@ -133,12 +121,9 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
-            size="huge"
+              size="huge"
               disabled={rightDisabled || allDisabled}
-              onClick={() =>
-                clickHandler(`${type}E`, droneOrientation)
-                
-              }
+              onClick={() => clickHandler(`${type}E`, droneOrientation)}
             >
               <Button.Content visible>
                 <Icon className="right" name="arrow right" />
@@ -149,12 +134,9 @@ const ButtonPanel = props => {
         <tr>
           <td>
             <Button
-            size="huge"
+              size="huge"
               disabled={leftDisabled || reverseDisabled || allDisabled}
-              onClick={() =>
-                clickHandler(`${type}SW`, droneOrientation)
-                
-              }
+              onClick={() => clickHandler(`${type}SW`, droneOrientation)}
             >
               <Button.Content visible>
                 <Icon className="b-left" name="arrow down" />
@@ -163,12 +145,9 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
-            size="huge"
+              size="huge"
               disabled={reverseDisabled || allDisabled}
-              onClick={() =>
-                clickHandler(`${type}S`, droneOrientation)
-                
-              }
+              onClick={() => clickHandler(`${type}S`, droneOrientation)}
             >
               <Button.Content visible>
                 <Icon className="back" name="arrow down" />
@@ -177,12 +156,9 @@ const ButtonPanel = props => {
           </td>
           <td>
             <Button
-            size="huge"
+              size="huge"
               disabled={rightDisabled || reverseDisabled || allDisabled}
-              onClick={() =>
-                clickHandler(`${type}SE`, droneOrientation)
-                
-              }
+              onClick={() => clickHandler(`${type}SE`, droneOrientation)}
             >
               <Button.Content visible>
                 <Icon className="b-right" name="arrow down" />

@@ -314,11 +314,29 @@ class Build extends Component {
       droneOrientation,
       buildDronePosition,
     } = this.props;
+    let leftDisabled, rightDisabled, forwardDisabled, reverseDisabled;
+    if (droneOrientation === 0) {
+      leftDisabled = buildDronePosition.x === limits.maxX;
+      rightDisabled = buildDronePosition.x === limits.minX;
+      forwardDisabled = buildDronePosition.z === limits.maxZ;
+      reverseDisabled = buildDronePosition.z === limits.minZ;
+    } else if (droneOrientation === 1) {
+      leftDisabled = buildDronePosition.z === limits.maxX;
+      rightDisabled = buildDronePosition.z === limits.minX;
+      forwardDisabled = buildDronePosition.x === limits.minZ;
+      reverseDisabled = buildDronePosition.x === limits.maxZ;
+    } else if (droneOrientation === 2) {
+      leftDisabled = buildDronePosition.x === limits.minX;
+      rightDisabled = buildDronePosition.x === limits.maxX;
+      forwardDisabled = buildDronePosition.z === limits.minZ;
+      reverseDisabled = buildDronePosition.z === limits.maxZ;
+    } else {
+      leftDisabled = buildDronePosition.z === limits.minX;
+      rightDisabled = buildDronePosition.z === limits.maxX;
+      forwardDisabled = buildDronePosition.x === limits.maxZ;
+      reverseDisabled = buildDronePosition.x === limits.minZ;
+    }
 
-    const leftDisabled = buildDronePosition.x === limits.maxX;
-    const rightDisabled = buildDronePosition.x === limits.minX;
-    const forwardDisabled = buildDronePosition.z === limits.maxZ;
-    const reverseDisabled = buildDronePosition.z === limits.minZ;
     const upDisabled = buildDronePosition.y === limits.maxY;
     const downDisabled = buildDronePosition.y === limits.minY;
     return (

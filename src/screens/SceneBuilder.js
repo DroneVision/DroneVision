@@ -26,23 +26,10 @@ import {
   addSceneObj,
   updateSceneObj,
   updateSelectedObj,
+  deleteSelectedObj,
+  clearObjects,
 } from '../store/store';
 
-const { ipcRenderer } = window.require('electron');
-
-const defaultObj = {
-  length: 2,
-  width: 2,
-  height: 2,
-  position: {
-    x: 0,
-    y: -4, //accounts for plane shifting + height/2
-    z: 0,
-  },
-  visible: true,
-};
-
-let objIdGlobal = 1;
 class SceneBuilder extends Component {
   constructor(props) {
     super(props);
@@ -54,19 +41,17 @@ class SceneBuilder extends Component {
   }
 
   componentDidMount() {
-    // Listen for flight import from main process
-    // ipcRenderer.on('file-opened', (event, flightInstructions) => {
-    //   this.props.updateInstructions(flightInstructions);
-    // });
-    if (this.props.sceneObjects.length) {
-      const limits = this.getNewLimits(this.props.sceneObjects[0]);
-      this.setState({ selectedObj: this.props.sceneObjects[0], limits });
+    const { sceneObjects, updateSelectedObj } = this.props;
+    if (sceneObjects.length) {
+      const limits = this.getNewLimits(sceneObjects[0]);
+      updateSelectedObj(sceneObjects[0].id);
+      this.setState({ limits });
     }
   }
 
   createNewObj = () => {
-    const { addSceneObj, updateSelectedObj } = this.props;
-    const id = objIdGlobal++;
+    const { addSceneObj, updateSelectedObj, sceneObjects } = this.props;
+    const id = Date.now();
     const newObj = {
       length: 2,
       width: 2,
@@ -130,11 +115,15 @@ class SceneBuilder extends Component {
     };
   };
 
-  deleteObject = event => {
-    console.log('deleted', event.target);
+  deleteObject = id => {
+    this.props.deleteSelectedObj(id);
+    if (this.props.sceneObjects.length <= 1) {
+      this.props.updateSelectedObj(null);
+    }
   };
 
   handleObjectSelection = evt => {
+    console.dir(evt.currentTarget);
     const { sceneObjects, updateSelectedObj } = this.props;
     const selectedObj = sceneObjects.find(
       sceneObj => sceneObj.id === Number(evt.currentTarget.id)
@@ -156,13 +145,13 @@ class SceneBuilder extends Component {
     const { limits } = this.state;
     const { droneOrientation, sceneObjects, selectedObjId } = this.props;
     const selectedObj = sceneObjects.find(obj => obj.id === selectedObjId);
-    let leftDisabled,
-      rightDisabled,
-      forwardDisabled,
-      reverseDisabled,
-      upDisabled,
-      downDisabled;
-    if (selectedObj) {
+    let leftDisabled = true,
+      rightDisabled = true,
+      forwardDisabled = true,
+      reverseDisabled = true,
+      upDisabled = true,
+      downDisabled = true;
+    if (selectedObj && selectedObj.id) {
       leftDisabled = selectedObj.position.x >= limits.maxX;
       rightDisabled = selectedObj.position.x <= limits.minX;
       forwardDisabled = selectedObj.position.z >= limits.maxZ;
@@ -173,10 +162,6 @@ class SceneBuilder extends Component {
     return (
       <div id="scene-builder">
         <div id="scene-help">
-          {/* <Image
-            src={require('../assets/images/helper-images/build-instructions.png')}
-            size="medium"
-          /> */}
           <Segment inverted id="object-list">
             <List divided inverted selection>
               <List.Header className="object-header">YOUR OBJECTS:</List.Header>
@@ -185,67 +170,71 @@ class SceneBuilder extends Component {
                 .map(sceneObj => {
                   return (
                     <List.Item
+                      active={selectedObjId === sceneObj.id}
                       className="object-single"
-                      active={this.state.activeListItemId === sceneObj.id}
                       key={sceneObj.id}
-                      onClick={this.handleObjectSelection}
-                      id={sceneObj.id}
                     >
                       {/* BEGIN remove button */}
                       <div
                         className="object-removal-button"
                         onClick={() => {
-                          this.deleteObject();
+                          this.deleteObject(sceneObj.id);
                         }}
                       >
                         +
                       </div>
                       {/* END remove button */}
-                      <List.Content className="object-name">
-                        {sceneObj.name}
-                      </List.Content>
-                      <ListContent>
-                        {`Length:   `}
-                        <NumericInput
-                          className="numeric-input"
-                          id={sceneObj.id}
-                          name={'length'}
-                          size={3}
-                          min={1}
-                          max={this.props.scale}
-                          value={sceneObj.length}
-                          onChange={this.handleObjDimChange}
-                        />
-                        {`   m`}
-                      </ListContent>
-                      <ListContent>
-                        {`Width:   `}
-                        <NumericInput
-                          className="numeric-input"
-                          id={sceneObj.id}
-                          name={'width'}
-                          size={3}
-                          min={1}
-                          max={this.props.scale}
-                          value={sceneObj.width}
-                          onChange={this.handleObjDimChange}
-                        />
-                        {`   m`}
-                      </ListContent>
-                      <ListContent>
-                        {`Height:   `}
-                        <NumericInput
-                          className="numeric-input"
-                          id={sceneObj.id}
-                          name={'height'}
-                          size={3}
-                          min={1}
-                          max={this.props.scale}
-                          value={sceneObj.height}
-                          onChange={this.handleObjDimChange}
-                        />
-                        {`   m`}
-                      </ListContent>
+                      <div
+                        id={sceneObj.id}
+                        onClick={this.handleObjectSelection}
+                      >
+                        <List.Content className="object-name">
+                          New Object
+                          {/* {sceneObj.name} */}
+                        </List.Content>
+                        <ListContent>
+                          {`Length:   `}
+                          <NumericInput
+                            className="numeric-input"
+                            id={sceneObj.id}
+                            name={'length'}
+                            size={3}
+                            min={1}
+                            max={this.props.scale}
+                            value={sceneObj.length}
+                            onChange={this.handleObjDimChange}
+                          />
+                          {`   m`}
+                        </ListContent>
+                        <ListContent>
+                          {`Width:   `}
+                          <NumericInput
+                            className="numeric-input"
+                            id={sceneObj.id}
+                            name={'width'}
+                            size={3}
+                            min={1}
+                            max={this.props.scale}
+                            value={sceneObj.width}
+                            onChange={this.handleObjDimChange}
+                          />
+                          {`   m`}
+                        </ListContent>
+                        <ListContent>
+                          {`Height:   `}
+                          <NumericInput
+                            className="numeric-input"
+                            id={sceneObj.id}
+                            name={'height'}
+                            size={3}
+                            min={1}
+                            max={this.props.scale}
+                            value={sceneObj.height}
+                            onChange={this.handleObjDimChange}
+                          />
+                          {`   m`}
+                        </ListContent>
+                      </div>
                     </List.Item>
                   );
                 })}
@@ -488,6 +477,8 @@ const mapDispatch = dispatch => {
     },
     updateSceneObj: updatedObj => dispatch(updateSceneObj(updatedObj)),
     updateSelectedObj: objId => dispatch(updateSelectedObj(objId)),
+    deleteSelectedObj: objId => dispatch(deleteSelectedObj(objId)),
+    clearObjects: () => dispatch(clearObjects()),
   };
 };
 

@@ -7,11 +7,12 @@ const readFileAsync = promisify(fs.readFile);
 
 // The dialog blocks the main thread until user selects a valid file.
 
-const promisifiedDialog = () => {
+const promisifiedDialog = target => {
+  const fileExt = target === 'flight-instructions' ? 'dvz' : 'dvzo';
   const options = {
     properties: ['openFile'],
     defaultPath: app.getPath('desktop'),
-    filters: [{ name: 'object', extensions: ['json', 'dvz', 'dvzo'] }],
+    filters: [{ name: 'object', extensions: [fileExt] }],
   };
   return new Promise((resolve, reject) => {
     dialog.showOpenDialog(null, options, (fileName, err) => {
@@ -24,19 +25,19 @@ const promisifiedDialog = () => {
   });
 };
 
-const readFile = async () => {
-  const fileName = await promisifiedDialog();
+const readFile = async target => {
+  const fileName = await promisifiedDialog(target);
   const data = await readFileAsync(fileName);
   return JSON.parse(data);
 };
 // Opening a File from menu bar
-async function loadFile(mainWindow, target) {
-  const targetData = await readFile();
+const loadFile = async (mainWindow, target) => {
+  const targetData = await readFile(target);
   mainWindow.webContents.send(`load-${target}`, targetData);
-}
+};
 
 // Saving a File from menu bar
-async function saveFile(mainWindow, target) {
+const saveFile = async (mainWindow, target) => {
   //target is 'flight-instructions' or 'scene-objects'
 
   // send a message to browser
@@ -49,10 +50,12 @@ async function saveFile(mainWindow, target) {
         ? 'flightInstructions.dvz'
         : 'sceneObjects.dvzo';
 
+    const fileExt = target === 'flight-instructions' ? 'dvz' : 'dvzo';
+
     const options = {
       defaultPath: path.join(app.getPath('desktop'), fileName),
       // Add a file extension
-      filters: [{ name: 'object', extensions: ['json', 'dvz', 'dvzo'] }],
+      filters: [{ name: 'object', extensions: [fileExt] }],
     };
 
     dialog.showSaveDialog(null, options, fileName => {
@@ -79,7 +82,7 @@ async function saveFile(mainWindow, target) {
       });
     });
   });
-}
+};
 
 module.exports = {
   loadFile,

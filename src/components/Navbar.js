@@ -2,31 +2,23 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Menu, Segment, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { changeTab, updateInstructions } from '../store/store';
-import {
-  saveFlightInstructions,
-  loadFlightInstructions,
-} from '../utils/fileSystemUtils';
-
-const { ipcRenderer } = window.require('electron');
+import { changeTab, updateInstructions,loadSceneObjsFromFile } from '../store/store';
+import { saveFile, loadFile } from '../utils/fileSystemUtils';
 
 class Navbar extends Component {
   handleTabChange = (e, { name }) => this.props.changeTab(name);
 
   handleLoadFlightInstructions = async () => {
-    const flightInstructions = await loadFlightInstructions();
+    const flightInstructions = await loadFile('flight-instructions');
     this.props.updateInstructions(flightInstructions);
   };
-
-  componentDidMount() {
-    ipcRenderer.on('file-opened', (event, flightInstructions) => {
-      this.props.updateInstructions(flightInstructions);
-    });
-  }
+  handleLoadSceneObjects = async () => {
+    const sceneObjects = await loadFile('scene-objects');
+    this.props.loadSceneObjsFromFile(sceneObjects);
+  };
 
   render() {
-    const { activeTab } = this.props;
-    const { flightInstructions } = this.props;
+    const { activeTab, flightInstructions, sceneObjects } = this.props;
 
     return (
       <div id="navbar">
@@ -81,9 +73,21 @@ class Navbar extends Component {
                     Import Flight Path
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() => saveFlightInstructions(flightInstructions)}
+                    onClick={() =>
+                      saveFile('flight-instructions', flightInstructions)
+                    }
                   >
                     Export Flight Path
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={this.handleLoadSceneObjects}>
+                    Import Scene Objects
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() =>
+                      saveFile('scene-objects', sceneObjects)
+                    }
+                  >
+                    Export Scene Objects
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
@@ -99,7 +103,7 @@ const mapState = state => {
   return {
     activeTab: state.navTab,
     flightInstructions: state.flightInstructions,
-    distance: state.distance,
+    sceneObjects: state.sceneObjects,
   };
 };
 
@@ -108,6 +112,7 @@ const mapDispatch = dispatch => {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
       dispatch(updateInstructions(flightInstructions)),
+      loadSceneObjsFromFile: sceneObjects => dispatch(loadSceneObjsFromFile(sceneObjects))
   };
 };
 
