@@ -200,7 +200,7 @@ class BuildCanvas extends Component {
       });
 
       //moves the camera to follow the drone as the path is drawn
-      this.followDroneWithCamera(point);
+      this.followDroneWithCamera(point, 7);
 
       this.line = new THREE.Line(geometry, material);
 
@@ -230,19 +230,19 @@ class BuildCanvas extends Component {
     }
   };
 
-  followDroneWithCamera = point => {
+  followDroneWithCamera = (point, followDistance = 5) => {
     //this works because the camera's target is set to be the drone3D model (in the constructor), so it will always turn to face the drone we move it
 
     //we always want the camera to be slightly behind and above the drone, looking in the same direction that it is facing
     const { droneOrientation } = this.props;
     if (droneOrientation === 0) {
-      this.camera.position.set(point.x, point.y + 2, point.z - 5);
+      this.camera.position.set(point.x, point.y + 2, point.z - followDistance);
     } else if (droneOrientation === 1) {
-      this.camera.position.set(point.x + 5, point.y + 2, point.z);
+      this.camera.position.set(point.x + followDistance, point.y + 2, point.z);
     } else if (droneOrientation === 2) {
-      this.camera.position.set(point.x, point.y + 2, point.z + 5);
+      this.camera.position.set(point.x, point.y + 2, point.z + followDistance);
     } else {
-      this.camera.position.set(point.x - 5, point.y + 2, point.z);
+      this.camera.position.set(point.x - followDistance, point.y + 2, point.z);
     }
   };
 

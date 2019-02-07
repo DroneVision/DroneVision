@@ -1,21 +1,21 @@
 import React from 'react';
 import { Button, Icon, Image } from 'semantic-ui-react';
 
-const renderCenterButton = (
-  type,
-  clickHandler,
-  allDisabled,
-  droneOrientation
-) => {
+const renderCenterButton = (type, clickHandler, allDisabled, screen) => {
   switch (type) {
     case 'C':
-      return (
-        <Image
-          src={require('../assets/images/helper-images/top-view-up.png')}
-          style={{ fontSize: 30 }}
-          avatar
-        />
-      );
+      if (screen === 'path') {
+        return (
+          <Image
+            src={require('../assets/images/helper-images/top-view-up.png')}
+            className="drone-button-image"
+            style={{ fontSize: 30 }}
+            avatar
+          />
+        );
+      } else {
+        return null;
+      }
     case 'U':
       return (
         <Button
@@ -55,6 +55,7 @@ const ButtonPanel = props => {
     allDisabled,
     droneOrientation,
     clickHandler,
+    screen,
   } = props;
 
   return (
@@ -111,14 +112,7 @@ const ButtonPanel = props => {
               </Button.Content>
             </Button>
           </td>
-          <td>
-            {renderCenterButton(
-              type,
-              clickHandler,
-              allDisabled,
-              droneOrientation
-            )}
-          </td>
+          <td>{renderCenterButton(type, clickHandler, allDisabled, screen)}</td>
           <td>
             <Button
               size="huge"

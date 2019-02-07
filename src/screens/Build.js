@@ -46,7 +46,7 @@ class Build extends Component {
         minY: 1,
         minZ: -scale / 2,
       },
-      currentPlane: 'Current',
+      buttonPlane: 'Current',
       startingPoint: { x: 0, y: 1, z: 0 },
       preVisButtonsDisabled: false,
       helpOpen: false,
@@ -57,17 +57,16 @@ class Build extends Component {
     document.addEventListener('keyup', this.handleKeyUp);
   }
   handleKeyDown = evt => {
-    // console.log('hi', evt.keyCode);
     if (evt.keyCode === 90 || evt.keyCode === 190) {
       //'z' and '.' key -> Activate Down Plane
-      this.setState({ currentPlane: 'Down' });
+      this.setState({ buttonPlane: 'Down' });
     } else if (evt.keyCode === 88 || evt.keyCode === 191) {
       //'x' and '/' key -> Activate Up Plane
-      this.setState({ currentPlane: 'Up' });
+      this.setState({ buttonPlane: 'Up' });
     }
   };
   handleKeyUp = () => {
-    this.setState({ currentPlane: 'Current' });
+    this.setState({ buttonPlane: 'Current' });
   };
 
   addFlightInstruction = instructionObj => {
@@ -326,7 +325,7 @@ class Build extends Component {
   handleClose = () => this.setState({ helpOpen: false });
 
   render() {
-    const { limits, currentPlane } = this.state;
+    const { limits, buttonPlane } = this.state;
     const {
       flightInstructions,
       droneOrientation,
@@ -355,8 +354,10 @@ class Build extends Component {
       reverseDisabled = buildDronePosition.x === limits.minZ;
     }
 
-    const upDisabled = buildDronePosition.y === limits.maxY;
-    const downDisabled = buildDronePosition.y === limits.minY;
+    const upDisabled =
+      buildDronePosition.y === limits.maxY && buttonPlane === 'Up';
+    const downDisabled =
+      buildDronePosition.y === limits.minY && buttonPlane === 'Down';
     return (
       <div id="build-screen">
         <Grid columns={3} padded centered>
@@ -387,25 +388,28 @@ class Build extends Component {
                   <tr>
                     <td>
                       <h1>
-                        {currentPlane === 'Current'
-                          ? null
-                          : `${currentPlane} +`}
+                        {buttonPlane === 'Current' ? null : `${buttonPlane} +`}
                       </h1>
                     </td>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td id={`${currentPlane}-strafe`}>
+                    <td id={`${buttonPlane}-strafe`}>
                       <ButtonPanel
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
-                        allDisabled={this.state.preVisButtonsDisabled}
+                        allDisabled={
+                          this.state.preVisButtonsDisabled ||
+                          upDisabled ||
+                          downDisabled
+                        }
                         clickHandler={this.handleButtonClick}
-                        type={currentPlane[0]}
+                        type={buttonPlane[0]}
                         droneOrientation={droneOrientation}
+                        screen="path"
                       />
                     </td>
 
