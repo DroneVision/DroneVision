@@ -9,22 +9,23 @@ import {
   Segment,
   Header,
   Image,
-  Grid,
   ListContent,
   Modal,
+  Checkbox,
+  Input,
 } from 'semantic-ui-react';
 
 import NumericInput from 'react-numeric-input';
 
 import { getDrawInstruction } from '../utils/buttonPanelUtils';
+import { colors } from '../utils/canvasUtils';
 
 import ButtonPanel from '../components/ButtonPanel';
 import SceneCanvas from '../components/SceneCanvas';
 import {
   changeTab,
-  toggleObstacles,
   addSceneObj,
-  updateSceneObj,
+  updateSingleSceneObj,
   updateSelectedObj,
   deleteSelectedObj,
   clearObjects,
@@ -54,11 +55,11 @@ class SceneBuilder extends Component {
 
   handleKeyDown = evt => {
     if (evt.keyCode === 90 || evt.keyCode === 190) {
-      //'z' and '.' key -> Activate Down Plane
-      this.setState({ buttonPlane: 'Down' });
-    } else if (evt.keyCode === 88 || evt.keyCode === 191) {
-      //'x' and '/' key -> Activate Up Plane
+      //'z' and '.' key -> Activate Up Plane
       this.setState({ buttonPlane: 'Up' });
+    } else if (evt.keyCode === 88 || evt.keyCode === 191) {
+      //'x' and '/' key -> Activate Down Plane
+      this.setState({ buttonPlane: 'Down' });
     }
   };
   handleKeyUp = () => {
@@ -66,7 +67,7 @@ class SceneBuilder extends Component {
   };
 
   createNewObj = () => {
-    const { addSceneObj, updateSelectedObj } = this.props;
+    const { addSceneObj, updateSelectedObj, sceneObjects } = this.props;
     const id = Date.now();
     const newObj = {
       length: 2,
@@ -78,10 +79,11 @@ class SceneBuilder extends Component {
         z: 0,
       },
       visible: true,
+      id,
+      name: 'New Object',
+      color: colors[sceneObjects.length % colors.length],
     };
 
-    newObj.id = id;
-    newObj.name = `Object ${id}`;
     updateSelectedObj(newObj.id);
     addSceneObj(newObj);
     const limits = this.getNewLimits(newObj);
@@ -91,7 +93,11 @@ class SceneBuilder extends Component {
   };
 
   handleObjDimChange = (valNum, valStr, inputElem) => {
-    const { sceneObjects, updateSceneObj, updateSelectedObj } = this.props;
+    const {
+      sceneObjects,
+      updateSingleSceneObj,
+      updateSelectedObj,
+    } = this.props;
     const objToUpdate = sceneObjects.find(
       sceneObj => Number(inputElem.id) === sceneObj.id
     );
@@ -99,13 +105,13 @@ class SceneBuilder extends Component {
     const propertyName = inputElem.name;
     objToUpdate[propertyName] = valNum;
     updateSelectedObj(objToUpdate.id);
-    updateSceneObj(objToUpdate);
+    updateSingleSceneObj(objToUpdate);
     const limits = this.getNewLimits(objToUpdate);
     this.setState({ limits });
   };
 
   handleButtonClick = dirString => {
-    const { selectedObjId, sceneObjects, updateSceneObj } = this.props;
+    const { selectedObjId, sceneObjects, updateSingleSceneObj } = this.props;
 
     const drawInstruction = getDrawInstruction(dirString);
 
@@ -116,7 +122,7 @@ class SceneBuilder extends Component {
     objToUpdate.position.y += y;
     objToUpdate.position.z += z;
 
-    updateSceneObj(objToUpdate);
+    updateSingleSceneObj(objToUpdate);
   };
 
   getNewLimits = selectedObj => {
@@ -132,14 +138,16 @@ class SceneBuilder extends Component {
   };
 
   deleteObject = id => {
-    this.props.deleteSelectedObj(id);
-    if (this.props.sceneObjects.length <= 1) {
-      this.props.updateSelectedObj(null);
+    const { sceneObjects, deleteSelectedObj, updateSelectedObj } = this.props;
+    deleteSelectedObj(id);
+    if (sceneObjects.length < 1) {
+      updateSelectedObj(null);
+    } else {
+      updateSelectedObj(sceneObjects[0].id);
     }
   };
 
   handleObjectSelection = evt => {
-    console.dir(evt.currentTarget);
     const { sceneObjects, updateSelectedObj } = this.props;
     const selectedObj = sceneObjects.find(
       sceneObj => sceneObj.id === Number(evt.currentTarget.id)
@@ -157,25 +165,55 @@ class SceneBuilder extends Component {
   buildHelp = () => this.setState({ helpOpen: true });
   handleClose = () => this.setState({ helpOpen: false });
 
+  toggleObjVisibility = (evt, data) => {
+    const {
+      sceneObjects,
+      updateSingleSceneObj,
+      selectedObjId,
+      updateSelectedObj,
+    } = this.props;
+
+    const objToUpdate = sceneObjects.find(sceneObj => data.id === sceneObj.id);
+    const updatedObj = { ...objToUpdate };
+    updatedObj.visible = data.checked;
+
+    updateSingleSceneObj(updatedObj);
+    if (selectedObjId === updatedObj.id) {
+      updateSelectedObj(null);
+    }
+  };
+  handleNameChange = (evt, data) => {
+    const { sceneObjects, updateSingleSceneObj } = this.props;
+    const objToUpdate = sceneObjects.find(sceneObj => data.id === sceneObj.id);
+    const updatedObj = { ...objToUpdate };
+    updatedObj.name = data.value;
+
+    updateSingleSceneObj(updatedObj);
+  };
+
   render() {
     const { limits, buttonPlane } = this.state;
     const { droneOrientation, sceneObjects, selectedObjId } = this.props;
     const selectedObj = sceneObjects.find(obj => obj.id === selectedObjId);
-    let leftDisabled = true,
-      rightDisabled = true,
-      forwardDisabled = true,
-      reverseDisabled = true,
-      upDisabled = true,
-      downDisabled = true;
-    if (selectedObj && selectedObj.id) {
-      leftDisabled = selectedObj.position.x >= limits.maxX;
-      rightDisabled = selectedObj.position.x <= limits.minX;
-      forwardDisabled = selectedObj.position.z >= limits.maxZ;
-      reverseDisabled = selectedObj.position.z <= limits.minZ;
-      upDisabled =
-        selectedObj.position.y >= limits.maxY && buttonPlane === 'Up';
-      downDisabled =
-        selectedObj.position.y <= limits.minY && buttonPlane === 'Down';
+    let leftDisabled = false,
+      rightDisabled = false,
+      forwardDisabled = false,
+      reverseDisabled = false,
+      upDisabled = false,
+      downDisabled = false;
+
+    const bounds = false;
+    if (bounds) {
+      if (selectedObj && selectedObj.id) {
+        leftDisabled = selectedObj.position.x >= limits.maxX;
+        rightDisabled = selectedObj.position.x <= limits.minX;
+        forwardDisabled = selectedObj.position.z >= limits.maxZ;
+        reverseDisabled = selectedObj.position.z <= limits.minZ;
+        upDisabled =
+          selectedObj.position.y >= limits.maxY && buttonPlane === 'Up';
+        downDisabled =
+          selectedObj.position.y <= limits.minY && buttonPlane === 'Down';
+      }
     }
     return (
       <div id="scene-builder">
@@ -192,6 +230,15 @@ class SceneBuilder extends Component {
                       className="object-single"
                       key={sceneObj.id}
                     >
+                      {/* BEGIN visibility checkbox */}
+                      <Checkbox
+                        id={sceneObj.id}
+                        toggle
+                        checked={sceneObj.visible}
+                        className="object-visibility-checkbox"
+                        onClick={this.toggleObjVisibility}
+                      />
+                      {/* END visibility checkbox */}
                       {/* BEGIN remove button */}
                       <div
                         className="object-removal-button"
@@ -207,12 +254,17 @@ class SceneBuilder extends Component {
                         onClick={this.handleObjectSelection}
                       >
                         <List.Content className="object-name">
-                          New Object
+                          <Input
+                            id={sceneObj.id}
+                            value={sceneObj.name}
+                            onChange={this.handleNameChange}
+                          />
                           {/* {sceneObj.name} */}
                         </List.Content>
                         <ListContent>
                           {`Length:   `}
                           <NumericInput
+                            disabled={!sceneObj.visible}
                             className="numeric-input"
                             id={sceneObj.id}
                             name={'length'}
@@ -227,6 +279,7 @@ class SceneBuilder extends Component {
                         <ListContent>
                           {`Width:   `}
                           <NumericInput
+                            disabled={!sceneObj.visible}
                             className="numeric-input"
                             id={sceneObj.id}
                             name={'width'}
@@ -241,6 +294,7 @@ class SceneBuilder extends Component {
                         <ListContent>
                           {`Height:   `}
                           <NumericInput
+                            disabled={!sceneObj.visible}
                             className="numeric-input"
                             id={sceneObj.id}
                             name={'height'}
@@ -281,27 +335,32 @@ class SceneBuilder extends Component {
         <div className="row">
           <div className="row-item">
             <div className="canvas">
-                <SceneCanvas />
-                <div className="legend" >
-              <Image src={require('../assets/images/helper-images/legend.png')}/>
+              <SceneCanvas />
+              <div className="legend">
+                <Image
+                  src={require('../assets/images/helper-images/legend.png')}
+                />
               </div>
-              </div>
+            </div>
           </div>
         </div>
         <div className="row">
           <div className="row-item">
             {/* Conditionally Render Button Panels */}
 
-            {sceneObjects.length ? (
+            {selectedObj && selectedObj.id && selectedObj.visible ? (
               <div id="row">
                 <div id="button-panels">
                   <table>
                     <thead align="center">
                       <tr>
                         <td>
-                          {buttonPlane === 'Current'
-                            ? null
-                            : `${buttonPlane} +`}
+                          <h1>
+                            {buttonPlane === 'Current'
+                              ? `Horizontal`
+                              : `${buttonPlane}`}{' '}
+                            Movement
+                          </h1>
                         </td>
                       </tr>
                     </thead>
@@ -320,108 +379,19 @@ class SceneBuilder extends Component {
                             screen="scene"
                           />
                         </td>
-
-                        <div id="build-help">
+                        <td id="build-help">
                           <Icon
                             name="question circle"
                             size="large"
                             onClick={this.buildHelp}
                           />
-                        </div>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
             ) : null}
-
-            {/* {sceneObjects.length ? (
-              <Grid.Row>
-                <Grid columns={3} padded centered>
-                  <Grid.Row>
-                    <Grid.Column
-                      as="h1"
-                      textAlign="center"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00a651',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
-                      Up + Strafe
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={upDisabled}
-                        clickHandler={this.handleButtonClick}
-                        type="U"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-
-                    <Grid.Column
-                      as="h1"
-                      textAlign="center"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#afafaf',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                    >
-                      Strafe
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={false}
-                        clickHandler={this.handleButtonClick}
-                        type="C"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-                    <Grid.Column
-                      as="h1"
-                      style={{
-                        color: '#ffffff',
-                        backgroundColor: '#00aeef',
-                        borderStyle: 'solid',
-                        borderColor: '#484848',
-                      }}
-                      textAlign="center"
-                    >
-                      Down + Strafe
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={downDisabled}
-                        clickHandler={this.handleButtonClick}
-                        type="D"
-                        droneOrientation={droneOrientation}
-                      />
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-              </Grid.Row>
-            ) : null} */}
-
-            {/* Popup Help Icon */}
-            {/* {sceneObjects.length ? (
-              <div id="build-help">
-                <Icon
-                  name="question circle"
-                  size="large"
-                  onClick={this.buildHelp}
-                />
-              </div>
-            ) : null} */}
-
             <Modal
               open={this.state.helpOpen}
               onClose={this.handleClose}
@@ -462,13 +432,12 @@ const mapState = state => {
 const mapDispatch = dispatch => {
   return {
     changeTab: tabName => dispatch(changeTab(tabName)),
-    toggleObstacles: () => {
-      dispatch(toggleObstacles());
-    },
+
     addSceneObj: newObj => {
       dispatch(addSceneObj(newObj));
     },
-    updateSceneObj: updatedObj => dispatch(updateSceneObj(updatedObj)),
+    updateSingleSceneObj: updatedObj =>
+      dispatch(updateSingleSceneObj(updatedObj)),
     updateSelectedObj: objId => dispatch(updateSelectedObj(objId)),
     deleteSelectedObj: objId => dispatch(deleteSelectedObj(objId)),
     clearObjects: () => dispatch(clearObjects()),

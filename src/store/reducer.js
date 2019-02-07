@@ -11,7 +11,7 @@ const INITIAL_STATE = {
   pitch: 0,
   yaw: 0,
   debugMode: true,
-  navTab: 'path-builder',
+  navTab: 'home',
   startingPosition: startingPositionCoords,
   currentDronePosition: startingPositionCoords,
   currentDroneRotation: Math.PI,
@@ -24,7 +24,7 @@ const INITIAL_STATE = {
     { droneInstruction: 'land', message: 'Land', drawInstruction: 'land' },
   ],
   droneOrientation: 0,
-  obstacles: false,
+
   droneConnectionStatus: {
     droneName: 'Drone Not Connected',
     isConnected: false,
@@ -40,6 +40,7 @@ const INITIAL_STATE = {
     z: startingPositionCoords.z,
   },
   sceneObjects: [],
+  sceneObjectsVisible: true,
   selectedObjId: null,
   preVisualizeAnimation: false,
 };
@@ -67,11 +68,11 @@ const UPDATE_CURRENT_DRONE_ROTATION = 'UPDATE_CURRENT_DRONE_ROTATION';
 
 const ROTATE_DRONE = 'ROTATE_DRONE';
 
-const TOGGLE_OBSTACLES = 'TOGGLE_OBSTACLES';
+const TOGGLE_SCENE_OBJECTS_VISIBILITY = 'TOGGLE_SCENE_OBJECTS_VISIBILITY';
 
 const UPDATE_DRONE_CONNECTION_STATUS = 'UPDATE_DRONE_CONNECTION_STATUS';
 
-const LOAD_SCENE_OBJECTS_FROM_FILE = 'LOAD_SCENE_OBJECTS_FROM_FILE';
+const UPDATE_SCENE_OBJECTS = 'UPDATE_SCENE_OBJECTS';
 const ADD_SCENE_OBJECT = 'ADD_SCENE_OBJECT';
 const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT';
 const UPDATE_SELECTED_OBJECT = 'UPDATE_SELECTED_OBJECT';
@@ -121,18 +122,18 @@ export const rotateDrone = newOrientation => ({
   newOrientation,
 });
 
-export const toggleObstacles = () => ({
-  type: TOGGLE_OBSTACLES,
-});
-
 export const updateDroneConnectionStatus = droneConnectionStatus => ({
   type: UPDATE_DRONE_CONNECTION_STATUS,
   droneConnectionStatus,
 });
 
-export const loadSceneObjsFromFile = sceneObjects => ({
-  type: LOAD_SCENE_OBJECTS_FROM_FILE,
+export const updateSceneObjs = sceneObjects => ({
+  type: UPDATE_SCENE_OBJECTS,
   sceneObjects,
+});
+
+export const toggleSceneObjsVisibility = () => ({
+  type: TOGGLE_SCENE_OBJECTS_VISIBILITY,
 });
 
 export const addSceneObj = newObject => ({
@@ -140,7 +141,7 @@ export const addSceneObj = newObject => ({
   newObject,
 });
 
-export const updateSceneObj = updatedObj => ({
+export const updateSingleSceneObj = updatedObj => ({
   type: UPDATE_SCENE_OBJECT,
   updatedObj,
 });
@@ -198,11 +199,12 @@ const reducer = (state = INITIAL_STATE, action) => {
       return { ...state, currentDroneRotation: action.newRotation };
     case ROTATE_DRONE:
       return { ...state, droneOrientation: action.newOrientation };
-    case TOGGLE_OBSTACLES:
-      return { ...state, obstacles: !state.obstacles };
+
     case UPDATE_DRONE_CONNECTION_STATUS:
       return { ...state, droneConnectionStatus: action.droneConnectionStatus };
-    case LOAD_SCENE_OBJECTS_FROM_FILE:
+    case TOGGLE_SCENE_OBJECTS_VISIBILITY:
+      return { ...state, sceneObjectsVisible: !state.sceneObjectsVisible };
+    case UPDATE_SCENE_OBJECTS:
       return {
         ...state,
         sceneObjects: action.sceneObjects,

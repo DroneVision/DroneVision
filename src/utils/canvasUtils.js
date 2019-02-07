@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+export const colors = [0x6666ff, 0x90f9c5, 0xc993ff, 0x90c7ff, 0x8eff8e];
+
 export const createSceneObjs = (objList, selectedObjId) => {
   const allObjs = new THREE.Group();
   objList
@@ -12,11 +14,19 @@ export const createSceneObjs = (objList, selectedObjId) => {
   return allObjs;
 };
 
-const createCube = ({ id, length, width, height, position, selected }) => {
+const createCube = ({
+  id,
+  length,
+  width,
+  height,
+  position,
+  selected,
+  color,
+}) => {
   const { x, y, z } = position;
   const objGeometry = new THREE.CubeGeometry(width, height, length);
   const objMaterial = new THREE.MeshPhongMaterial({
-    color: 0x6666ff,
+    color: color,
     flatShading: false,
   });
   const objEdges = new THREE.EdgesGeometry(objGeometry);

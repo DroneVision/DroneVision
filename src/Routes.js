@@ -3,6 +3,7 @@ import { withRouter, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PathBuilder from './screens/PathBuilder';
 import SceneBuilder from './screens/SceneBuilder';
+import Home from './screens/Home';
 import Autopilot from './screens/Autopilot';
 import Videos from './screens/Videos';
 import About from './screens/About';
@@ -12,7 +13,7 @@ import Footer from './components/Footer';
 import {
   updateInstructions,
   updateDroneConnectionStatus,
-  loadSceneObjsFromFile,
+  updateSceneObjs,
   updateSelectedObj,
 } from './store';
 const { ipcRenderer } = window.require('electron');
@@ -25,7 +26,7 @@ class Routes extends Component {
     });
 
     ipcRenderer.on('load-scene-objects', (event, sceneObjects) => {
-      this.props.loadSceneObjsFromFile(sceneObjects);
+      this.props.updateSceneObjs(sceneObjects);
       this.props.updateSelectedObj(sceneObjects[0].id);
     });
     // Listen for request for flight instructions save from main process
@@ -54,7 +55,8 @@ class Routes extends Component {
         <div id="right-column" />
         <Navbar />
         <Switch>
-          <Route exact path="/" component={PathBuilder} />
+          <Route exact path="/" component={Home} />
+          <Route path="/home" component={Home} />
           <Route path="/scene-builder" component={SceneBuilder} />
           <Route path="/path-builder" component={PathBuilder} />
           <Route path="/autopilot" component={Autopilot} />
@@ -81,8 +83,8 @@ const mapDispatch = dispatch => {
       dispatch(updateDroneConnectionStatus(droneStatus)),
     updateInstructions: updatedFlightInstructions =>
       dispatch(updateInstructions(updatedFlightInstructions)),
-    loadSceneObjsFromFile: sceneObjects =>
-      dispatch(loadSceneObjsFromFile(sceneObjects)),
+    updateSceneObjs: sceneObjects =>
+      dispatch(updateSceneObjs(sceneObjects)),
     updateSelectedObj: selectedObjId =>
       dispatch(updateSelectedObj(selectedObjId)),
   };

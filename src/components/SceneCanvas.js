@@ -100,13 +100,11 @@ class SceneCanvas extends Component {
   componentDidUpdate = prevProps => {
     const { sceneObjects, selectedObjId } = this.props;
 
-    // if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
     if (this.sceneObjects) {
       this.scene.remove(this.sceneObjects);
     }
     this.sceneObjects = createSceneObjs(sceneObjects, selectedObjId);
     this.scene.add(this.sceneObjects);
-    // }
   };
 
   animate = async () => {
