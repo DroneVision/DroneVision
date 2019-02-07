@@ -24,7 +24,7 @@ class Videos extends Component {
   render() {
     const { availableVideos } = this.state;
     return (
-      <div i="videos">
+      <div id="videos">
         <Grid centered padded>
           <Grid.Row>
             <Grid.Column>
@@ -56,7 +56,7 @@ class Videos extends Component {
                   {availableVideos.map(video => {
                     return (
                       <List.Item
-                      key={video}
+                        key={video}
                         as="a"
                         name={video}
                         onClick={this.handleVideoClick}

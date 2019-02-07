@@ -75,6 +75,8 @@ const LOAD_SCENE_OBJECTS_FROM_FILE = 'LOAD_SCENE_OBJECTS_FROM_FILE';
 const ADD_SCENE_OBJECT = 'ADD_SCENE_OBJECT';
 const UPDATE_SCENE_OBJECT = 'UPDATE_SCENE_OBJECT';
 const UPDATE_SELECTED_OBJECT = 'UPDATE_SELECTED_OBJECT';
+const DELETE_SELECTED_OBJECT = 'DELETE_SELECTED_OBJECT';
+const CLEAR_OBJECTS = 'CLEAR_OBJECTS';
 
 const UPDATE_BUILD_DRONE_POSITION = 'UPDATE_BUILD_DRONE_POSITION';
 const TOGGLE_PREVIZUALIZE_ANIMATION = 'TOGGLE_PREVIZUALIZE_ANIMATION';
@@ -148,6 +150,15 @@ export const updateSelectedObj = objId => ({
   objId,
 });
 
+export const deleteSelectedObj = objId => ({
+  type: DELETE_SELECTED_OBJECT,
+  objId,
+});
+
+export const clearObjects = () => ({
+  type: CLEAR_OBJECTS,
+});
+
 export const updateBuildDronePosition = updatedPosition => ({
   type: UPDATE_BUILD_DRONE_POSITION,
   updatedPosition,
@@ -218,6 +229,19 @@ const reducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         buildDronePosition: action.updatedPosition,
+      };
+    case DELETE_SELECTED_OBJECT:
+      const objectsToKeep = state.sceneObjects.filter(
+        sceneObj => sceneObj.id !== action.objId
+      );
+      return {
+        ...state,
+        sceneObjects: [...objectsToKeep],
+      };
+    case CLEAR_OBJECTS:
+      return {
+        ...state,
+        sceneObjects: [],
       };
     case TOGGLE_PREVIZUALIZE_ANIMATION:
       return {

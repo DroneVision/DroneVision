@@ -26,8 +26,8 @@ class FlyControls extends Component {
                 content="Take Off"
                 onClick={() => this.realTimeTakeOff()}
               />
-            </Grid.Column>
-            <Grid.Column id="centered">
+              {/* </Grid.Column>
+            <Grid.Column id="centered"> */}
               <Button
                 color="facebook"
                 labelPosition="left"
@@ -50,26 +50,20 @@ class FlyControls extends Component {
           <Grid.Row columns={4}>
             <Grid.Column id="centered">
               <Button
-                onClick={() => this.realTimeFly(`up ${distance}`)}
-                content="Up"
-              />
-            </Grid.Column>
-            <Grid.Column id="centered">
-              <Button
                 content={<Icon name="arrow left" />}
                 onClick={() => this.realTimeFly(`left ${distance}`)}
               />
-            </Grid.Column>
-            <Grid.Column id="centered">
               <Button
-                content={<Icon name="arrow right" />}
-                onClick={() => this.realTimeFly(`right ${distance}`)}
+                onClick={() => this.realTimeFly(`up ${distance}`)}
+                content="Up"
               />
-            </Grid.Column>
-            <Grid.Column id="centered">
               <Button
                 onClick={() => this.realTimeFly(`down ${distance}`)}
                 content="Down"
+              />
+              <Button
+                content={<Icon name="arrow right" />}
+                onClick={() => this.realTimeFly(`right ${distance}`)}
               />
             </Grid.Column>
           </Grid.Row>
@@ -88,18 +82,15 @@ class FlyControls extends Component {
               <Button onClick={() => this.realTimeFly(`flip f`)}>
                 Front-Flip
               </Button>
-            </Grid.Column>
-            <Grid.Column id="centered">
+
               <Button onClick={() => this.realTimeFly(`flip b`)}>
                 Back-Flip
               </Button>
-            </Grid.Column>
-            <Grid.Column id="centered">
+
               <Button onClick={() => this.realTimeFly(`flip l`)}>
                 Left-Flip
               </Button>
-            </Grid.Column>
-            <Grid.Column id="centered">
+
               <Button onClick={() => this.realTimeFly(`flip r`)}>
                 Right-Flip
               </Button>
