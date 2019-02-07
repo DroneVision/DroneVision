@@ -29,7 +29,7 @@ import {
   updateDroneConnectionStatus,
   rotateDrone,
   togglePreVisualizeAnimation,
-} from '../store/store';
+} from '../store';
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
 

@@ -7,7 +7,7 @@ import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
-import { updateCDP } from '../store/store';
+import { updateCDP } from '../store';
 import { createSceneObjs } from '../utils/canvasUtils';
 
 const { ipcRenderer } = window.require('electron');

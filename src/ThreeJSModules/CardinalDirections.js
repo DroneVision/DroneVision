@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { voxelSizeValue } from '../store/store';
+import { voxelSizeValue } from '../store';
 //CARDINAL DIRECTIONS GROUP
 const cardinalDirections = new THREE.Group();
 

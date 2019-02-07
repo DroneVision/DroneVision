@@ -14,7 +14,7 @@ import {
   updateDroneConnectionStatus,
   loadSceneObjsFromFile,
   updateSelectedObj,
-} from './store/store';
+} from './store';
 const { ipcRenderer } = window.require('electron');
 
 class Routes extends Component {
