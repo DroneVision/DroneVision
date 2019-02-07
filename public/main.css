@@ -242,3 +242,14 @@
 .manual-control-logo {
   height: 360px;
 }
+
+.canvas{
+  position: relative;
+}
+
+.legend {
+  position: absolute;
+  bottom: 10px;
+  right: -45px;
+  width: 70px;
+}

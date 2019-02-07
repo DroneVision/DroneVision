@@ -299,8 +299,8 @@ class Run extends Component {
               content="Record Flight"
               onClick={this.runFlightInstructionsAndRecord}
             />
+            </div>
           </div>
-        </div>
       </div>
     );
   }
