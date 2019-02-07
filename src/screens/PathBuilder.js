@@ -55,7 +55,6 @@ class PathBuilder extends Component {
     };
   }
   componentDidMount() {
-    webFrame.setZoomFactor(0.7);
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
     ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
