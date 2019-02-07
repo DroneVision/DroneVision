@@ -14,18 +14,12 @@
   transform: rotate(-45deg);
 }
 
-.drone0 {
-  transform: rotate(0deg);
-}
-
-.drone1 {
-  transform: rotate(90deg);
-}
-.drone2 {
-  transform: rotate(180deg);
-}
-.drone3 {
-  transform: rotate(270deg);
+.drone-button-image {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
 
 .flight-message-single {
@@ -138,7 +132,7 @@
   align-items: center;
 }
 
-#up-strafe {
+#Up-strafe {
   background-color: #00a651;
   border-radius: 0.5rem;
   padding: 1rem;
@@ -146,7 +140,7 @@
   border-style: solid;
 }
 
-#down-strafe {
+#Down-strafe {
   background-color: #00aeef;
   border-radius: 0.5rem;
   padding: 1rem;
@@ -154,7 +148,7 @@
   border-style: solid;
 }
 
-#strafe {
+#Current-strafe {
   background-color: #afafaf;
   border-radius: 0.5rem;
   padding: 1rem;

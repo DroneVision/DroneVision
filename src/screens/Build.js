@@ -46,11 +46,35 @@ class Build extends Component {
         minY: 1,
         minZ: -scale / 2,
       },
+      buttonPlane: 'Current',
       startingPoint: { x: 0, y: 1, z: 0 },
       preVisButtonsDisabled: false,
       helpOpen: false,
     };
   }
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
+  }
+  handleKeyDown = evt => {
+    if (evt.keyCode === 90 || evt.keyCode === 190) {
+      //'z' and '.' key -> Activate Up Plane
+      this.setState({ buttonPlane: 'Up' });
+    } else if (evt.keyCode === 88 || evt.keyCode === 191) {
+      //'x' and '/' key -> Activate Down Plane
+      this.setState({ buttonPlane: 'Down' });
+    }
+    // else if (evt.keyCode === 68 || evt.keyCode === 74) {
+    //   //'d' and 'j' key -> Rotate counter-clockwise
+    //   this.addRotationInstruction('ccw');
+    // } else if (evt.keyCode === 70 || evt.keyCode === 75) {
+    //   //'f' and 'k' key -> Rotate clockwise
+    //   this.addRotationInstruction('cw');
+    // }
+  };
+  handleKeyUp = () => {
+    this.setState({ buttonPlane: 'Current' });
+  };
 
   addFlightInstruction = instructionObj => {
     const { flightInstructions, speed, distance } = this.props;
@@ -142,11 +166,11 @@ class Build extends Component {
 
     let updatedFlightInstructions = flightInstructions.slice();
 
-    const lastDroneInstructionArr = lastDroneInstruction.split(' ');
+    const [lastInstruction, lastDegs] = lastDroneInstruction.split(' ');
 
-    if (direction === lastDroneInstructionArr[0]) {
-      const oldDegs = lastDroneInstructionArr[1];
-      const resultDegs = degs + Number(oldDegs);
+    //avoids sending duplicate commands unless the combination would push it above the maximum allowable rotation command of 360 degrees
+    if (direction === lastInstruction && Number(lastDegs) <= 360 - degs) {
+      const resultDegs = degs + Number(lastDegs);
       flightInstructionObj.droneInstruction = `${direction} ${resultDegs}`;
       flightInstructionObj.message = `${newMessage} --> ${resultDegs} degrees`;
       flightInstructionObj.drawInstruction = `${direction} ${resultDegs}`;
@@ -159,6 +183,7 @@ class Build extends Component {
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
+
     this.props.updateInstructions(updatedFlightInstructions);
 
     let newOrientation;
@@ -308,7 +333,7 @@ class Build extends Component {
   handleClose = () => this.setState({ helpOpen: false });
 
   render() {
-    const { limits } = this.state;
+    const { limits, buttonPlane } = this.state;
     const {
       flightInstructions,
       droneOrientation,
@@ -337,8 +362,10 @@ class Build extends Component {
       reverseDisabled = buildDronePosition.x === limits.minZ;
     }
 
-    const upDisabled = buildDronePosition.y === limits.maxY;
-    const downDisabled = buildDronePosition.y === limits.minY;
+    const upDisabled =
+      buildDronePosition.y === limits.maxY && buttonPlane === 'Up';
+    const downDisabled =
+      buildDronePosition.y === limits.minY && buttonPlane === 'Down';
     return (
       <div id="build-screen">
         <Grid columns={3} padded centered>
@@ -368,58 +395,32 @@ class Build extends Component {
                 <thead align="center">
                   <tr>
                     <td>
-                      <h1>Up & Strafe</h1>
-                    </td>
-                    <td>
-                      <h1>Strafe</h1>
-                    </td>
-                    <td>
-                      <h1>Down & Strafe</h1>
+                      <h1>
+                        {buttonPlane === 'Current' ? null : `${buttonPlane} +`}
+                      </h1>
                     </td>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td id="up-strafe">
+                    <td id={`${buttonPlane}-strafe`}>
                       <ButtonPanel
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
                         forwardDisabled={forwardDisabled}
                         reverseDisabled={reverseDisabled}
                         allDisabled={
-                          upDisabled || this.state.preVisButtonsDisabled
+                          this.state.preVisButtonsDisabled ||
+                          upDisabled ||
+                          downDisabled
                         }
                         clickHandler={this.handleButtonClick}
-                        type="U"
+                        type={buttonPlane[0]}
                         droneOrientation={droneOrientation}
+                        screen="path"
                       />
                     </td>
-                    <td id="strafe">
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={this.state.preVisButtonsDisabled}
-                        clickHandler={this.handleButtonClick}
-                        type="C"
-                        droneOrientation={droneOrientation}
-                      />
-                    </td>
-                    <td id="down-strafe">
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={
-                          downDisabled || this.state.preVisButtonsDisabled
-                        }
-                        clickHandler={this.handleButtonClick}
-                        type="D"
-                        droneOrientation={droneOrientation}
-                      />
-                    </td>
+
                     <div id="build-help">
                       <Icon
                         name="question circle"

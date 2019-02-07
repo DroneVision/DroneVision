@@ -37,6 +37,7 @@ class SceneBuilder extends Component {
       startingPoint: { x: 0, y: 1, z: 0 },
       limits: {},
       helpOpen: false,
+      buttonPlane: 'Current',
     };
   }
 
@@ -47,10 +48,25 @@ class SceneBuilder extends Component {
       updateSelectedObj(sceneObjects[0].id);
       this.setState({ limits });
     }
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
   }
 
+  handleKeyDown = evt => {
+    if (evt.keyCode === 90 || evt.keyCode === 190) {
+      //'z' and '.' key -> Activate Down Plane
+      this.setState({ buttonPlane: 'Down' });
+    } else if (evt.keyCode === 88 || evt.keyCode === 191) {
+      //'x' and '/' key -> Activate Up Plane
+      this.setState({ buttonPlane: 'Up' });
+    }
+  };
+  handleKeyUp = () => {
+    this.setState({ buttonPlane: 'Current' });
+  };
+
   createNewObj = () => {
-    const { addSceneObj, updateSelectedObj, sceneObjects } = this.props;
+    const { addSceneObj, updateSelectedObj } = this.props;
     const id = Date.now();
     const newObj = {
       length: 2,
@@ -142,7 +158,7 @@ class SceneBuilder extends Component {
   handleClose = () => this.setState({ helpOpen: false });
 
   render() {
-    const { limits } = this.state;
+    const { limits, buttonPlane } = this.state;
     const { droneOrientation, sceneObjects, selectedObjId } = this.props;
     const selectedObj = sceneObjects.find(obj => obj.id === selectedObjId);
     let leftDisabled = true,
@@ -156,8 +172,10 @@ class SceneBuilder extends Component {
       rightDisabled = selectedObj.position.x <= limits.minX;
       forwardDisabled = selectedObj.position.z >= limits.maxZ;
       reverseDisabled = selectedObj.position.z <= limits.minZ;
-      upDisabled = selectedObj.position.y >= limits.maxY;
-      downDisabled = selectedObj.position.y <= limits.minY;
+      upDisabled =
+        selectedObj.position.y >= limits.maxY && buttonPlane === 'Up';
+      downDisabled =
+        selectedObj.position.y <= limits.minY && buttonPlane === 'Down';
     }
     return (
       <div id="scene-builder">
@@ -276,58 +294,28 @@ class SceneBuilder extends Component {
                     <thead align="center">
                       <tr>
                         <td>
-                          <h1>Up & Strafe</h1>
-                        </td>
-                        <td>
-                          <h1>Strafe</h1>
-                        </td>
-                        <td>
-                          <h1>Down & Strafe</h1>
+                          {buttonPlane === 'Current'
+                            ? null
+                            : `${buttonPlane} +`}
                         </td>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <td id="up-strafe">
+                        <td id={`${buttonPlane}-strafe`}>
                           <ButtonPanel
                             leftDisabled={leftDisabled}
                             rightDisabled={rightDisabled}
                             forwardDisabled={forwardDisabled}
                             reverseDisabled={reverseDisabled}
-                            allDisabled={
-                              upDisabled || this.state.preVisButtonsDisabled
-                            }
+                            allDisabled={upDisabled || downDisabled}
                             clickHandler={this.handleButtonClick}
-                            type="U"
+                            type={buttonPlane[0]}
                             droneOrientation={droneOrientation}
+                            screen="scene"
                           />
                         </td>
-                        <td id="strafe">
-                          <ButtonPanel
-                            leftDisabled={leftDisabled}
-                            rightDisabled={rightDisabled}
-                            forwardDisabled={forwardDisabled}
-                            reverseDisabled={reverseDisabled}
-                            allDisabled={this.state.preVisButtonsDisabled}
-                            clickHandler={this.handleButtonClick}
-                            type="C"
-                            droneOrientation={droneOrientation}
-                          />
-                        </td>
-                        <td id="down-strafe">
-                          <ButtonPanel
-                            leftDisabled={leftDisabled}
-                            rightDisabled={rightDisabled}
-                            forwardDisabled={forwardDisabled}
-                            reverseDisabled={reverseDisabled}
-                            allDisabled={
-                              downDisabled || this.state.preVisButtonsDisabled
-                            }
-                            clickHandler={this.handleButtonClick}
-                            type="D"
-                            droneOrientation={droneOrientation}
-                          />
-                        </td>
+
                         <div id="build-help">
                           <Icon
                             name="question circle"
