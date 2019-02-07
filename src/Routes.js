@@ -3,7 +3,7 @@ import { withRouter, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Build from './screens/Build';
 import SceneBuilder from './screens/SceneBuilder';
-import Autopilot from './screens/Autopilot';
+import AutoPilot from './screens/AutoPilot';
 import Videos from './screens/Videos';
 import About from './screens/About';
 import ManualControl from './screens/ManualControl';
@@ -41,11 +41,12 @@ class Routes extends Component {
       ipcRenderer.send('send-scene-objects', this.props.sceneObjects);
     });
 
-    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
-      this.props.updateDroneConnectionStatus(droneConnectionStatus);
-      // Send a command to drone
-      ipcRenderer.send('single-instruction', 'command');
-    });
+    // ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+    //   // Send a command to drone
+    //   ipcRenderer.send('single-instruction', 'command');
+    //   this.props.updateDroneConnectionStatus(droneConnectionStatus);
+    //   console.log('invoked');
+    // });
   }
   render() {
     return (
@@ -57,7 +58,7 @@ class Routes extends Component {
           <Route exact path="/" component={Build} />
           <Route path="/scene-builder" component={SceneBuilder} />
           <Route path="/path-builder" component={Build} />
-          <Route path="/autopilot" component={Autopilot} />
+          <Route path="/autopilot" component={AutoPilot} />
           <Route path="/manual-flight" component={ManualControl} />
           <Route path="/videos" component={Videos} />
           <Route path="/about" component={About} />
@@ -77,8 +78,6 @@ const mapState = state => {
 
 const mapDispatch = dispatch => {
   return {
-    updateDroneConnectionStatus: droneStatus =>
-      dispatch(updateDroneConnectionStatus(droneStatus)),
     updateInstructions: updatedFlightInstructions =>
       dispatch(updateInstructions(updatedFlightInstructions)),
     loadSceneObjsFromFile: sceneObjects =>

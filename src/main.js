@@ -153,5 +153,6 @@ ipcMain.on('disable-video-stream', () => {
 
 ipcMain.on('getDroneState', async (event, droneState) => {
   let updatedState = await getDroneState();
+  console.log('updated state', updatedState);
   event.sender.send('updatedDroneState', updatedState);
 });

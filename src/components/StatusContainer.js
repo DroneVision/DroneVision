@@ -7,7 +7,7 @@ const { ipcRenderer } = window.require('electron');
 
 let interval;
 
-class StatusSegment extends Component {
+class StatusContainer extends Component {
   constructor() {
     super();
     this.state = {
@@ -38,6 +38,18 @@ class StatusSegment extends Component {
         this.props.changeRoll(arg.roll);
         this.props.changePitch(arg.pitch);
         this.props.changeYaw(arg.yaw);
+      } else {
+        this.setState({
+          battery: 0,
+          pitch: 'no data',
+          roll: 'no data',
+          yaw: 'no data',
+          temph: 'no data',
+          time: 'no data',
+        });
+        this.props.changeRoll(this.state.roll);
+        this.props.changePitch(this.state.pitch);
+        this.props.changeYaw(this.state.yaw);
       }
     });
   }
@@ -48,23 +60,24 @@ class StatusSegment extends Component {
 
   getDroneState = () => {
     ipcRenderer.send('getDroneState');
+  console.log('getDroneState invoked')
   };
 
-  resetDroneState = () => {
-    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
-      this.props.updateDroneConnectionStatus(droneConnectionStatus);
-      if (!droneConnectionStatus.isConnected) {
-        this.setState({
-          battery: 0,
-          pitch: 'no data',
-          roll: 'no data',
-          yaw: 'no data',
-          temph: 'no data',
-          time: 'no data',
-        });
-      }
-    });
-  };
+  // resetDroneState = () => {
+  //   ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+  //     this.props.updateDroneConnectionStatus(droneConnectionStatus);
+  //     if (!droneConnectionStatus.isConnected) {
+  //       this.setState({
+  //         battery: 0,
+  //         pitch: 'no data',
+  //         roll: 'no data',
+  //         yaw: 'no data',
+  //         temph: 'no data',
+  //         time: 'no data',
+  //       });
+  //     }
+  //   });
+  // };
 
   render() {
     return (
@@ -162,4 +175,4 @@ const mapDispatch = dispatch => {
 export default connect(
   mapState,
   mapDispatch
-)(StatusSegment);
+)(StatusContainer);

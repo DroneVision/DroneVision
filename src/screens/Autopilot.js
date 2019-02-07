@@ -5,12 +5,12 @@ import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
 import { Button, Grid, Header, Icon } from 'semantic-ui-react';
 import wait from 'waait';
-import { updateCDP, updateCDR } from '../store/store';
+import { updateCDP, updateCDR, updateDroneConnectionStatus } from '../store/store';
 import commandDelays from '../drone/commandDelays';
 
 const { ipcRenderer } = window.require('electron');
 
-class Run extends Component {
+class AutoPilot extends Component {
   constructor() {
     super();
 
@@ -20,7 +20,13 @@ class Run extends Component {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      // Send a command to drone
+      ipcRenderer.send('single-instruction', 'command');
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+    });
+  }
 
   connectToDroneHandler = () => {
     ipcRenderer.send('connect-to-drone');
@@ -282,7 +288,7 @@ class Run extends Component {
         <div className="row">
           <div className="row-item">
             <Button
-              disabled={this.props.droneConnectionStatus.isConnected}
+              disabled={!this.props.droneConnectionStatus.isConnected}
               color="facebook"
               labelPosition="left"
               icon="military"
@@ -301,6 +307,11 @@ class Run extends Component {
             />
           </div>
         </div>
+        <div className="row">
+          <div className="row-item">
+            <StatusContainer />
+          </div>
+        </div>
       </div>
     );
   }
@@ -314,7 +325,7 @@ const mapState = state => {
     currentDroneRotation: state.currentDroneRotation,
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
-    droneConnectionStatus: state.droneConnectionStatus,
+    droneConnectionStatus: state.droneConnectionStatus
   };
 };
 
@@ -326,10 +337,12 @@ const mapDispatch = dispatch => {
     updateCDR: newRotation => {
       dispatch(updateCDR(newRotation));
     },
+    updateDroneConnectionStatus: droneStatus =>
+      dispatch(updateDroneConnectionStatus(droneStatus))
   };
 };
 
 export default connect(
   mapState,
   mapDispatch
-)(Run);
+)(AutoPilot);
