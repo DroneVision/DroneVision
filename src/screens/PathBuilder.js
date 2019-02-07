@@ -33,7 +33,7 @@ import {
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
 
-class Build extends Component {
+class PathBuilder extends Component {
   constructor(props) {
     super(props);
     const { scale } = this.props;
@@ -624,4 +624,4 @@ const mapDispatch = dispatch => {
 export default connect(
   mapState,
   mapDispatch
-)(Build);
+)(PathBuilder);
