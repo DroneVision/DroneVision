@@ -128,11 +128,11 @@ class BuildCanvas extends Component {
     this.redrawLinesAndMoveDrone(prevProps);
     const { sceneObjects } = this.props;
     // if (!_.isEqual(prevProps.sceneObjects, sceneObjects)) {
-      if (this.sceneObjects) {
-        this.scene.remove(this.sceneObjects);
-      }
-      this.sceneObjects = createSceneObjs(sceneObjects);
-      this.scene.add(this.sceneObjects);
+    if (this.sceneObjects) {
+      this.scene.remove(this.sceneObjects);
+    }
+    this.sceneObjects = createSceneObjs(sceneObjects);
+    this.scene.add(this.sceneObjects);
     // }
   };
 
@@ -141,6 +141,7 @@ class BuildCanvas extends Component {
       postTakeoffPosition,
       flightInstructions: newFlightInstructions,
       obstacles,
+      droneOrientation,
     } = this.props;
     let oldFlightInstructions;
     if (prevProps) {
@@ -182,10 +183,10 @@ class BuildCanvas extends Component {
         const [command] = droneInstruction.split(' ');
         if (command === 'cw') {
           this.drone3DModel.rotation.y =
-            Math.PI - (Math.PI / 2) * this.props.droneOrientation;
+            Math.PI - (Math.PI / 2) * droneOrientation;
         } else if (command === 'ccw') {
           this.drone3DModel.rotation.y =
-            -Math.PI - (Math.PI / 2) * this.props.droneOrientation;
+            -Math.PI - (Math.PI / 2) * droneOrientation;
         } else {
           const [z, x, y] = drawInstruction;
           point.x += x;
@@ -197,6 +198,9 @@ class BuildCanvas extends Component {
           geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
         }
       });
+
+      //moves the camera to follow the drone as the path is drawn
+      this.followDroneWithCamera(point);
 
       this.line = new THREE.Line(geometry, material);
 
@@ -211,6 +215,7 @@ class BuildCanvas extends Component {
         z: point.z,
       });
     }
+
     if (!_.isEqual(point, postTakeoffPosition)) {
       //add land line if drone is not still at the starting position
       const landLineGeometry = new THREE.Geometry();
@@ -222,6 +227,19 @@ class BuildCanvas extends Component {
       );
       this.landLine = new THREE.Line(landLineGeometry, landLineMaterial);
       this.scene.add(this.landLine);
+    }
+  };
+
+  followDroneWithCamera = point => {
+    const { droneOrientation } = this.props;
+    if (droneOrientation === 0) {
+      this.camera.position.set(point.x, point.y + 2, point.z - 5);
+    } else if (droneOrientation === 1) {
+      this.camera.position.set(point.x + 5, point.y + 2, point.z);
+    } else if (droneOrientation === 2) {
+      this.camera.position.set(point.x, point.y + 2, point.z + 5);
+    } else {
+      this.camera.position.set(point.x - 5, point.y + 2, point.z);
     }
   };
 
