@@ -3,6 +3,7 @@ import { withRouter, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PathBuilder from './screens/PathBuilder';
 import SceneBuilder from './screens/SceneBuilder';
+import AutoPilot from './screens/AutoPilot';
 import Videos from './screens/Videos';
 import About from './screens/About';
 import ManualControl from './screens/ManualControl';
