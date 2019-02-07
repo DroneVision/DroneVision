@@ -231,6 +231,9 @@ class BuildCanvas extends Component {
   };
 
   followDroneWithCamera = point => {
+    //this works because the camera's target is set to be the drone3D model (in the constructor), so it will always turn to face the drone we move it
+
+    //we always want the camera to be slightly behind and above the drone, looking in the same direction that it is facing
     const { droneOrientation } = this.props;
     if (droneOrientation === 0) {
       this.camera.position.set(point.x, point.y + 2, point.z - 5);

@@ -46,11 +46,29 @@ class Build extends Component {
         minY: 1,
         minZ: -scale / 2,
       },
+      currentPlane: 'Current',
       startingPoint: { x: 0, y: 1, z: 0 },
       preVisButtonsDisabled: false,
       helpOpen: false,
     };
   }
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
+  }
+  handleKeyDown = evt => {
+    // console.log('hi', evt.keyCode);
+    if (evt.keyCode === 90 || evt.keyCode === 190) {
+      //'z' and '.' key -> Activate Down Plane
+      this.setState({ currentPlane: 'Down' });
+    } else if (evt.keyCode === 88 || evt.keyCode === 191) {
+      //'x' and '/' key -> Activate Up Plane
+      this.setState({ currentPlane: 'Up' });
+    }
+  };
+  handleKeyUp = () => {
+    this.setState({ currentPlane: 'Current' });
+  };
 
   addFlightInstruction = instructionObj => {
     const { flightInstructions, speed, distance } = this.props;
@@ -308,7 +326,7 @@ class Build extends Component {
   handleClose = () => this.setState({ helpOpen: false });
 
   render() {
-    const { limits } = this.state;
+    const { limits, currentPlane } = this.state;
     const {
       flightInstructions,
       droneOrientation,
@@ -368,33 +386,17 @@ class Build extends Component {
                 <thead align="center">
                   <tr>
                     <td>
-                      <h1>Up & Strafe</h1>
-                    </td>
-                    <td>
-                      <h1>Strafe</h1>
-                    </td>
-                    <td>
-                      <h1>Down & Strafe</h1>
+                      <h1>
+                        {currentPlane === 'Current'
+                          ? null
+                          : `${currentPlane} +`}
+                      </h1>
                     </td>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td id="up-strafe">
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={
-                          upDisabled || this.state.preVisButtonsDisabled
-                        }
-                        clickHandler={this.handleButtonClick}
-                        type="U"
-                        droneOrientation={droneOrientation}
-                      />
-                    </td>
-                    <td id="strafe">
+                    <td id={`${currentPlane}-strafe`}>
                       <ButtonPanel
                         leftDisabled={leftDisabled}
                         rightDisabled={rightDisabled}
@@ -402,24 +404,11 @@ class Build extends Component {
                         reverseDisabled={reverseDisabled}
                         allDisabled={this.state.preVisButtonsDisabled}
                         clickHandler={this.handleButtonClick}
-                        type="C"
+                        type={currentPlane[0]}
                         droneOrientation={droneOrientation}
                       />
                     </td>
-                    <td id="down-strafe">
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={
-                          downDisabled || this.state.preVisButtonsDisabled
-                        }
-                        clickHandler={this.handleButtonClick}
-                        type="D"
-                        droneOrientation={droneOrientation}
-                      />
-                    </td>
+
                     <div id="build-help">
                       <Icon
                         name="question circle"
