@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
-import { Button, Grid, Header, Icon } from 'semantic-ui-react';
+import { Button, Grid, Header, Icon, Image } from 'semantic-ui-react';
 import wait from 'waait';
 import { updateCDP, updateCDR } from '../store/store';
 import commandDelays from '../drone/commandDelays';
@@ -244,7 +244,12 @@ class Run extends Component {
         </div>
         <div className="row">
           <div className="row-item">
-            <AutoPilotCanvas />
+            <div className="canvas">
+                <AutoPilotCanvas />
+                <div className="legend" >
+              <Image src={require('../assets/images/helper-images/legend.png')}/>
+              </div>
+              </div>
           </div>
           <div className="row-item">
             <DroneTelemetry />
@@ -299,8 +304,8 @@ class Run extends Component {
               content="Record Flight"
               onClick={this.runFlightInstructionsAndRecord}
             />
+            </div>
           </div>
-        </div>
       </div>
     );
   }

@@ -380,11 +380,22 @@ class Build extends Component {
           </Header>
 
           <Grid.Row>
-            <Grid.Column>
+            <Grid.Column >
+              
               {this.props.preVisualizeAnimation ? (
+                 <div className="canvas">
                 <PreVisCanvas />
+                <div className="legend" >
+              <Image src={require('../assets/images/helper-images/legend.png')}/>
+              </div>
+              </div>
               ) : (
+              <div className="canvas">
                 <BuildCanvas />
+                <div className="legend-path-builder" >
+              <Image src={require('../assets/images/helper-images/legend.png')}/>
+              </div>
+              </div>
               )}
             </Grid.Column>
           </Grid.Row>
