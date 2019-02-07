@@ -38,18 +38,6 @@ class StatusContainer extends Component {
         this.props.changeRoll(arg.roll);
         this.props.changePitch(arg.pitch);
         this.props.changeYaw(arg.yaw);
-      } else {
-        this.setState({
-          battery: 0,
-          pitch: 'no data',
-          roll: 'no data',
-          yaw: 'no data',
-          temph: 'no data',
-          time: 'no data',
-        });
-        this.props.changeRoll(this.state.roll);
-        this.props.changePitch(this.state.pitch);
-        this.props.changeYaw(this.state.yaw);
       }
     });
   }
