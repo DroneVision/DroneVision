@@ -33,6 +33,8 @@ import {
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
 
+const { ipcRenderer, webFrame } = window.require('electron');
+
 class Build extends Component {
   constructor(props) {
     super(props);
@@ -75,6 +77,27 @@ class Build extends Component {
   handleKeyUp = () => {
     this.setState({ buttonPlane: 'Current' });
   };
+
+  componentDidMount() {
+    webFrame.setZoomFactor(0.9);
+    // Listen for flight import from main process
+    ipcRenderer.on('file-opened', (event, flightInstructions) => {
+      this.props.updateInstructions(flightInstructions);
+    });
+    // Listen for request for flight instructions from main process
+    ipcRenderer.on('request-flightInstructions', event => {
+      // Reply back with instructions
+      ipcRenderer.send(
+        'send-flightInstructions',
+        this.props.flightInstructions
+      );
+    });
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      // Send a command to drone
+      ipcRenderer.send('single-instruction', 'command');
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+    });
+  }
 
   addFlightInstruction = instructionObj => {
     const { flightInstructions, speed, distance } = this.props;
