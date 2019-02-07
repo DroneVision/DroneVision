@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import StatusContainer from '../components/StatusContainer';
+import StatusSegment from '../components/StatusSegment';
 import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
 import { Button, Grid, Header, Icon } from 'semantic-ui-react';
@@ -313,7 +313,7 @@ class Run extends Component {
         </div>
         <div className="row">
           <div className="row-item">
-            <StatusContainer />
+            <StatusSegment />
           </div>
         </div>
       </div>
