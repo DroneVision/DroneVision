@@ -247,9 +247,16 @@
   position: relative;
 }
 
-.legend {
+.legend-path-builder {
   position: absolute;
   bottom: 10px;
   right: -45px;
+  width: 70px;
+}
+
+.legend {
+  position: absolute;
+  bottom: 12px;
+  right: 10px;
   width: 70px;
 }
