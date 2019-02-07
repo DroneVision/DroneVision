@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Battery from './Battery';
 import { connect } from 'react-redux';
 import { List, Segment, Icon } from 'semantic-ui-react';
-import { changeRoll, changePitch, changeYaw } from '../store/store';
+import { changeRoll, changePitch, changeYaw, updateDroneConnectionStatus } from '../store/store';
 const { ipcRenderer } = window.require('electron');
 
 let interval;
@@ -40,6 +40,19 @@ class StatusContainer extends Component {
         this.props.changeYaw(arg.yaw);
       }
     });
+    ipcRenderer.on('drone-disconnection', (event, droneConnectionStatus) => {
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+      if (!droneConnectionStatus.isConnected) {
+        this.setState({
+          battery: 0,
+          pitch: 'no data',
+          roll: 'no data',
+          yaw: 'no data',
+          temph: 'no data',
+          time: 'no data',
+        });
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -48,24 +61,8 @@ class StatusContainer extends Component {
 
   getDroneState = () => {
     ipcRenderer.send('getDroneState');
-  console.log('getDroneState invoked')
+    
   };
-
-  // resetDroneState = () => {
-  //   ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
-  //     this.props.updateDroneConnectionStatus(droneConnectionStatus);
-  //     if (!droneConnectionStatus.isConnected) {
-  //       this.setState({
-  //         battery: 0,
-  //         pitch: 'no data',
-  //         roll: 'no data',
-  //         yaw: 'no data',
-  //         temph: 'no data',
-  //         time: 'no data',
-  //       });
-  //     }
-  //   });
-  // };
 
   render() {
     return (
@@ -157,6 +154,8 @@ const mapDispatch = dispatch => {
     changeYaw: newYaw => {
       dispatch(changeYaw(newYaw));
     },
+    updateDroneConnectionStatus: droneStatus =>
+      dispatch(updateDroneConnectionStatus(droneStatus))
   };
 };
 

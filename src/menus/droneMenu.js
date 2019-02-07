@@ -146,7 +146,7 @@ module.exports = mainWindow => {
                 droneName: 'Drone Not Connected',
                 isConnected: false
             }
-            mainWindow.webContents.send('drone-connection', droneConnectionStatus);
+            mainWindow.webContents.send('drone-disconnection', droneConnectionStatus);
             dialog.showMessageBox(mainWindow, {
                 type: 'info',
                 buttons: ['OK'],
