@@ -64,6 +64,13 @@ class Build extends Component {
       //'x' and '/' key -> Activate Up Plane
       this.setState({ buttonPlane: 'Up' });
     }
+    // else if (evt.keyCode === 68 || evt.keyCode === 74) {
+    //   //'d' and 'j' key -> Rotate counter-clockwise
+    //   this.addRotationInstruction('ccw');
+    // } else if (evt.keyCode === 70 || evt.keyCode === 75) {
+    //   //'f' and 'k' key -> Rotate clockwise
+    //   this.addRotationInstruction('cw');
+    // }
   };
   handleKeyUp = () => {
     this.setState({ buttonPlane: 'Current' });
@@ -159,11 +166,11 @@ class Build extends Component {
 
     let updatedFlightInstructions = flightInstructions.slice();
 
-    const lastDroneInstructionArr = lastDroneInstruction.split(' ');
+    const [lastInstruction, lastDegs] = lastDroneInstruction.split(' ');
 
-    if (direction === lastDroneInstructionArr[0]) {
-      const oldDegs = lastDroneInstructionArr[1];
-      const resultDegs = degs + Number(oldDegs);
+    //avoids sending duplicate commands unless the combination would push it above the maximum allowable rotation command of 360 degrees
+    if (direction === lastInstruction && Number(lastDegs) <= 360 - degs) {
+      const resultDegs = degs + Number(lastDegs);
       flightInstructionObj.droneInstruction = `${direction} ${resultDegs}`;
       flightInstructionObj.message = `${newMessage} --> ${resultDegs} degrees`;
       flightInstructionObj.drawInstruction = `${direction} ${resultDegs}`;
@@ -176,6 +183,7 @@ class Build extends Component {
       //New flight instruction (non-duplicate), so add it in
       updatedFlightInstructions.splice(-1, 0, flightInstructionObj);
     }
+
     this.props.updateInstructions(updatedFlightInstructions);
 
     let newOrientation;
