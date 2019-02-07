@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { voxelSizeValue } from '../store/store';
+import { voxelSizeValue } from '../store';
 //CARDINAL DIRECTIONS GROUP
 const cardinalDirections = new THREE.Group();
 
@@ -44,123 +44,123 @@ northStarHeavenlyLight.position.set(0, voxelSizeValue * -0.5, 0);
 cardinalDirections.add(northStarHeavenlyLight);
 
 // //EAST STAR
-// const eastStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
-// const eastStarMaterial = new THREE.MeshPhongMaterial({
-//   color: 0x7f7f00,
-//   flatShading: true,
-// });
+const eastStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
+const eastStarMaterial = new THREE.MeshPhongMaterial({
+  color: 0x7f7f00,
+  flatShading: true,
+});
 
-// const eastStar = new THREE.Mesh(eastStarGeometry, eastStarMaterial);
+const eastStar = new THREE.Mesh(eastStarGeometry, eastStarMaterial);
 
-// eastStar.position.set(-200, 0, 0);
-// eastStar.updateMatrix();
-// eastStar.matrixAutoUpdate = false;
-// eastStar.position.set(0, voxelSizeValue * -0.5, 0);
-// cardinalDirections.add(eastStar);
+eastStar.position.set(-200, 0, 0);
+eastStar.updateMatrix();
+eastStar.matrixAutoUpdate = false;
+eastStar.position.set(0, voxelSizeValue * -0.5, 0);
+cardinalDirections.add(eastStar);
 
-// //EAST STAR HEAVENLY LIGHT
-// const eastStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
-//   0,
-//   1,
-//   140,
-//   4,
-//   1
-// );
+//EAST STAR HEAVENLY LIGHT
+const eastStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
+  0,
+  1,
+  140,
+  4,
+  1
+);
 
-// const eastStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
-//   color: 0xffff00,
-//   flatShading: true,
-// });
+const eastStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
+  color: 0xffff00,
+  flatShading: true,
+});
 
-// const eastStarHeavenlyLight = new THREE.Mesh(
-//   eastStarHeavenlyLightGeometry,
-//   eastStarHeavenlyLightMaterial
-// );
+const eastStarHeavenlyLight = new THREE.Mesh(
+  eastStarHeavenlyLightGeometry,
+  eastStarHeavenlyLightMaterial
+);
 
-// eastStarHeavenlyLight.position.set(-200, 75, 0);
-// eastStarHeavenlyLight.updateMatrix();
-// eastStarHeavenlyLight.matrixAutoUpdate = false;
-// eastStarHeavenlyLight.position.set(0, voxelSizeValue * -0.5, 0);
-// cardinalDirections.add(eastStarHeavenlyLight);
+eastStarHeavenlyLight.position.set(-200, 75, 0);
+eastStarHeavenlyLight.updateMatrix();
+eastStarHeavenlyLight.matrixAutoUpdate = false;
+eastStarHeavenlyLight.position.set(0, voxelSizeValue * -0.5, 0);
+cardinalDirections.add(eastStarHeavenlyLight);
 
-// //SOUTH STAR
-// const southStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
-// const southStarMaterial = new THREE.MeshPhongMaterial({
-//   color: 0x7f0000,
-//   flatShading: true,
-// });
+//SOUTH STAR
+const southStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
+const southStarMaterial = new THREE.MeshPhongMaterial({
+  color: 0x7f0000,
+  flatShading: true,
+});
 
-// const southStar = new THREE.Mesh(southStarGeometry, southStarMaterial);
+const southStar = new THREE.Mesh(southStarGeometry, southStarMaterial);
 
-// southStar.position.set(0, 0, -200);
-// southStar.updateMatrix();
-// southStar.matrixAutoUpdate = false;
-// southStar.position.set(0, voxelSizeValue * -0.5, 0);
-// cardinalDirections.add(southStar);
+southStar.position.set(0, 0, -200);
+southStar.updateMatrix();
+southStar.matrixAutoUpdate = false;
+southStar.position.set(0, voxelSizeValue * -0.5, 0);
+cardinalDirections.add(southStar);
 
 // //SOUTH STAR HEAVENLY LIGHT
-// const southStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
-//   0,
-//   1,
-//   140,
-//   4,
-//   1
-// );
+const southStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
+  0,
+  1,
+  140,
+  4,
+  1
+);
 
-// const southStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
-//   color: 0xff0000,
-//   flatShading: true,
-// });
+const southStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
+  color: 0xff0000,
+  flatShading: true,
+});
 
-// const southStarHeavenlyLight = new THREE.Mesh(
-//   southStarHeavenlyLightGeometry,
-//   southStarHeavenlyLightMaterial
-// );
+const southStarHeavenlyLight = new THREE.Mesh(
+  southStarHeavenlyLightGeometry,
+  southStarHeavenlyLightMaterial
+);
 
-// southStarHeavenlyLight.position.set(0, 75, -200);
-// southStarHeavenlyLight.updateMatrix();
-// southStarHeavenlyLight.matrixAutoUpdate = false;
-// southStarHeavenlyLight.position.set(0, voxelSizeValue * -0.5, 0);
-// cardinalDirections.add(southStarHeavenlyLight);
+southStarHeavenlyLight.position.set(0, 75, -200);
+southStarHeavenlyLight.updateMatrix();
+southStarHeavenlyLight.matrixAutoUpdate = false;
+southStarHeavenlyLight.position.set(0, voxelSizeValue * -0.5, 0);
+cardinalDirections.add(southStarHeavenlyLight);
 
 // //WEST STAR
-// const westStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
-// const westStarMaterial = new THREE.MeshPhongMaterial({
-//   color: 0x00007f,
-//   flatShading: true,
-// });
+const westStarGeometry = new THREE.CylinderBufferGeometry(0, 7, 30, 4, 1);
+const westStarMaterial = new THREE.MeshPhongMaterial({
+  color: 0x00007f,
+  flatShading: true,
+});
 
-// const westStar = new THREE.Mesh(westStarGeometry, westStarMaterial);
+const westStar = new THREE.Mesh(westStarGeometry, westStarMaterial);
 
-// westStar.position.set(200, 0, 0);
-// westStar.updateMatrix();
-// westStar.matrixAutoUpdate = false;
-// westStar.position.set(0, voxelSizeValue * -0.5, 0);
-// cardinalDirections.add(westStar);
+westStar.position.set(200, 0, 0);
+westStar.updateMatrix();
+westStar.matrixAutoUpdate = false;
+westStar.position.set(0, voxelSizeValue * -0.5, 0);
+cardinalDirections.add(westStar);
 
-// //WEST STAR HEAVENLY LIGHT
-// const westStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
-//   0,
-//   1,
-//   140,
-//   4,
-//   1
-// );
+//WEST STAR HEAVENLY LIGHT
+const westStarHeavenlyLightGeometry = new THREE.CylinderBufferGeometry(
+  0,
+  1,
+  140,
+  4,
+  1
+);
 
-// const westStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
-//   color: 0x0000ff,
-//   flatShading: true,
-// });
+const westStarHeavenlyLightMaterial = new THREE.MeshPhongMaterial({
+  color: 0x0000ff,
+  flatShading: true,
+});
 
-// const westStarHeavenlyLight = new THREE.Mesh(
-//   westStarHeavenlyLightGeometry,
-//   westStarHeavenlyLightMaterial
-// );
+const westStarHeavenlyLight = new THREE.Mesh(
+  westStarHeavenlyLightGeometry,
+  westStarHeavenlyLightMaterial
+);
 
-// westStarHeavenlyLight.position.set(200, 75, 0);
-// westStarHeavenlyLight.updateMatrix();
-// westStarHeavenlyLight.matrixAutoUpdate = false;
-// westStarHeavenlyLight.position.set(0, voxelSizeValue * -0.5, 0);
-// cardinalDirections.add(westStarHeavenlyLight);
+westStarHeavenlyLight.position.set(200, 75, 0);
+westStarHeavenlyLight.updateMatrix();
+westStarHeavenlyLight.matrixAutoUpdate = false;
+westStarHeavenlyLight.position.set(0, voxelSizeValue * -0.5, 0);
+cardinalDirections.add(westStarHeavenlyLight);
 
 export default cardinalDirections;

@@ -3,9 +3,13 @@ import { connect } from 'react-redux';
 import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
-import { Button, Grid, Header, Icon } from 'semantic-ui-react';
+import { Button, Grid, Header, Icon, Image } from 'semantic-ui-react';
 import wait from 'waait';
-import { updateCDP, updateCDR, updateDroneConnectionStatus } from '../store/store';
+import {
+  updateCDP,
+  updateCDR,
+  updateDroneConnectionStatus,
+} from '../store';
 import commandDelays from '../drone/commandDelays';
 
 const { ipcRenderer } = window.require('electron');
@@ -250,7 +254,14 @@ class AutoPilot extends Component {
         </div>
         <div className="row">
           <div className="row-item">
-            <AutoPilotCanvas />
+            <div className="canvas">
+              <AutoPilotCanvas />
+              <div className="legend">
+                <Image
+                  src={require('../assets/images/helper-images/legend.png')}
+                />
+              </div>
+            </div>
           </div>
           <div className="row-item">
             <DroneTelemetry />
@@ -325,7 +336,7 @@ const mapState = state => {
     currentDroneRotation: state.currentDroneRotation,
     startingPosition: state.startingPosition,
     voxelSize: state.voxelSize,
-    droneConnectionStatus: state.droneConnectionStatus
+    droneConnectionStatus: state.droneConnectionStatus,
   };
 };
 
@@ -338,7 +349,7 @@ const mapDispatch = dispatch => {
       dispatch(updateCDR(newRotation));
     },
     updateDroneConnectionStatus: droneStatus =>
-      dispatch(updateDroneConnectionStatus(droneStatus))
+      dispatch(updateDroneConnectionStatus(droneStatus)),
   };
 };
 

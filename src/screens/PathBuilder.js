@@ -29,11 +29,12 @@ import {
   updateDroneConnectionStatus,
   rotateDrone,
   togglePreVisualizeAnimation,
-} from '../store/store';
+} from '../store';
+
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
 const { webFrame, ipcRenderer } = window.require('electron');
 
-class Build extends Component {
+class PathBuilder extends Component {
   constructor(props) {
     super(props);
     const { scale } = this.props;
@@ -386,11 +387,22 @@ class Build extends Component {
           </Header>
 
           <Grid.Row>
-            <Grid.Column>
+            <Grid.Column >
+              
               {this.props.preVisualizeAnimation ? (
+                 <div className="canvas">
                 <PreVisCanvas />
+                <div className="legend" >
+              <Image src={require('../assets/images/helper-images/legend.png')}/>
+              </div>
+              </div>
               ) : (
+              <div className="canvas">
                 <BuildCanvas />
+                <div className="legend-path-builder" >
+              <Image src={require('../assets/images/helper-images/legend.png')}/>
+              </div>
+              </div>
               )}
             </Grid.Column>
           </Grid.Row>
@@ -630,4 +642,4 @@ const mapDispatch = dispatch => {
 export default connect(
   mapState,
   mapDispatch
-)(Build);
+)(PathBuilder);

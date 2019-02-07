@@ -28,7 +28,7 @@ import {
   updateSelectedObj,
   deleteSelectedObj,
   clearObjects,
-} from '../store/store';
+} from '../store';
 
 class SceneBuilder extends Component {
   constructor(props) {
@@ -280,7 +280,12 @@ class SceneBuilder extends Component {
         </div>
         <div className="row">
           <div className="row-item">
-            <SceneCanvas />
+            <div className="canvas">
+                <SceneCanvas />
+                <div className="legend" >
+              <Image src={require('../assets/images/helper-images/legend.png')}/>
+              </div>
+              </div>
           </div>
         </div>
         <div className="row">

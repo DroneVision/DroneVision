@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Battery from './Battery';
 import { connect } from 'react-redux';
 import { List, Segment, Icon } from 'semantic-ui-react';
-import { changeRoll, changePitch, changeYaw, updateDroneConnectionStatus } from '../store/store';
+import { changeRoll, changePitch, changeYaw, updateDroneConnectionStatus } from '../store';
 const { ipcRenderer } = window.require('electron');
 
 let interval;
