@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Menu, Segment, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { changeTab, updateInstructions,loadSceneObjsFromFile } from '../store/store';
+import { changeTab, updateInstructions, loadSceneObjsFromFile } from '../store';
 import { saveFile, loadFile } from '../utils/fileSystemUtils';
 
 class Navbar extends Component {
@@ -83,9 +83,7 @@ class Navbar extends Component {
                     Import Scene Objects
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() =>
-                      saveFile('scene-objects', sceneObjects)
-                    }
+                    onClick={() => saveFile('scene-objects', sceneObjects)}
                   >
                     Export Scene Objects
                   </Dropdown.Item>
@@ -112,7 +110,8 @@ const mapDispatch = dispatch => {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
       dispatch(updateInstructions(flightInstructions)),
-      loadSceneObjsFromFile: sceneObjects => dispatch(loadSceneObjsFromFile(sceneObjects))
+    loadSceneObjsFromFile: sceneObjects =>
+      dispatch(loadSceneObjsFromFile(sceneObjects)),
   };
 };
 

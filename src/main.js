@@ -58,7 +58,8 @@ ipcMain.on('get-available-videos', evt => {
     if (err) {
       console.log('error', err);
     } else {
-      evt.sender.send('has-available-videos', files);
+      const videos = files.filter(el => !el.startsWith('index'))
+      evt.sender.send('has-available-videos', videos);
     }
   });
 });

@@ -7,7 +7,7 @@ import droneModel from '../ThreeJSModules/Drone3DModel';
 import cardinalDirections from '../ThreeJSModules/CardinalDirections';
 import Obstacles from '../ThreeJSModules/Obstacles';
 import _ from 'lodash';
-import { updateBuildDronePosition } from '../store/store';
+import { updateBuildDronePosition } from '../store';
 import { createSceneObjs } from '../utils/canvasUtils';
 
 class BuildCanvas extends Component {

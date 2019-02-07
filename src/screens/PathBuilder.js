@@ -29,11 +29,13 @@ import {
   updateDroneConnectionStatus,
   rotateDrone,
   togglePreVisualizeAnimation,
-} from '../store/store';
+
+} from '../store';
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
+const { webFrame, ipcRenderer } = window.require('electron');
 
-class Build extends Component {
+class PathBuilder extends Component {
   constructor(props) {
     super(props);
     const { scale } = this.props;
@@ -53,8 +55,14 @@ class Build extends Component {
     };
   }
   componentDidMount() {
+    webFrame.setZoomFactor(.9);
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
+    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+      // Send a command to drone
+      ipcRenderer.send('single-instruction', 'command');
+      this.props.updateDroneConnectionStatus(droneConnectionStatus);
+    });
   }
   handleKeyDown = evt => {
     if (evt.keyCode === 90 || evt.keyCode === 190) {
@@ -380,6 +388,9 @@ class Build extends Component {
           </Header>
 
           <Grid.Row>
+
+           
+
               {this.props.preVisualizeAnimation ? (
                  <div className="canvas">
                 <PreVisCanvas />
@@ -390,11 +401,16 @@ class Build extends Component {
               ) : (
               <div className="canvas">
                 <BuildCanvas />
+
                 <div className="legend" >
+
               <Image src={require('../assets/images/helper-images/legend.png')}/>
               </div>
               </div>
               )}
+
+           
+
           </Grid.Row>
 
           <div id="row">
@@ -632,4 +648,5 @@ const mapDispatch = dispatch => {
 export default connect(
   mapState,
   mapDispatch
-)(Build);
+)(PathBuilder);
+

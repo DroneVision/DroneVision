@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Battery from './Battery';
 import { connect } from 'react-redux';
 import { List, Segment, Icon } from 'semantic-ui-react';
-import { changeRoll, changePitch, changeYaw } from '../store/store';
+import { changeRoll, changePitch, changeYaw, updateDroneConnectionStatus } from '../store';
 const { ipcRenderer } = window.require('electron');
 
 let interval;
@@ -40,18 +40,7 @@ class StatusContainer extends Component {
         this.props.changeYaw(arg.yaw);
       }
     });
-  }
-
-  componentWillUnmount() {
-    clearInterval(interval);
-  }
-
-  getDroneState = () => {
-    ipcRenderer.send('getDroneState');
-  };
-
-  resetDroneState = () => {
-    ipcRenderer.on('drone-connection', (event, droneConnectionStatus) => {
+    ipcRenderer.on('drone-disconnection', (event, droneConnectionStatus) => {
       this.props.updateDroneConnectionStatus(droneConnectionStatus);
       if (!droneConnectionStatus.isConnected) {
         this.setState({
@@ -64,6 +53,15 @@ class StatusContainer extends Component {
         });
       }
     });
+  }
+
+  componentWillUnmount() {
+    clearInterval(interval);
+  }
+
+  getDroneState = () => {
+    ipcRenderer.send('getDroneState');
+    
   };
 
   render() {
@@ -156,6 +154,8 @@ const mapDispatch = dispatch => {
     changeYaw: newYaw => {
       dispatch(changeYaw(newYaw));
     },
+    updateDroneConnectionStatus: droneStatus =>
+      dispatch(updateDroneConnectionStatus(droneStatus))
   };
 };
 
