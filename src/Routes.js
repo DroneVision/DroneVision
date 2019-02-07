@@ -58,7 +58,7 @@ class Routes extends Component {
           <Route exact path="/" component={PathBuilder} />
           <Route path="/scene-builder" component={SceneBuilder} />
           <Route path="/path-builder" component={PathBuilder} />
-          <Route path="/autopilot" component={AutoPilot} />
+          <Route path="/autopilot" component={Autopilot} />
           <Route path="/manual-flight" component={ManualControl} />
           <Route path="/videos" component={Videos} />
           <Route path="/about" component={About} />

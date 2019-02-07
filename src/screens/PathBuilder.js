@@ -29,6 +29,7 @@ import {
   updateDroneConnectionStatus,
   rotateDrone,
   togglePreVisualizeAnimation,
+
 } from '../store';
 
 import { getFlightInstruction } from '../utils/buttonPanelUtils';
@@ -387,8 +388,9 @@ class PathBuilder extends Component {
           </Header>
 
           <Grid.Row>
-            <Grid.Column >
-              
+
+           
+
               {this.props.preVisualizeAnimation ? (
                  <div className="canvas">
                 <PreVisCanvas />
@@ -399,12 +401,16 @@ class PathBuilder extends Component {
               ) : (
               <div className="canvas">
                 <BuildCanvas />
-                <div className="legend-path-builder" >
+
+                <div className="legend" >
+
               <Image src={require('../assets/images/helper-images/legend.png')}/>
               </div>
               </div>
               )}
-            </Grid.Column>
+
+           
+
           </Grid.Row>
 
           <div id="row">
@@ -643,3 +649,4 @@ export default connect(
   mapState,
   mapDispatch
 )(PathBuilder);
+
