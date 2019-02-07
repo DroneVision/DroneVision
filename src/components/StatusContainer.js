@@ -7,7 +7,7 @@ const { ipcRenderer } = window.require('electron');
 
 let interval;
 
-class StatusSegment extends Component {
+class StatusContainer extends Component {
   constructor() {
     super();
     this.state = {
@@ -162,4 +162,4 @@ const mapDispatch = dispatch => {
 export default connect(
   mapState,
   mapDispatch
-)(StatusSegment);
+)(StatusContainer);
