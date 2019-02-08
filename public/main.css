@@ -220,7 +220,8 @@
 #object-list {
   overflow: scroll;
   height: 40rem;
-  width: 225px;
+  /* width: 225px; */
+  width: 285px;
   -webkit-scrollbar-button: visible;
 }
 
