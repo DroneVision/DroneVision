@@ -9,11 +9,24 @@ import {
   Header,
   Icon,
 } from 'semantic-ui-react';
-import { changeTab } from '../store';
+import { changeTab, updateInstructions, updateSceneObjs } from '../store';
+import { loadFile } from '../utils/fileSystemUtils';
 class Home extends Component {
+  constructor(props) {
+    super(props);
+  }
+  handleLoadFlightInstructions = async () => {
+    const flightInstructions = await loadFile('flight-instructions');
+    this.props.updateInstructions(flightInstructions);
+    this.props.changeTab('path-builder');
+  };
+  handleLoadSceneObjects = async () => {
+    const sceneObjects = await loadFile('scene-objects');
+    this.props.updateSceneObjs(sceneObjects);
+  };
   render() {
     return (
-      <Container text>
+      <Container>
         <Header
           as="h1"
           content="Welcome to DroneVision"
@@ -35,26 +48,61 @@ class Home extends Component {
             marginTop: '1.5em',
           }}
         />
-        <Link to={'/scene-builder'}>
-          <Button
-            primary
-            size="huge"
-            onClick={() => this.props.changeTab('scene-builder')}
-          >
-            Create a scene
-            <Icon name="right arrow" />
-          </Button>
-        </Link>
-        <Link to={'/path-builder'}>
-          <Button
-            primary
-            size="huge"
-            onClick={() => this.props.changeTab('path-builder')}
-          >
-            Create an autopilot flight path
-            <Icon name="right arrow" />
-          </Button>
-        </Link>
+        <Grid columns={2} centered>
+          <Grid.Row>
+            <Grid.Column width={4}>
+              <Link to={'/scene-builder'}>
+                <Button
+                  primary
+                  size="huge"
+                  onClick={() => this.props.changeTab('scene-builder')}
+                >
+                  Create a Scene
+                  <Icon name="right arrow" />
+                </Button>
+              </Link>
+            </Grid.Column>
+            <Grid.Column width={4}>
+              <Link to={'/path-builder'}>
+                <Button
+                  primary
+                  size="huge"
+                  onClick={() => this.props.changeTab('path-builder')}
+                >
+                  Create a Flight-Path
+                  <Icon name="right arrow" />
+                </Button>
+              </Link>
+              /
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={4}>
+              <Link to={'/scene-builder'}>
+                <Button
+                  secondary
+                  size="huge"
+                  onClick={this.handleLoadSceneObjects}
+                >
+                  Import a Scene
+                  <Icon name="right arrow" />
+                </Button>
+              </Link>
+            </Grid.Column>
+            <Grid.Column width={4}>
+              <Link to={'/path-builder'}>
+                <Button
+                  secondary
+                  size="huge"
+                  onClick={this.handleLoadFlightInstructions}
+                >
+                  Import a Flight-Path
+                  <Icon name="right arrow" />
+                </Button>
+              </Link>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </Container>
       // <Link to={'/autopilot'}>
       //   <Button onClick={() => this.props.changeTab('autopilot')}>
@@ -90,6 +138,9 @@ class Home extends Component {
 const mapDispatch = dispatch => {
   return {
     changeTab: tabName => dispatch(changeTab(tabName)),
+    updateInstructions: flightInstructions =>
+      dispatch(updateInstructions(flightInstructions)),
+    updateSceneObjs: sceneObjects => dispatch(updateSceneObjs(sceneObjects)),
   };
 };
 
