@@ -35,6 +35,12 @@
   text-align: center;
 }
 
+#build-help {
+  position: relative;
+  right: 0;
+  top: -87px;
+}
+
 #build-help:hover {
   opacity: 0.5;
 }
@@ -127,9 +133,8 @@
 }
 
 #video-list a {
-  color: white
+  color: white;
 }
-
 
 #videos {
   display: flex;
@@ -177,11 +182,6 @@
 .row {
   display: flex;
   flex-wrap: wrap;
-}
-
-#build-help {
-  position: relative;
-  right: 0;
 }
 
 .row > .row-item {
@@ -244,19 +244,18 @@
   color: rgb(30, 120, 255);
 }
 
-.object-name-input{
+.object-name-input {
   width: 150px;
   margin-bottom: 3px;
 }
 .object-visibility-checkbox {
   position: absolute;
-margin-top: 2px;
-margin-bottom: 10px;
+  margin-top: 2px;
+  margin-bottom: 10px;
   font-size: 36px;
   cursor: pointer;
   z-index: 5;
 }
-
 
 .object-single {
   position: relative;
