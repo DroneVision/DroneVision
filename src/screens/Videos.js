@@ -31,9 +31,9 @@ class Videos extends Component {
               <Header as="h1" dividing id="centered-padded-top">
                 <Icon name="video" />
                 <Header.Content>
-                  My Video Library
+                  Videos
                   <Header.Subheader>
-                    <i>Watch your recorded videos</i>
+                    <i>Watch your recorded drone footage</i>
                   </Header.Subheader>
                 </Header.Content>
               </Header>
@@ -47,27 +47,29 @@ class Videos extends Component {
           </Grid.Row>
 
           <Grid.Row>
-              <Segment textAlign="center" compact id="video-list" inverted>
-                <List link>
-                  <List.Header>
-                    <font color="yellow"><h1>Recorded Videos</h1></font>
-                    <hr width="50%"/>
-                  </List.Header>
-                  {availableVideos.map(video => {
-                    return (
-                      <List.Item
-                        key={video}
-                        as="a"
-
-                        name={video}
-                        onClick={this.handleVideoClick}
-                      >
-                        {video}
-                      </List.Item>
-                    );
-                  })}
-                </List>
-              </Segment>
+            <Segment textAlign="center" compact id="video-list" inverted>
+              <List link>
+                <List.Header>
+                  <font color="yellow">
+                    <h1>Your Videos</h1>
+                  </font>
+                  <hr width="50%" />
+                </List.Header>
+                {availableVideos.map(video => {
+                  return (
+                    <List.Item
+                      // className="video-single"
+                      key={video}
+                      as="a"
+                      name={video}
+                      onClick={this.handleVideoClick}
+                    >
+                      {video.slice(0, -4)}
+                    </List.Item>
+                  );
+                })}
+              </List>
+            </Segment>
           </Grid.Row>
         </Grid>
       </div>
