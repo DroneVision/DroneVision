@@ -7,7 +7,7 @@ import { Button, Grid, Header, Icon, Image } from 'semantic-ui-react';
 import wait from 'waait';
 import { updateCDP, updateCDR, updateDroneConnectionStatus } from '../store';
 import commandDelays from '../drone/commandDelays';
-
+import FlightInstructionsList from '../components/FlightInstructionsList';
 const { ipcRenderer } = window.require('electron');
 
 class AutoPilot extends Component {
@@ -199,6 +199,9 @@ class AutoPilot extends Component {
               </div>
             </div>
           </div>
+          <FlightInstructionsList
+            flightInstructions={this.props.flightInstructions}
+          />
           <div className="row-item">
             <DroneTelemetry />
           </div>
