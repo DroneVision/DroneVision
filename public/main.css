@@ -126,6 +126,11 @@
   width: 50%;
 }
 
+#video-list a {
+  color: white
+}
+
+
 #videos {
   display: flex;
   justify-content: center;
