@@ -16,7 +16,7 @@ class BuildCanvas extends Component {
 
     //RENDERER
     this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize(640, 360, false);
+    this.renderer.setSize(1024, 576, false);
 
     //SCENE
     this.scene = new THREE.Scene();
