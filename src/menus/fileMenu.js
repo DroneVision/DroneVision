@@ -34,6 +34,13 @@ module.exports = BrowserWindow => {
           loadFile(BrowserWindow, 'scene-objects');
         },
       },
+      {
+        label: 'Import Flight Path and Scene',
+        accelerator: 'CmdOrCtrl+Shift+D+Z',
+        click() {
+          loadFile(BrowserWindow, 'both');
+        },
+      },
     ],
   };
 

@@ -21,13 +21,20 @@ const { ipcRenderer } = window.require('electron');
 class Routes extends Component {
   componentDidMount() {
     // Listen for flight-instructions import from main process
-    ipcRenderer.on('load-flight-instructions', (event, flightInstructions) => {
-      this.props.updateInstructions(flightInstructions);
+    ipcRenderer.on('load-flight-instructions', (event, data) => {
+      this.props.updateInstructions(data['flight-instructions']);
     });
 
-    ipcRenderer.on('load-scene-objects', (event, sceneObjects) => {
-      this.props.updateSceneObjs(sceneObjects);
-      this.props.updateSelectedObj(sceneObjects[0].id);
+    ipcRenderer.on('load-scene-objects', (event, data) => {
+      this.props.updateSceneObjs(data['scene-objects']);
+      this.props.updateSelectedObj(data['sceneObjects'][0].id);
+    });
+
+    ipcRenderer.on('load-both', (event, data) => {
+      console.log('d', data);
+      this.props.updateInstructions(data['flight-instructions']);
+      this.props.updateSceneObjs(data['scene-objects']);
+      this.props.updateSelectedObj(data['scene-objects'][0].id);
     });
     // Listen for request for flight instructions save from main process
     ipcRenderer.on('save-flight-instructions', event => {
