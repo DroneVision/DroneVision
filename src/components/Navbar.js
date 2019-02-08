@@ -52,13 +52,13 @@ class Navbar extends Component {
               active={activeTab === 'autopilot'}
               onClick={this.handleTabChange}
             />
-            <Menu.Item
+            {/* <Menu.Item
               as={Link}
               to={'/manual-flight'}
               name="manual-flight"
               active={activeTab === 'manual-flight'}
               onClick={this.handleTabChange}
-            />
+            /> */}
             <Menu.Item
               as={Link}
               to={'/videos'}
@@ -117,8 +117,7 @@ const mapDispatch = dispatch => {
     changeTab: tabName => dispatch(changeTab(tabName)),
     updateInstructions: flightInstructions =>
       dispatch(updateInstructions(flightInstructions)),
-    updateSceneObjs: sceneObjects =>
-      dispatch(updateSceneObjs(sceneObjects)),
+    updateSceneObjs: sceneObjects => dispatch(updateSceneObjs(sceneObjects)),
   };
 };
 

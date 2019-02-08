@@ -136,6 +136,10 @@
   color: white;
 }
 
+#video-list a:hover {
+  text-decoration: underline;
+}
+
 #videos {
   display: flex;
   justify-content: center;
