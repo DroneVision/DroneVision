@@ -195,6 +195,7 @@
   position: absolute;
   padding: 2rem;
   text-align: center;
+  right: 0;
 }
 
 #scene-builder {
