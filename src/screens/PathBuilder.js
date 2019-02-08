@@ -18,7 +18,7 @@ import {
 import ButtonPanel from '../components/ButtonPanel';
 import BuildCanvas from '../components/BuildCanvas';
 import PreVisCanvas from '../components/PreVisCanvas';
-
+import FlightInstructionsList from '../components/FlightInstructionsList';
 import {
   changeTab,
   updateInstructions,
@@ -505,38 +505,7 @@ class PathBuilder extends Component {
             </table>
           </div>
 
-          <div id="flight-instructions">
-            <Segment inverted>
-              <List divided inverted animated>
-                <List.Header>
-                  <i>Flight Instructions</i>
-                </List.Header>
-                {flightInstructions
-                  .map(instructionObj => instructionObj.message)
-                  .map((message, ind) => {
-                    let icon;
-                    if (message === 'Takeoff') {
-                      icon = 'hand point up';
-                    } else if (message === 'Land') {
-                      icon = 'hand point down';
-                    } else if (message === 'Hold') {
-                      icon = 'hourglass half';
-                    } else {
-                      icon = 'dot circle';
-                    }
-                    return (
-                      <List.Item
-                        className="flight-message-single"
-                        key={ind}
-                        content={message}
-                        icon={icon}
-                      />
-                    );
-                  })}
-              </List>
-            </Segment>
-          </div>
-
+          {/* <FlightInstructionsList flightInstructions={this.props.flightInstructions}/> */}
           <div className="row">
             <Button
               disabled={
