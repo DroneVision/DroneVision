@@ -165,7 +165,7 @@
   position: absolute;
   width: 25rem;
   right: 2rem;
-  top: 8rem;
+  top: 14.2rem;
   height: 30rem;
   overflow: auto;
 }
@@ -219,8 +219,9 @@
 
 #object-list {
   overflow: scroll;
-  height: 40rem;
-  width: 225px;
+  height: 35rem;
+  width: 285px;
+  margin-top: 5.5rem;
   -webkit-scrollbar-button: visible;
 }
 
