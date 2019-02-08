@@ -1,4 +1,4 @@
-##DroneVision
+## DroneVision
 
 DroneVision is a cross-platform, native, desktop-application designed to assist filmmakers that wish to use drone footage in their projects. Users are able to build and pre-visualize drone flight-paths in 3D utilizing our custom path-building tool. Leveraging React, Redux, and Three.js, we are able to model the user's flight-path in real-time and allow users to connect to their drone and film the paths they build with one, simple, click.
 
@@ -6,7 +6,7 @@ Users are also able to import and export flight-paths for later use with our own
 
 Technologies: Electron, React, Redux, Three.js, JavaScript, HTML, CSS, and Semantic-UI React
 
-##ReadMe
+## ReadMe
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

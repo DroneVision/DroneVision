@@ -47,17 +47,18 @@ class Videos extends Component {
           </Grid.Row>
 
           <Grid.Row>
-            <Grid.Column>
-              <Segment textAlign="center" compact id="video-list">
+              <Segment textAlign="center" compact id="video-list" inverted>
                 <List link>
                   <List.Header>
-                    <i>Recorded Videos</i>
+                    <font color="yellow"><h1>Recorded Videos</h1></font>
+                    <hr width="50%"/>
                   </List.Header>
                   {availableVideos.map(video => {
                     return (
                       <List.Item
                         key={video}
                         as="a"
+
                         name={video}
                         onClick={this.handleVideoClick}
                       >
@@ -67,7 +68,6 @@ class Videos extends Component {
                   })}
                 </List>
               </Segment>
-            </Grid.Column>
           </Grid.Row>
         </Grid>
       </div>
