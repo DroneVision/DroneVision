@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import StatusContainer from '../components/StatusContainer';
 import DroneTelemetry from '../components/DroneTelemetry';
 import AutoPilotCanvas from '../components/AutoPilotCanvas';
-import { Button, Grid, Header, Icon, Image } from 'semantic-ui-react';
+import { Button, Segment, List, Header, Icon, Image } from 'semantic-ui-react';
 import wait from 'waait';
 import { updateCDP, updateCDR, updateDroneConnectionStatus } from '../store';
 import commandDelays from '../drone/commandDelays';
-import FlightInstructionsList from '../components/FlightInstructionsList';
+
 const { ipcRenderer } = window.require('electron');
 
 class AutoPilot extends Component {
@@ -199,9 +199,37 @@ class AutoPilot extends Component {
               </div>
             </div>
           </div>
-          <FlightInstructionsList
-            flightInstructions={this.props.flightInstructions}
-          />
+          <div id="flight-instructions">
+            <Segment inverted>
+              <List divided inverted animated>
+                <List.Header>
+                  <i>Flight Instructions</i>
+                </List.Header>
+                {this.props.flightInstructions
+                  .map(instructionObj => instructionObj.message)
+                  .map((message, ind) => {
+                    let icon;
+                    if (message === 'Takeoff') {
+                      icon = 'hand point up';
+                    } else if (message === 'Land') {
+                      icon = 'hand point down';
+                    } else if (message === 'Hold') {
+                      icon = 'hourglass half';
+                    } else {
+                      icon = 'dot circle';
+                    }
+                    return (
+                      <List.Item
+                        className="flight-message-single"
+                        key={ind}
+                        content={message}
+                        icon={icon}
+                      />
+                    );
+                  })}
+              </List>
+            </Segment>
+          </div>
           <div className="row-item">
             <DroneTelemetry />
           </div>
