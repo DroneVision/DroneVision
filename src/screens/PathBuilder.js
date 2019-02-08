@@ -397,9 +397,9 @@ class PathBuilder extends Component {
           <Header as="h1" dividing id="centered-padded-top">
             <Icon name="settings" />
             <Header.Content>
-              AutoPilot Builder
+              Path Builder
               <Header.Subheader>
-                <i>Visualize your build path</i>
+                <i>Create your autopilot flight path</i>
               </Header.Subheader>
             </Header.Content>
           </Header>
