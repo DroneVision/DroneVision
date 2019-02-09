@@ -213,7 +213,8 @@
 }
 
 .object-header,
-.flight-instructions-header {
+.flight-instructions-header,
+.autopilot-instructions-header {
   margin-bottom: 15px;
   color: yellow;
 }
@@ -225,6 +226,15 @@
   right: 80px;
   margin-top: 120px;
   height: 576px;
+}
+
+#autopilot-instructions {
+  overflow: auto;
+  position: absolute;
+  width: 280px;
+  left: 867px;
+  margin-top: 28px;
+  height: 360px;
 }
 
 #object-list {
@@ -294,12 +304,9 @@
 }
 
 .path-builder-row {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
-
-
-
 
 .sm-ml {
   margin-left: 1rem !important;
@@ -317,4 +324,26 @@
   margin-top: 2rem !important;
 }
 
+.toggle-left-build {
+  position: absolute;
+  margin-top: 697px;
+  margin-left: 495px;
+}
 
+.toggle-right-build {
+  position: absolute;
+  margin-top: 697px;
+  right: 498px;
+}
+
+.toggle-left-scene {
+  position: absolute;
+  margin-top: 725px;
+  left: 495px;
+}
+
+.toggle-right-scene {
+  position: absolute;
+  margin-top: 725px;
+  right: 498px;
+}

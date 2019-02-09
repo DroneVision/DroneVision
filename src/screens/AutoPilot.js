@@ -199,11 +199,14 @@ class AutoPilot extends Component {
               </div>
             </div>
           </div>
-          <div id="flight-instructions">
+          <div id="autopilot-instructions">
             <Segment inverted>
               <List divided inverted animated>
-                <List.Header>
-                  <i>Flight Instructions</i>
+                <List.Header
+                  align="center"
+                  className="autopilot-instructions-header"
+                >
+                  AUTOPILOT COMMANDS:
                 </List.Header>
                 {this.props.flightInstructions
                   .map(instructionObj => instructionObj.message)

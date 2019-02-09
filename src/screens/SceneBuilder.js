@@ -217,6 +217,9 @@ class SceneBuilder extends Component {
     }
     return (
       <div id="scene-builder">
+        <div className="toggle-left-scene">Toggle Up/Down: Z/X</div>
+        <div className="toggle-right-scene">Toggle Up/Down: >/?</div>
+
         <div id="scene-help">
           <Segment inverted id="object-list">
             <List divided inverted selection>
