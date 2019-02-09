@@ -10,7 +10,6 @@ import _ from 'lodash';
 import { updateBuildDronePosition } from '../store';
 import { createSceneObjs } from '../utils/canvasUtils';
 
-
 class BuildCanvas extends Component {
   constructor(props) {
     super(props);
@@ -99,7 +98,9 @@ class BuildCanvas extends Component {
     //TAKEOFF LINE
     const takeoffLineMaterial = new THREE.LineBasicMaterial({
       color: 'yellow',
+      linewidth: 4,
     });
+
     const takeoffLineGeometry = new THREE.Geometry();
     takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
     takeoffLineGeometry.vertices.push(new THREE.Vector3(0, 1, 0));
@@ -110,6 +111,7 @@ class BuildCanvas extends Component {
 
     //AMBIENT LIGHT
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+
     this.scene.add(ambientLight);
   }
 

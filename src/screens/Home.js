@@ -15,18 +15,15 @@ class Home extends Component {
   constructor(props) {
     super(props);
   }
-  handleLoadFlightInstructions = async () => {
-    const flightInstructions = await loadFile('flight-instructions');
-    this.props.updateInstructions(flightInstructions);
-    this.props.changeTab('path-builder');
-  };
-  handleLoadSceneObjects = async () => {
-    const sceneObjects = await loadFile('scene-objects');
-    this.props.updateSceneObjs(sceneObjects);
+
+  handleLoadInstructionsAndScene = async () => {
+    const data = await loadFile('both');
+    this.props.updateInstructions(data['flight-instructions']);
+    this.props.updateSceneObjs(data['scene-objects']);
   };
   render() {
     return (
-      <Container textAlign='center'>
+      <Container textAlign="center">
         <Header
           as="h1"
           content="Welcome to DroneVision"
@@ -43,38 +40,38 @@ class Home extends Component {
           size="large"
         />
         <div className="home-btn-row sm-mt">
-            <Link to={'/scene-builder'}>
-              <Button
-                className="sm-mr"
-                primary
-                size="huge"
-                onClick={() => this.props.changeTab('scene-builder')}
-              >
-                Create Scene
-                <Icon name="right arrow" />
-              </Button>
-            </Link>
-            <Link to={'/path-builder'}>
-              <Button
-                className="sm-ml"
-                primary
-                size="huge"
-                onClick={() => this.props.changeTab('path-builder')}
-              >
-                Create Flight-Path
-                <Icon name="right arrow" />
-              </Button>
-            </Link>
+          <Link to={'/scene-builder'}>
+            <Button
+              className="sm-mr"
+              primary
+              size="huge"
+              onClick={() => this.props.changeTab('scene-builder')}
+            >
+              Create Scene
+              <Icon name="right arrow" />
+            </Button>
+          </Link>
+          <Link to={'/path-builder'}>
+            <Button
+              className="sm-ml"
+              primary
+              size="huge"
+              onClick={() => this.props.changeTab('path-builder')}
+            >
+              Create Flight-Path
+              <Icon name="right arrow" />
+            </Button>
+          </Link>
         </div>
-          <Grid>
-           <Grid.Row>
+        <Grid>
+          <Grid.Row>
             <Grid.Column>
-              <Link to={'/scene-builder'}>
+              <Link to={'/autopilot'}>
                 <Button
                   className="sm-mt"
                   secondary
                   size="huge"
-                  onClick={this.handleLoadSceneObjects}
+                  onClick={this.handleLoadInstructionsAndScene}
                 >
                   Import Flight Path + Scene
                   <Icon className="sm-ml" name="cloud download" />
@@ -84,7 +81,7 @@ class Home extends Component {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              <Header
+              {/* <Header
                 as="h2"
                 content="PREPARE FOR TAKEOFF"
                 style={{
@@ -93,10 +90,14 @@ class Home extends Component {
                   marginTop: '1.5em',
                   color: 'red'
                 }}
+              /> */}
+              <Image
+                centered
+                src={require('../assets/images/preparefortakeoff.png')}
+                size="large"
               />
             </Grid.Column>
           </Grid.Row>
-          
         </Grid>
       </Container>
     );
