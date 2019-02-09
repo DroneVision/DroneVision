@@ -391,6 +391,20 @@ class SceneBuilder extends Component {
                           />
                         </td>
                       </tr>
+                      <br />
+                      <tr />
+                      <tr>
+                        <td>
+                          <Link to={'/path-builder'}>
+                            <Button
+                              disabled={this.state.preVisButtonsDisabled}
+                              onClick={() => this.props.changeTab('autopilot')}
+                            >
+                              Create Flight Path
+                            </Button>
+                          </Link>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
