@@ -16,6 +16,11 @@ class Navbar extends Component {
     const data = await loadFile('scene-objects');
     this.props.updateSceneObjs(data['scene-objects']);
   };
+  handleLoadInstructionsAndScene = async () => {
+    const data = await loadFile('both');
+    this.props.updateInstructions(data['flight-instructions']);
+    this.props.updateSceneObjs(data['scene-objects']);
+  };
 
   render() {
     const { activeTab, flightInstructions, sceneObjects } = this.props;
@@ -101,6 +106,19 @@ class Navbar extends Component {
                     onClick={() => saveFile('scene-objects', sceneObjects)}
                   >
                     Export Scene Objects
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={this.handleLoadInstructionsAndScene}>
+                    Import Flight Path + Scene
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() =>
+                      saveFile('both', {
+                        'flight-instructions': flightInstructions,
+                        'scene-objects': sceneObjects,
+                      })
+                    }
+                  >
+                    Export Flight Path + Scene
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
