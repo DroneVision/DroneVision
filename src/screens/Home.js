@@ -74,7 +74,7 @@ class Home extends Component {
         <Grid>
           <Grid.Row>
             <Grid.Column>
-              <Link to={'/autopilot'}>
+              <Link to={'/path-builder'}>
                 <Button
                   className="sm-mt"
                   secondary

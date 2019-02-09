@@ -136,6 +136,26 @@ class PreVisCanvas extends Component {
       this.scene.add(this.sceneObjects);
     }
   }
+  followDroneWithCamera = (point, followDistance = 5) => {
+    //this works because the camera's target is set to be the drone3D model (in the constructor), so it will always turn to face the drone when we move it
+
+    //we always want the camera to be slightly behind and above the drone, looking in the same direction that it is facing
+    const { droneOrientation, currentDroneRotation } = this.props;
+
+    if (Math.abs(currentDroneRotation) === Math.PI) {
+      console.log('cond1', currentDroneRotation);
+      this.camera.position.set(point.x, point.y + 2, point.z - followDistance);
+    } else if (currentDroneRotation === Math.PI / 2) {
+      console.log('cond2', currentDroneRotation);
+      this.camera.position.set(point.x + followDistance, point.y + 2, point.z);
+    } else if (currentDroneRotation === 0) {
+      console.log('cond3', currentDroneRotation);
+      this.camera.position.set(point.x, point.y + 2, point.z + followDistance);
+    } else {
+      console.log('cond4', currentDroneRotation);
+      this.camera.position.set(point.x - followDistance, point.y + 2, point.z);
+    }
+  };
 
   drawLineForPreVis = flightInstructions => {
     this.scene.remove(this.takeoffLine);
@@ -278,6 +298,7 @@ class PreVisCanvas extends Component {
         object.position.z = this.props.currentDronePosition.z;
       }
     }
+    this.followDroneWithCamera(object.position, 3);
   };
 
   moveCamera = object => {
@@ -370,7 +391,7 @@ class PreVisCanvas extends Component {
 
     this.moveDrone(this.drone3DModel);
     this.rotateDrone(this.drone3DModel);
-    this.moveCamera(this.camera);
+    // this.moveCamera(this.camera);
     // this.rotateDrone(this.camera);
     console.log(this.camera.position);
     this.controls.update();

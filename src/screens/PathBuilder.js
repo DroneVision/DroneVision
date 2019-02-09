@@ -297,12 +297,12 @@ class PathBuilder extends Component {
         if (rotationDirection === 'cw') {
           const newCWRotation =
             this.props.currentDroneRotation -
-            rotationAngles[rotationDegreesNumber];
+            ((rotationDegreesNumber / 90) * Math.PI) / 2;
           await this.props.updateCDR(newCWRotation);
         } else {
           const newCCWRotation =
             this.props.currentDroneRotation +
-            rotationAngles[rotationDegreesNumber];
+            ((rotationDegreesNumber / 90) * Math.PI) / 2;
           await this.props.updateCDR(newCCWRotation);
         }
         await wait(commandDelays.cw);
