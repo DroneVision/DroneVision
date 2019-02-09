@@ -255,7 +255,7 @@ class SceneBuilder extends Component {
                       >
                         <List.Content className="object-name">
                           <Input
-                          className="object-name-input"
+                            className="object-name-input"
                             id={sceneObj.id}
                             value={sceneObj.name}
                             onChange={this.handleNameChange}
@@ -322,9 +322,9 @@ class SceneBuilder extends Component {
         </div>
         <div className="row">
           <div className="row-item">
-            <Header as="h1" dividing className="centered-padded-top">
-              <Icon name="building" />
-              <Header.Content>
+            <Header as="h1" dividing>
+              <Header.Content className="centered-padded-top">
+                <Icon name="building" />
                 Scene Builder
                 <Header.Subheader>
                   <i>Add objects to your scene</i>

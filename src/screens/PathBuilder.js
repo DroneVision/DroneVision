@@ -394,9 +394,9 @@ class PathBuilder extends Component {
     return (
       <div id="build-screen">
         <Grid columns={3} padded centered>
-          <Header as="h1" dividing id="centered-padded-top">
-            <Icon name="settings" />
-            <Header.Content>
+          <Header as="h1" dividing>
+            <Header.Content className="centered-padded-top">
+              <Icon name="settings" />
               Path Builder
               <Header.Subheader>
                 <i>Create your autopilot flight path</i>
@@ -508,8 +508,8 @@ class PathBuilder extends Component {
           <div id="flight-instructions">
             <Segment inverted>
               <List divided inverted animated>
-                <List.Header>
-                  <i>Flight Instructions</i>
+                <List.Header className="flight-instructions-header">
+                  YOUR FLIGHT PATH:
                 </List.Header>
                 {flightInstructions
                   .map(instructionObj => instructionObj.message)
