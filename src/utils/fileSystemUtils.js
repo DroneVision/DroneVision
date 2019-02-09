@@ -5,15 +5,25 @@ const { promisify } = require('util');
 
 const readFileAsync = promisify(fs.readFile);
 
-// Opening a File from electron browser
-
+// Saving a File from electron browser
 export const saveFile = (target, targetData) => {
-  const fileName =
-    target === 'flight-instructions'
-      ? 'flightInstructions.dvz'
-      : 'sceneObjects.dvzo';
+  // const fileName =
+  //   target === 'flight-instructions'
+  //     ? 'flightInstructions.dvz'
+  //     : 'sceneObjects.dvzo';
 
-  const fileExt = target === 'flight-instructions' ? 'dvz' : 'dvzo';
+  let fileName, fileExt;
+  if (target === 'both') {
+    fileName = 'flight+scene';
+    fileExt = 'dvz';
+  } else if (target === 'flight-instructions') {
+    fileName = 'flight-instructions';
+    fileExt = 'dvz';
+  } else {
+    fileName = 'scene-objects';
+    fileExt = 'dvzo';
+  }
+
   const options = {
     defaultPath: path.join(app.getPath('desktop'), fileName),
     // Add a file extension
@@ -24,9 +34,8 @@ export const saveFile = (target, targetData) => {
     if (fileName === undefined) {
       return;
     }
-    const targetObj = {};
-    targetObj[target] = targetData;
-    fs.writeFile(fileName, JSON.stringify(targetObj), err => {
+
+    fs.writeFile(fileName, JSON.stringify(targetData), err => {
       if (err) {
         alert('An error ocurred creating the file ' + err.message);
       }
@@ -62,8 +71,7 @@ const promisifiedDialog = target => {
   });
 };
 
-// Saving a File from electron browser
-
+// Opening a File from electron browser
 export const loadFile = async target => {
   const fileNames = await promisifiedDialog(target);
   const res = [];
