@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 
 class Video extends Component {
   render() {
-    const {video} = this.props
+    const { video } = this.props;
     let url = null;
     if (video) {
-      url = require(`../videos/${this.props.video}`)
-      console.log(url)
+      url = require(`../videos/${this.props.video}`);
+      console.log(url);
     }
     return (
       <div id="video-player">
-        <video loop controls src={url} />
+        <video loop controls src={url} width="960px" height="720px" />
       </div>
     );
   }
