@@ -18,6 +18,7 @@ import {
 import ButtonPanel from '../components/ButtonPanel';
 import BuildCanvas from '../components/BuildCanvas';
 import PreVisCanvas from '../components/PreVisCanvas';
+import ControlsHelp from '../components/ControlsHelp';
 
 import {
   changeTab,
@@ -427,52 +428,53 @@ class PathBuilder extends Component {
             )}
           </Grid.Row>
 
-          <div id="row">
-            <div id="button-panels">
-              <table>
-                <thead align="center">
-                  <tr>
-                    <td>
-                      <h1>
-                        {buttonPlane === 'Current'
-                          ? `Horizontal`
-                          : `${buttonPlane}`}{' '}
-                        Movement
-                      </h1>
-                    </td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td id={`${buttonPlane}-strafe`}>
-                      <ButtonPanel
-                        leftDisabled={leftDisabled}
-                        rightDisabled={rightDisabled}
-                        forwardDisabled={forwardDisabled}
-                        reverseDisabled={reverseDisabled}
-                        allDisabled={
-                          this.state.preVisButtonsDisabled ||
-                          upDisabled ||
-                          downDisabled
-                        }
-                        clickHandler={this.handleButtonClick}
-                        type={buttonPlane[0]}
-                        droneOrientation={droneOrientation}
-                        screen="path"
-                      />
-                    </td>
+          <div className="path-builder-row">
+              <ControlsHelp className="sm-mr" />
+              <div id="button-panels" className="sm-ml">
+                <table>
+                  <thead align="center">
+                    <tr>
+                      <td>
+                        <h1>
+                          {buttonPlane === 'Current'
+                            ? `Horizontal`
+                            : `${buttonPlane}`}{' '}
+                          Movement
+                        </h1>
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td id={`${buttonPlane}-strafe`}>
+                        <ButtonPanel
+                          leftDisabled={leftDisabled}
+                          rightDisabled={rightDisabled}
+                          forwardDisabled={forwardDisabled}
+                          reverseDisabled={reverseDisabled}
+                          allDisabled={
+                            this.state.preVisButtonsDisabled ||
+                            upDisabled ||
+                            downDisabled
+                          }
+                          clickHandler={this.handleButtonClick}
+                          type={buttonPlane[0]}
+                          droneOrientation={droneOrientation}
+                          screen="path"
+                        />
+                      </td>
 
-                    <td id="build-help">
-                      <Icon
-                        name="question circle"
-                        size="large"
-                        onClick={this.buildHelp}
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                      <td id="build-help">
+                        <Icon
+                          name="question circle"
+                          size="large"
+                          onClick={this.buildHelp}
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
           </div>
           <div className="row">
             <table>

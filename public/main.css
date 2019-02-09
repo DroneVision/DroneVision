@@ -293,6 +293,11 @@
   align-items: center;
 }
 
+.path-builder-row {
+    display: flex;
+    justify-content: center;
+}
+
 
 
 

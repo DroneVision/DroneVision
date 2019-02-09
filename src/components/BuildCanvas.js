@@ -10,6 +10,7 @@ import _ from 'lodash';
 import { updateBuildDronePosition } from '../store';
 import { createSceneObjs } from '../utils/canvasUtils';
 
+
 class BuildCanvas extends Component {
   constructor(props) {
     super(props);
