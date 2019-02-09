@@ -28,17 +28,25 @@ class Home extends Component {
           as="h1"
           content="Welcome to DroneVision"
           style={{
-            fontSize: '6em',
+            fontSize: '100px',
             fontWeight: 'normal',
             marginBottom: 0,
-            marginTop: '3rem',
+            marginTop: '100px',
           }}
         />
         <Image
           centered
           src={require('../assets/images/home-tello.png')}
+          size="x-large"
+          id="drone-image"
+        />
+
+        <Image
+          centered
+          src={require('../assets/images/preparefortakeoff.png')}
           size="large"
         />
+
         <div className="home-btn-row sm-mt">
           <Link to={'/scene-builder'}>
             <Button
@@ -77,25 +85,6 @@ class Home extends Component {
                   <Icon className="sm-ml" name="cloud download" />
                 </Button>
               </Link>
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column>
-              {/* <Header
-                as="h2"
-                content="PREPARE FOR TAKEOFF"
-                style={{
-                  fontSize: '2.5em',
-                  fontWeight: 'normal',
-                  marginTop: '1.5em',
-                  color: 'red'
-                }}
-              /> */}
-              <Image
-                centered
-                src={require('../assets/images/preparefortakeoff.png')}
-                size="large"
-              />
             </Grid.Column>
           </Grid.Row>
         </Grid>
