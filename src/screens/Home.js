@@ -26,11 +26,10 @@ class Home extends Component {
   };
   render() {
     return (
-      <Container>
+      <Container textAlign='center'>
         <Header
           as="h1"
           content="Welcome to DroneVision"
-          inverted
           style={{
             fontSize: '6em',
             fontWeight: 'normal',
@@ -38,99 +37,63 @@ class Home extends Component {
             marginTop: '3em',
           }}
         />
-        <Header
-          as="h2"
-          content="Prepare for takeoff!"
-          inverted
-          style={{
-            fontSize: '1.7em',
-            fontWeight: 'normal',
-            marginTop: '1.5em',
-          }}
-        />
-        <Grid columns={2} centered>
-          <Grid.Row>
-            <Grid.Column width={4}>
+        <div className="home-btn-row">
+            <Link to={'/scene-builder'}>
+              <Button
+                className="sm-mr"
+                primary
+                size="huge"
+                onClick={() => this.props.changeTab('scene-builder')}
+              >
+                Create Scene
+                <Icon name="right arrow" />
+              </Button>
+            </Link>
+            <Link to={'/path-builder'}>
+              <Button
+                className="sm-ml"
+                primary
+                size="huge"
+                onClick={() => this.props.changeTab('path-builder')}
+              >
+                Create Flight-Path
+                <Icon name="right arrow" />
+              </Button>
+            </Link>
+        </div>
+          <Grid>
+           <Grid.Row>
+            <Grid.Column>
               <Link to={'/scene-builder'}>
                 <Button
-                  primary
-                  size="huge"
-                  onClick={() => this.props.changeTab('scene-builder')}
-                >
-                  Create a Scene
-                  <Icon name="right arrow" />
-                </Button>
-              </Link>
-            </Grid.Column>
-            <Grid.Column width={4}>
-              <Link to={'/path-builder'}>
-                <Button
-                  primary
-                  size="huge"
-                  onClick={() => this.props.changeTab('path-builder')}
-                >
-                  Create a Flight-Path
-                  <Icon name="right arrow" />
-                </Button>
-              </Link>
-              /
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={4}>
-              <Link to={'/scene-builder'}>
-                <Button
+                  className="sm-mt"
                   secondary
                   size="huge"
                   onClick={this.handleLoadSceneObjects}
                 >
-                  Import a Scene
-                  <Icon name="right arrow" />
-                </Button>
-              </Link>
-            </Grid.Column>
-            <Grid.Column width={4}>
-              <Link to={'/path-builder'}>
-                <Button
-                  secondary
-                  size="huge"
-                  onClick={this.handleLoadFlightInstructions}
-                >
-                  Import a Flight-Path
-                  <Icon name="right arrow" />
+                  Import Flight Path + Scene
+                  <Icon className="sm-ml" name="cloud download" />
                 </Button>
               </Link>
             </Grid.Column>
           </Grid.Row>
+          <Grid.Row>
+            <Grid.Column>
+              <Header
+                as="h2"
+                content="PREPARE FOR TAKEOFF"
+                style={{
+                  fontSize: '2.5em',
+                  fontWeight: 'normal',
+                  marginTop: '1.5em',
+                  color: 'red'
+                }}
+              />
+            </Grid.Column>
+          </Grid.Row>
+          
         </Grid>
       </Container>
-      // <Link to={'/autopilot'}>
-      //   <Button onClick={() => this.props.changeTab('autopilot')}>
-      //     Run Autopilot/Record Video
-      //   </Button>
-      // </Link>
-      // <Grid columns={3} centered>
-      //   <Grid.Row>
-      //     <Grid.Column width={3}>
-      //       <Image src={require('../assets/images/scene.png')} />
-      //     </Grid.Column>
-      //     <Grid.Column width={3}>
-      //       <Image src={require('../assets/images/path.png')} />
-      //     </Grid.Column>
-      //   </Grid.Row>
-
-      //   <Grid.Row>
-      //     <Grid.Column width={3}>
-      //       <Image src={require('../assets/images/autopilot.png')} />
-      //     </Grid.Column>
-      //     <Grid.Column width={3}>
-      //       <Image src={require('../assets/images/manual.png')} />
-      //     </Grid.Column>
-      //     <Grid.Column width={4}>
-      //       <Image src={require('../assets/images/video.png')} />
-      //     </Grid.Column>
-      //   </Grid.Row>
-      // </Grid>
     );
   }
 }

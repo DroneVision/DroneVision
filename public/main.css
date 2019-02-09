@@ -277,3 +277,30 @@ margin-bottom: 10px;
   right: 10px;
   width: 70px;
 }
+
+.home-btn-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+.sm-ml {
+  margin-left: 1rem !important;
+}
+
+.sm-mr {
+  margin-right: 1rem !important;
+}
+
+.sm-mb {
+  margin-bottom: 2rem !important;
+}
+
+.sm-mt {
+  margin-top: 2rem !important;
+}
+
+
