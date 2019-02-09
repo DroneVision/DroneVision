@@ -9,12 +9,12 @@ class Navbar extends Component {
   handleTabChange = (e, { name }) => this.props.changeTab(name);
 
   handleLoadFlightInstructions = async () => {
-    const flightInstructions = await loadFile('flight-instructions');
-    this.props.updateInstructions(flightInstructions);
+    const data = await loadFile('flight-instructions');
+    this.props.updateInstructions(data['flight-instructions']);
   };
   handleLoadSceneObjects = async () => {
-    const sceneObjects = await loadFile('scene-objects');
-    this.props.updateSceneObjs(sceneObjects);
+    const data = await loadFile('scene-objects');
+    this.props.updateSceneObjs(data['scene-objects']);
   };
 
   render() {
@@ -76,7 +76,11 @@ class Navbar extends Component {
             <Menu.Menu position="right">
               <Dropdown text="Import/Export" pointing className="link item">
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={this.handleLoadFlightInstructions}>
+                  <Dropdown.Item
+                    as={Link}
+                    to="/path-builder"
+                    onClick={this.handleLoadFlightInstructions}
+                  >
                     Import Flight Path
                   </Dropdown.Item>
                   <Dropdown.Item
@@ -86,7 +90,11 @@ class Navbar extends Component {
                   >
                     Export Flight Path
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={this.handleLoadSceneObjects}>
+                  <Dropdown.Item
+                    as={Link}
+                    to="/scene-builder"
+                    onClick={this.handleLoadSceneObjects}
+                  >
                     Import Scene Objects
                   </Dropdown.Item>
                   <Dropdown.Item

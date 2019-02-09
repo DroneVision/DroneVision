@@ -161,6 +161,13 @@ class AutoPilotCanvas extends Component {
 
   componentDidUpdate = prevProps => {
     this.drawLineForAutopilot(this.props.flightInstructions);
+    const { sceneObjects } = this.props;
+
+    if (this.sceneObjects) {
+      this.scene.remove(this.sceneObjects);
+    }
+    this.sceneObjects = createSceneObjs(sceneObjects);
+    this.scene.add(this.sceneObjects);
   };
 
   drawLineForAutopilot = flightInstructions => {

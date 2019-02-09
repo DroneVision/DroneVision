@@ -24,7 +24,9 @@ export const saveFile = (target, targetData) => {
     if (fileName === undefined) {
       return;
     }
-    fs.writeFile(fileName, JSON.stringify(targetData), err => {
+    const targetObj = {};
+    targetObj[target] = targetData;
+    fs.writeFile(fileName, JSON.stringify(targetObj), err => {
       if (err) {
         alert('An error ocurred creating the file ' + err.message);
       }
@@ -36,16 +38,23 @@ export const saveFile = (target, targetData) => {
 // The dialog blocks the main thread until the user select the file
 
 const promisifiedDialog = target => {
-  const fileExt = target === 'flight-instructions' ? 'dvz' : 'dvzo';
+  let fileExt;
+  if (target === 'both') {
+    fileExt = ['dvz', 'dvzo'];
+  } else if (target === 'flight-instructions') {
+    fileExt = ['dvz'];
+  } else {
+    fileExt = ['dvzo'];
+  }
   const options = {
-    properties: ['openFile'],
+    properties: ['openFile', 'multiSelections'],
     defaultPath: app.getPath('desktop'),
-    filters: [{ name: 'object', extensions: [fileExt] }],
+    filters: [{ name: 'object', extensions: fileExt }],
   };
   return new Promise((resolve, reject) => {
-    dialog.showOpenDialog(null, options, (fileName, err) => {
-      if (!err && fileName !== undefined) {
-        resolve(fileName[0]);
+    dialog.showOpenDialog(null, options, (fileNames, err) => {
+      if (!err && fileNames !== undefined) {
+        resolve(fileNames);
       } else {
         reject(err);
       }
@@ -56,7 +65,11 @@ const promisifiedDialog = target => {
 // Saving a File from electron browser
 
 export const loadFile = async target => {
-  const fileName = await promisifiedDialog(target);
-  const data = await readFileAsync(fileName);
-  return JSON.parse(data);
+  const fileNames = await promisifiedDialog(target);
+  const res = [];
+  for (let fileName of fileNames) {
+    const data = await readFileAsync(fileName);
+    res.push(JSON.parse(data));
+  }
+  return res.reduce((accum, el) => ({ ...accum, ...el }), {});
 };
