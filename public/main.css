@@ -100,10 +100,10 @@
   padding: 7px;
 }
 
-#centered-padded-top {
+.centered-padded-top {
   display: flex;
   justify-content: center;
-  padding-top: 3rem;
+  padding-top: 35px;
 }
 
 #centered {
@@ -141,9 +141,11 @@
 }
 
 #videos {
-  display: flex;
+  margin-top: -14px;
+  text-align: center;
+  /* display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
 }
 
 #Up-strafe {
@@ -170,15 +172,6 @@
   border-style: solid;
 }
 
-#flight-instructions {
-  position: absolute;
-  width: 25rem;
-  right: 2rem;
-  top: 14.2rem;
-  height: 30rem;
-  overflow: auto;
-}
-
 #controls {
   display: flex;
 }
@@ -203,8 +196,10 @@
 }
 
 #scene-builder {
-  display: flex;
-  flex-direction: column;
+  margin-top: -28px;
+  text-align: center;
+  /* display: flex;
+  flex-direction: column; */
 }
 
 .numeric-input {
@@ -217,17 +212,27 @@
   color: yellow;
 }
 
-.object-header {
+.object-header,
+.flight-instructions-header {
   margin-bottom: 15px;
-  color: white;
+  color: yellow;
+}
+
+#flight-instructions {
+  overflow: auto;
+  position: absolute;
+  width: 25rem;
+  right: 80px;
+  margin-top: 120px;
+  height: 576px;
 }
 
 #object-list {
   overflow: scroll;
-  height: 35rem;
+  height: 576px;
   width: 285px;
-  margin-top: 5.5rem;
-  -webkit-scrollbar-button: visible;
+  margin-top: 120px;
+  margin-right: 80px;
 }
 
 .object-removal-button {
@@ -264,6 +269,7 @@
 .object-single {
   position: relative;
   margin: 2px 0px;
+  margin-left: 50px;
 }
 
 .manual-control-logo {

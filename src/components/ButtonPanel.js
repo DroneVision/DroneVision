@@ -9,7 +9,7 @@ const renderCenterButton = (type, clickHandler, allDisabled, screen) => {
           <Image
             src={require('../assets/images/helper-images/top-view-up.png')}
             className="drone-button-image"
-            style={{ fontSize: 30 }}
+            style={{ fontSize: 25 }}
             avatar
           />
         );

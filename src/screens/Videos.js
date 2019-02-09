@@ -27,17 +27,15 @@ class Videos extends Component {
       <div id="videos">
         <Grid centered padded>
           <Grid.Row>
-            <Grid.Column>
-              <Header as="h1" dividing id="centered-padded-top">
+            <Header as="h1" dividing>
+              <Header.Content className="centered-padded-top">
                 <Icon name="video" />
-                <Header.Content>
-                  Videos
-                  <Header.Subheader>
-                    <i>Watch your recorded drone footage</i>
-                  </Header.Subheader>
-                </Header.Content>
-              </Header>
-            </Grid.Column>
+                Videos
+                <Header.Subheader>
+                  <i>Watch your recorded drone footage</i>
+                </Header.Subheader>
+              </Header.Content>
+            </Header>
           </Grid.Row>
 
           <Grid.Row>
