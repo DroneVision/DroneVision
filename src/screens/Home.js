@@ -34,10 +34,15 @@ class Home extends Component {
             fontSize: '6em',
             fontWeight: 'normal',
             marginBottom: 0,
-            marginTop: '3em',
+            marginTop: '3rem',
           }}
         />
-        <div className="home-btn-row">
+        <Image
+          centered
+          src={require('../assets/images/home-tello.png')}
+          size="large"
+        />
+        <div className="home-btn-row sm-mt">
             <Link to={'/scene-builder'}>
               <Button
                 className="sm-mr"
