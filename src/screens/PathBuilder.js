@@ -394,6 +394,9 @@ class PathBuilder extends Component {
       buildDronePosition.y === limits.minY && buttonPlane === 'Down';
     return (
       <div id="build-screen">
+        <div className="toggle-left-build">Toggle Up/Down: Z/X</div>
+        <div className="toggle-right-build">Toggle Up/Down: >/?</div>
+
         <Grid columns={3} padded centered>
           <Header as="h1" dividing>
             <Header.Content className="centered-padded-top">
@@ -429,52 +432,54 @@ class PathBuilder extends Component {
           </Grid.Row>
 
           <div className="path-builder-row">
-              <ControlsHelp className="sm-mr" />
-              <div id="button-panels" className="sm-ml">
-                <table>
-                  <thead align="center">
-                    <tr>
-                      <td>
-                        <h1>
-                          {buttonPlane === 'Current'
-                            ? `Horizontal`
-                            : `${buttonPlane}`}{' '}
-                          Movement
-                        </h1>
-                      </td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td id={`${buttonPlane}-strafe`}>
-                        <ButtonPanel
-                          leftDisabled={leftDisabled}
-                          rightDisabled={rightDisabled}
-                          forwardDisabled={forwardDisabled}
-                          reverseDisabled={reverseDisabled}
-                          allDisabled={
-                            this.state.preVisButtonsDisabled ||
-                            upDisabled ||
-                            downDisabled
-                          }
-                          clickHandler={this.handleButtonClick}
-                          type={buttonPlane[0]}
-                          droneOrientation={droneOrientation}
-                          screen="path"
-                        />
-                      </td>
-
-                      <td id="build-help">
-                        <Icon
-                          name="question circle"
-                          size="large"
-                          onClick={this.buildHelp}
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            {/* <ControlsHelp className="sm-mr" /> */}
+            <div id="button-panels" className="sm-ml">
+              <table>
+                <thead align="center">
+                  <tr>
+                    <td />
+                    <td>
+                      <h1>
+                        {buttonPlane === 'Current'
+                          ? `Horizontal`
+                          : `${buttonPlane}`}{' '}
+                        Movement
+                      </h1>
+                    </td>
+                    <td />
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td />
+                    <td id={`${buttonPlane}-strafe`}>
+                      <ButtonPanel
+                        leftDisabled={leftDisabled}
+                        rightDisabled={rightDisabled}
+                        forwardDisabled={forwardDisabled}
+                        reverseDisabled={reverseDisabled}
+                        allDisabled={
+                          this.state.preVisButtonsDisabled ||
+                          upDisabled ||
+                          downDisabled
+                        }
+                        clickHandler={this.handleButtonClick}
+                        type={buttonPlane[0]}
+                        droneOrientation={droneOrientation}
+                        screen="path"
+                      />
+                    </td>
+                    <td id="build-help">
+                      <Icon
+                        name="question circle"
+                        size="large"
+                        onClick={this.buildHelp}
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
           <div className="row">
             <table>
