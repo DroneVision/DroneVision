@@ -118,8 +118,9 @@ class BuildCanvas extends Component {
   componentDidMount() {
     const { sceneObjects } = this.props;
     document.getElementById('canvas').appendChild(this.renderer.domElement);
-    this.animate();
     this.redrawLinesAndMoveDrone();
+    this.animate();
+
     this.sceneObjects = createSceneObjs(sceneObjects);
     this.scene.add(this.sceneObjects);
   }
@@ -153,10 +154,10 @@ class BuildCanvas extends Component {
     this.drone3DModel.rotation.y = Math.PI;
 
     //REMOVE OLD LINE AND LAND LINE
-    if (this.line) {
-      this.scene.remove(this.line);
-      this.scene.remove(this.landLine);
-    }
+    // if (this.line) {
+    //   this.scene.remove(this.line);
+    //   this.scene.remove(this.landLine);
+    // }
 
     //DRAW NEW FLIGHT PATH
     const material = new THREE.LineBasicMaterial({
@@ -168,6 +169,7 @@ class BuildCanvas extends Component {
     geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
 
     if (!_.isEqual(oldFlightInstructions, newFlightInstructions)) {
+      console.log('hi', newFlightInstructions);
       newFlightInstructions.slice(1, -1).forEach(instructionObj => {
         const { droneInstruction, drawInstruction } = instructionObj;
 

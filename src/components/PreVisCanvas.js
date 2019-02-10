@@ -145,7 +145,10 @@ class PreVisCanvas extends Component {
     if (Math.abs(currentDroneRotation) === Math.PI) {
       console.log('cond1', currentDroneRotation);
       this.camera.position.set(point.x, point.y + 2, point.z - followDistance);
-    } else if (currentDroneRotation === Math.PI / 2) {
+    } else if (
+      currentDroneRotation === Math.PI / 2 ||
+      currentDroneRotation === (-3 / 2) * Math.PI
+    ) {
       console.log('cond2', currentDroneRotation);
       this.camera.position.set(point.x + followDistance, point.y + 2, point.z);
     } else if (currentDroneRotation === 0) {
